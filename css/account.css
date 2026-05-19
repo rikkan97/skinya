@@ -1,0 +1,156 @@
+/* ====================================================================
+   ACCOUNT.CSS — Login / Register / Forgot UI (centered modal)
+   ==================================================================== */
+
+.account-overlay{
+  position:fixed;inset:0;z-index:1000;
+  visibility:hidden;opacity:0;
+  transition:opacity .25s var(--ease-luxe), visibility .25s;
+  display:flex;align-items:center;justify-content:center;
+  padding:1.5rem;
+}
+.account-overlay.open{visibility:visible;opacity:1}
+
+.account-backdrop{
+  position:absolute;inset:0;
+  background:rgba(31,24,19,0.45);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+}
+
+.account-panel{
+  position:relative;
+  width:min(440px, 100%);
+  background:var(--ivory);
+  box-shadow:0 30px 80px -20px rgba(31,24,19,0.4);
+  padding:2.4rem 2.2rem 2rem;
+  transform:translateY(-12px) scale(.98);
+  transition:transform .3s var(--ease-luxe);
+  border-radius:6px;
+}
+.account-overlay.open .account-panel{transform:translateY(0) scale(1)}
+
+.account-close{
+  position:absolute;top:.9rem;right:.9rem;
+  background:transparent;border:0;cursor:pointer;
+  font-size:1.05rem;color:var(--mauve-soft);
+  padding:.45rem .6rem;line-height:1;
+  transition:color .2s;
+}
+.account-close:hover{color:var(--aubergine)}
+
+.account-logo{display:flex;justify-content:center;margin:-.6rem 0 1.2rem}
+.account-logo img{height:42px;width:auto;object-fit:contain;display:block}
+
+.account-pw-wrap{position:relative;display:block}
+.account-pw-wrap input{width:100%;padding-right:2.2rem}
+.account-pw-toggle{
+  position:absolute;right:0;top:50%;transform:translateY(-50%);
+  background:transparent;border:0;cursor:pointer;
+  color:var(--mauve-soft);
+  padding:.35rem .4rem;line-height:0;
+  display:inline-flex;align-items:center;justify-content:center;
+  transition:color .2s;
+}
+.account-pw-toggle:hover{color:var(--aubergine)}
+.account-pw-toggle .pw-eye-off{display:none}
+.account-pw-toggle.is-shown .pw-eye{display:none}
+.account-pw-toggle.is-shown .pw-eye-off{display:block}
+
+.account-view{display:none;flex-direction:column;gap:1rem}
+.account-view.is-active{display:flex}
+
+.account-eyebrow{
+  font-size:.62rem;letter-spacing:.32em;text-transform:uppercase;
+  color:var(--gold-leaf);font-weight:600;
+}
+
+.account-view h3{
+  font-family:'Cormorant Garamond',serif;font-weight:500;
+  font-size:2rem;line-height:1.1;color:var(--aubergine);
+  margin:.15rem 0 .2rem;letter-spacing:-.01em;
+}
+.account-view h3 em{
+  font-style:italic;font-weight:500;
+  background:linear-gradient(135deg,var(--plum-deep) 0%,var(--gold-leaf) 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+
+.account-sub{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1rem;line-height:1.5;color:var(--aubergine);
+  opacity:.8;margin:0 0 .4rem;
+}
+
+.account-field{display:flex;flex-direction:column;gap:.4rem}
+.account-field span{
+  font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--plum-deep);font-weight:600;
+}
+.account-field input{
+  width:100%;border:0;border-bottom:1px solid rgba(31,24,19,0.18);
+  background:transparent;outline:0;
+  font-family:'Inter',sans-serif;font-size:.95rem;
+  color:var(--aubergine);
+  padding:.55rem 0;
+  transition:border-color .25s;
+}
+.account-field input::placeholder{color:var(--mauve-soft);opacity:.6}
+.account-field input:focus{border-bottom-color:var(--gold-leaf)}
+
+.account-row-mini{
+  display:flex;justify-content:flex-end;
+  margin-top:-.3rem;
+}
+
+.account-link{
+  font-family:'Inter',sans-serif;
+  font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--plum-deep);cursor:pointer;font-weight:600;
+  text-decoration:none;
+  transition:color .2s;
+}
+.account-link:hover{color:var(--gold-leaf)}
+
+.account-submit{
+  width:100%;justify-content:center;
+  margin-top:.5rem;
+}
+
+.account-foot{
+  text-align:center;
+  font-size:.78rem;color:var(--aubergine);opacity:.85;
+  margin:.4rem 0 0;
+  font-family:'Inter',sans-serif;
+}
+.account-foot .account-link{margin-left:.3rem}
+
+.account-menu{list-style:none;margin:.6rem 0;padding:0;display:flex;flex-direction:column;gap:0}
+.account-menu li{border-bottom:1px solid rgba(31,24,19,0.08)}
+.account-menu li:first-child{border-top:1px solid rgba(31,24,19,0.08)}
+.account-menu a{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.85rem .2rem;text-decoration:none;
+  font-family:'Cormorant Garamond',serif;
+  font-size:1rem;color:var(--aubergine);
+  transition:color .2s, padding-left .2s;
+}
+.account-menu a::after{content:'›';color:var(--mauve-soft);font-size:1.2rem;transition:transform .2s, color .2s}
+.account-menu a:hover{color:var(--gold-leaf);padding-left:.4rem}
+.account-menu a:hover::after{color:var(--gold-leaf);transform:translateX(3px)}
+
+.account-sub strong{font-weight:500;color:var(--plum-deep)}
+
+/* Logged-in indicator (μικρό gold dot στο nav button) */
+#accountBtn{position:relative}
+#accountBtn.is-logged-in::after{
+  content:'';position:absolute;top:6px;right:6px;
+  width:7px;height:7px;border-radius:50%;
+  background:var(--gold-leaf);
+  box-shadow:0 0 0 2px var(--ivory);
+}
+
+@media(max-width:520px){
+  .account-panel{padding:2rem 1.4rem 1.6rem}
+  .account-view h3{font-size:1.7rem}
+}

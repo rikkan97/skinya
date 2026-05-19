@@ -234,7 +234,12 @@ function setupScrollSpy(){
   update(); // initial check
 }
 
-document.addEventListener('DOMContentLoaded', ()=>{
+document.addEventListener('DOMContentLoaded', async ()=>{
+
+  // ───── Φόρτωση δεδομένων από Supabase (γεμίζει products + categories arrays) ─────
+  if (typeof loadDataFromSupabase === 'function') {
+    await loadDataFromSupabase();
+  }
 
   // ───── Router: όλα τα [data-route] links ─────
   // Αν το link έχει και data-cat, μετά το navigateTo κάνουμε smooth scroll
