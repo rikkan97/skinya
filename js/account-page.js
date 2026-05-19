@@ -116,24 +116,24 @@ function renderOrderCard(o){
 
   return `
     <article class="ord-card" data-order-id="${o.id}">
-      <header class="ord-head">
+      <div class="ord-head">
         <div>
           <div class="ord-num">${escapeHTML(o.order_number)}</div>
           <div class="ord-date">${fmtDate(o.created_at)} · ${itemsCount} ${itemsCount===1?'προϊόν':'προϊόντα'}</div>
         </div>
         <div class="ord-status ${st.cls}">${st.label}</div>
-      </header>
+      </div>
 
       <ul class="ord-items">${itemsHtml}</ul>
 
-      <footer class="ord-foot">
+      <div class="ord-foot">
         <div class="ord-addr"><small>Αποστολή</small>${escapeHTML(addrLine)||'—'}</div>
         <div class="ord-totals">
           <div><span>Υποσύνολο</span><span>${fmtMoney(o.subtotal)}</span></div>
           <div><span>Μεταφορικά</span><span>${fmtMoney(o.shipping)}</span></div>
           <div class="ord-total-grand"><span>Σύνολο</span><span>${fmtMoney(o.total)}</span></div>
         </div>
-      </footer>
+      </div>
     </article>`;
 }
 
