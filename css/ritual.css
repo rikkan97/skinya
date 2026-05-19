@@ -1696,7 +1696,6 @@
   animation:marqueeScroll 36s linear infinite;
   will-change:transform;
 }
-.m-bundle--marquee:hover .m-marquee-track{animation-play-state:paused}
 .m-marquee-img{
   flex-shrink:0;
   width:auto;height:230px;aspect-ratio:3/4;
