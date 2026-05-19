@@ -1811,6 +1811,7 @@
     linear-gradient(180deg, #4a2e22 0%, #2a1812 55%, #150906 100%);
   color:var(--ivory);
   position:relative;
+  padding-top:3rem;
 }
 .routine-section--night.night-v2::before{display:none}
 
