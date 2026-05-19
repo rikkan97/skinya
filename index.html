@@ -1336,6 +1336,61 @@
 
 </div>
 
+<!-- ============ ACCOUNT PAGE — Παραγγελίες · Στοιχεία ============ -->
+<div class="page" id="page-account">
+
+  <header class="page-header account-page-header">
+    <div class="page-header-content">
+      <div class="eyebrow">Ο λογαριασμός μου</div>
+      <h1>Καλώς <em>ήρθες.</em></h1>
+      <p class="account-page-email" id="accountPageEmail">—</p>
+    </div>
+  </header>
+
+  <section class="account-page-section">
+
+    <!-- Tabs nav -->
+    <div class="acct-tabs">
+      <button class="acct-tab is-active" data-acct-tab="orders" type="button">Παραγγελίες</button>
+      <button class="acct-tab" data-acct-tab="profile" type="button">Στοιχεία</button>
+      <button class="acct-tab acct-tab--danger" type="button" onclick="accountLogout()">Αποσύνδεση</button>
+    </div>
+
+    <!-- TAB 1: Orders -->
+    <div class="acct-pane is-active" data-acct-pane="orders">
+      <div id="ordersList">
+        <p class="acct-empty">Φόρτωση παραγγελιών…</p>
+      </div>
+    </div>
+
+    <!-- TAB 2: Profile -->
+    <div class="acct-pane" data-acct-pane="profile">
+      <form class="acct-profile-form" id="profileForm" onsubmit="saveProfile(event)" autocomplete="on">
+        <div class="ck-row">
+          <label class="ck-field"><span>Όνομα</span>
+            <input type="text" name="first_name" autocomplete="given-name">
+          </label>
+          <label class="ck-field"><span>Επώνυμο</span>
+            <input type="text" name="last_name" autocomplete="family-name">
+          </label>
+        </div>
+        <label class="ck-field"><span>Email</span>
+          <input type="email" name="email" readonly>
+        </label>
+        <label class="ck-field"><span>Τηλέφωνο</span>
+          <input type="tel" name="phone" autocomplete="tel">
+        </label>
+        <label class="acct-check">
+          <input type="checkbox" name="newsletter">
+          <span>Θέλω να λαμβάνω email για νέα προϊόντα και exclusive προσφορές</span>
+        </label>
+        <button type="submit" class="btn-primary"><span>Αποθήκευση αλλαγών</span></button>
+      </form>
+    </div>
+
+  </section>
+</div>
+
 <!-- ============ CONTACT PAGE ============ -->
 <div class="page" id="page-contact">
 
@@ -2203,9 +2258,8 @@
       <h3>Γεια <em>σου.</em></h3>
       <p class="account-sub">Είσαι συνδεδεμένη ως <strong id="profileEmail">—</strong></p>
       <ul class="account-menu">
-        <li><a href="#" data-route="account">Οι παραγγελίες μου</a></li>
-        <li><a href="#" data-route="account">Διευθύνσεις αποστολής</a></li>
-        <li><a href="#" data-route="account">Στοιχεία λογαριασμού</a></li>
+        <li><a data-route="account" onclick="closeAccount()">Οι παραγγελίες μου</a></li>
+        <li><a data-route="account" onclick="closeAccount()">Στοιχεία λογαριασμού</a></li>
       </ul>
       <button type="button" class="btn-primary account-submit" onclick="accountLogout()"><span>Αποσύνδεση</span></button>
     </div>
@@ -2239,6 +2293,7 @@
 <script src="js/search.js"></script>
 <script src="js/account.js"></script>
 <script src="js/legal.js"></script>
+<script src="js/account-page.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

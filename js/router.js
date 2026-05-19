@@ -39,6 +39,10 @@ function navigateTo(route){
   if(route === 'products'){
     renderCatalog();
   }
+  // Αν πήγαμε στον λογαριασμό, φέρε orders + profile
+  if(route === 'account' && typeof loadAccountPage === 'function'){
+    loadAccountPage();
+  }
 }
 
 // Όταν ο user πατάει το back/forward button του browser ή ένα anchor link
