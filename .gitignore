@@ -1,0 +1,6 @@
+.DS_Store
+Thumbs.db
+*.exe
+*.log
+.vscode/
+node_modules/
