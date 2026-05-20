@@ -26,12 +26,13 @@ function subscribeNews(){
   showToast('Καλώς ήρθατε στο Cercle Skinya ❀');
 }
 
-// ───── CAROUSEL ─────
+// ───── CAROUSEL (δυναμικός αριθμός slides — από site_sections) ─────
 let currentSlide = 0;
-const totalSlides = 3;
+let totalSlides = 3;
 let carouselInterval;
 
 function goToSlide(n){
+  if(totalSlides <= 0) return;
   currentSlide = (n + totalSlides) % totalSlides;
   const track = document.getElementById('track');
   if(track){
@@ -44,5 +45,18 @@ function goToSlide(n){
 
 function startCarousel(){
   if(carouselInterval) clearInterval(carouselInterval);
+  if(totalSlides <= 1) return;
   carouselInterval = setInterval(()=>goToSlide(currentSlide+1), 6000);
 }
+
+// Καλείται από το renderHomeFavorites μετά το rebuild των slides
+window.setCarouselSlides = function(count){
+  totalSlides = count;
+  currentSlide = 0;
+  // re-wire dots (νέα DOM elements μετά το rebuild)
+  document.querySelectorAll('.dot').forEach((d,i)=>{
+    d.onclick = ()=>{ goToSlide(i); startCarousel(); };
+  });
+  goToSlide(0);
+  startCarousel();
+};

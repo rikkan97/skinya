@@ -240,6 +240,10 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   if (typeof loadDataFromSupabase === 'function') {
     await loadDataFromSupabase();
   }
+  // ───── Render admin-managed UI sections ─────
+  if (typeof renderHomeFavorites === 'function') {
+    await renderHomeFavorites();
+  }
 
   // ───── Router: όλα τα [data-route] links ─────
   // Αν το link έχει και data-cat, μετά το navigateTo κάνουμε smooth scroll
