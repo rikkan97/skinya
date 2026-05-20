@@ -127,7 +127,7 @@ async function fetchSiteSection(id){
 // Φέρε ΟΛΑ τα sections με μία αίτηση — populate window.siteSections map
 async function fetchAllSiteSections(){
   const { data, error } = await window.sb
-    .from('site_sections').select('id, kind, max_items, items');
+    .from('site_sections').select('id, kind, max_items, items, config');
   if(error){ console.warn('[Skinya] fetchAllSiteSections error:', error); return {}; }
   const map = {};
   for(const s of (data||[])){
@@ -287,12 +287,15 @@ function effectivePrice(p){
   return 0;
 }
 
-// Υπολογίζει & ενημερώνει τα bundle prices στο DOM
-function renderBundlePrice(sectionId, discount, origElId, finalElId){
+// Υπολογίζει & ενημερώνει τα bundle prices στο DOM (discount από section.config)
+function renderBundlePrice(sectionId, btnId, origElId, finalElId){
   const section = window.siteSections?.[sectionId];
   const origEl  = document.getElementById(origElId);
   const finalEl = document.getElementById(finalElId);
+  const btn     = document.getElementById(btnId);
   if(!section || !origEl || !finalEl) return;
+
+  const discount = Number(section.config?.discount) || 0;
 
   const total = (section.items||[])
     .map(it => products.find(p => p.id === it.sku))
@@ -304,10 +307,20 @@ function renderBundlePrice(sectionId, discount, origElId, finalElId){
 
   origEl.textContent  = fmt(total);
   finalEl.textContent = fmt(discounted);
+
+  // Ενημέρωσε & το κουμπί label (π.χ. "Πάρε το σετ · −5%")
+  if(btn && discount > 0){
+    const pct = Math.round(discount * 100 * 10) / 10;
+    const span = btn.querySelector('span');
+    if(span) span.textContent = `Πάρε το σετ · −${pct}%`;
+  } else if(btn){
+    const span = btn.querySelector('span');
+    if(span) span.textContent = 'Πάρε το σετ';
+  }
 }
 
-// Καλείται από bundle buttons (data-driven add)
-function addBundleFromSection(sectionId, bundleName, discount){
+// Καλείται από bundle buttons (data-driven add — discount διαβάζεται από section)
+function addBundleFromSection(sectionId, bundleName){
   const section = window.siteSections?.[sectionId];
   if(!section?.items?.length){
     if(typeof showToast === 'function') showToast('Δεν βρέθηκε το set');
@@ -324,9 +337,9 @@ async function renderRoutines(){
   await fetchAllSiteSections();  // ensure cache
   const sections = window.siteSections || {};
 
-  // Ενημέρωσε τα bundle prices (αυτόματα από τα προϊόντα της ρουτίνας)
-  renderBundlePrice('morning_routine', 0.05, 'morningBundleOriginal', 'morningBundleFinal');
-  renderBundlePrice('night_routine',   0.08, 'nightBundleOriginal',   'nightBundleFinal');
+  // Ενημέρωσε τα bundle prices (discount διαβάζεται από section.config)
+  renderBundlePrice('morning_routine', 'morningBundleBtn', 'morningBundleOriginal', 'morningBundleFinal');
+  renderBundlePrice('night_routine',   'nightBundleBtn',   'nightBundleOriginal',   'nightBundleFinal');
 
   // MORNING
   const morning = sections['morning_routine'];
