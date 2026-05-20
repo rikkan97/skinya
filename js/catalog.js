@@ -61,7 +61,6 @@ function renderKeyIng(p){
 
 // Featured product card (μεγάλη asymmetric κάρτα στην κορυφή κάθε κατηγορίας)
 function renderFeatured(p){
-  const price = getProductPrice(p);
   return `
     <article class="featured-product" data-id="${p.id}">
       <span class="featured-tag">★ Best of Category</span>
@@ -76,7 +75,7 @@ function renderFeatured(p){
         <p class="desc">${p.desc||''}</p>
         ${renderBadges(p.badges, p.brand)}
         <div class="product-buy">
-          <span class="product-price">${price.toFixed(2)}€</span>
+          ${renderPriceHTML(p)}
           <button class="btn-add-cart" type="button" onclick="addToCart('${p.id}')"><span>+ Στο καλάθι</span></button>
         </div>
       </div>
@@ -86,7 +85,6 @@ function renderFeatured(p){
 
 // Mini card (μικρή κάρτα στο grid)
 function renderMiniCard(p){
-  const price = getProductPrice(p);
   return `
     <article class="mini-card" data-id="${p.id}">
       <div class="mini-visual${p.img?' has-img':''}">
@@ -99,7 +97,7 @@ function renderMiniCard(p){
         ${renderKeyIng(p)}
         ${renderBadges(p.badges, p.brand)}
         <div class="product-buy">
-          <span class="product-price">${price.toFixed(2)}€</span>
+          ${renderPriceHTML(p)}
           <button class="btn-add-cart" type="button" onclick="addToCart('${p.id}')" aria-label="Προσθήκη στο καλάθι"><span>+ Καλάθι</span></button>
         </div>
       </div>

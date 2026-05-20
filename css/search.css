@@ -130,6 +130,10 @@
   font-size:.92rem;color:var(--aubergine);
   font-weight:500;padding-left:.5rem;white-space:nowrap;
 }
+.search-result-price.has-offer s{
+  color:#8d8088;font-weight:400;font-size:.78rem;margin-right:.25rem;opacity:.75;
+}
+.search-result-price.has-offer b{color:var(--aubergine);font-weight:600}
 
 /* highlight pulse μετά από navigate */
 .search-highlight{

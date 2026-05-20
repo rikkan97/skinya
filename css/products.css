@@ -261,6 +261,28 @@
 .cat-grid{grid-auto-rows:1fr}
 .product-price{font-family:'Cormorant Garamond',serif;font-weight:500;font-style:italic;font-size:1.4rem;color:var(--aubergine);letter-spacing:-.01em;line-height:1}
 .featured-info .product-price{font-size:1.9rem}
+
+/* ─────────────── Offer / sale price (διαγραμμένη + νέα) ─────────────── */
+.product-price--offer{display:inline-flex;align-items:baseline;gap:.5rem;flex-wrap:wrap;font-style:normal}
+.product-price--offer .price-was{
+  font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:400;
+  font-size:.72em;color:#8d8088;
+  text-decoration:line-through;text-decoration-thickness:1px;
+  opacity:.75;letter-spacing:-.01em;
+}
+.product-price--offer .price-now{
+  font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500;
+  color:var(--aubergine);letter-spacing:-.01em;
+}
+.product-price--offer .price-pct{
+  font-family:'Inter',sans-serif;font-style:normal;
+  font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700;
+  color:#a8443a;background:rgba(192,133,122,0.14);
+  border:1px solid rgba(192,133,122,0.32);
+  padding:.18rem .5rem;border-radius:99px;line-height:1.2;
+  align-self:center;
+}
+.featured-info .product-price--offer .price-pct{font-size:.66rem;padding:.22rem .6rem}
 .btn-add-cart{font-family:'Inter',sans-serif;font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;font-weight:600;padding:.7rem 1.15rem;background:var(--aubergine);color:var(--ivory);border:1px solid var(--aubergine);cursor:pointer;transition:all .4s var(--ease-luxe);white-space:nowrap;border-radius:var(--radius-pill);position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:.4rem;box-shadow:0 4px 12px -4px rgba(46,35,29,0.25)}
 .btn-add-cart::before{content:'';position:absolute;inset:0;background:var(--gold-leaf);transform:translateX(-101%);transition:transform .45s var(--ease-luxe);z-index:0;border-radius:var(--radius-pill)}
 .btn-add-cart>*{position:relative;z-index:1}

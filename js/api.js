@@ -34,6 +34,7 @@ function mapProduct(row){
     desc:     row.description || '',
     featured: !!row.is_featured,
     price:    row.price != null ? Number(row.price) : null,
+    defaultPrice: row.default_price != null ? Number(row.default_price) : null,
     stock:    row.stock,
     badges:   Array.isArray(row.badges) ? row.badges : []
   };
@@ -276,9 +277,56 @@ function applyProductToWeeklyCard(card, p){
   }
 }
 
+// Βοηθητικό: παίρνει την effective τιμή προϊόντος (price override → default_price → category default)
+function effectivePrice(p){
+  if(!p) return 0;
+  if(p.price != null && !isNaN(p.price)) return Number(p.price);
+  if(p.defaultPrice != null && !isNaN(p.defaultPrice)) return Number(p.defaultPrice);
+  // last-resort fallback: getProductPrice από data.js αν υπάρχει
+  if(typeof getProductPrice === 'function') return getProductPrice(p);
+  return 0;
+}
+
+// Υπολογίζει & ενημερώνει τα bundle prices στο DOM
+function renderBundlePrice(sectionId, discount, origElId, finalElId){
+  const section = window.siteSections?.[sectionId];
+  const origEl  = document.getElementById(origElId);
+  const finalEl = document.getElementById(finalElId);
+  if(!section || !origEl || !finalEl) return;
+
+  const total = (section.items||[])
+    .map(it => products.find(p => p.id === it.sku))
+    .filter(Boolean)
+    .reduce((s, p) => s + effectivePrice(p), 0);
+
+  const discounted = total * (1 - discount);
+  const fmt = n => n.toFixed(2).replace('.', ',') + '€';
+
+  origEl.textContent  = fmt(total);
+  finalEl.textContent = fmt(discounted);
+}
+
+// Καλείται από bundle buttons (data-driven add)
+function addBundleFromSection(sectionId, bundleName, discount){
+  const section = window.siteSections?.[sectionId];
+  if(!section?.items?.length){
+    if(typeof showToast === 'function') showToast('Δεν βρέθηκε το set');
+    return;
+  }
+  const skus = section.items.map(it => it.sku).filter(Boolean);
+  if(typeof addBundle === 'function'){
+    addBundle(skus, bundleName);
+  }
+}
+window.addBundleFromSection = addBundleFromSection;
+
 async function renderRoutines(){
   await fetchAllSiteSections();  // ensure cache
   const sections = window.siteSections || {};
+
+  // Ενημέρωσε τα bundle prices (αυτόματα από τα προϊόντα της ρουτίνας)
+  renderBundlePrice('morning_routine', 0.05, 'morningBundleOriginal', 'morningBundleFinal');
+  renderBundlePrice('night_routine',   0.08, 'nightBundleOriginal',   'nightBundleFinal');
 
   // MORNING
   const morning = sections['morning_routine'];

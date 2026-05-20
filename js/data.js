@@ -53,7 +53,39 @@ const CATEGORY_DEFAULT_PRICE = {
   body:         14.90
 };
 function getProductPrice(p){
-  return p.price != null ? p.price : (CATEGORY_DEFAULT_PRICE[p.cat] || 19.90);
+  const { price } = getProductOffer(p);
+  return price;
+}
+
+// Επιστρέφει { price, original, hasOffer, pct }
+//   • price    : η τιμή που πρέπει να πληρώσει ο πελάτης
+//   • original : η αρχική (διαγραμμένη) τιμή, μόνο όταν hasOffer
+//   • hasOffer : true αν υπάρχει discount (price < default)
+//   • pct      : ακέραιο ποσοστό έκπτωσης (π.χ. 25)
+function getProductOffer(p){
+  const def = (p.defaultPrice != null ? p.defaultPrice : null)
+              ?? (CATEGORY_DEFAULT_PRICE[p.cat] || 19.90);
+  const override = (p.price != null) ? p.price : null;
+  if(override != null && def > 0 && override < def){
+    return { price: override, original: def, hasOffer: true, pct: Math.round((1 - override/def) * 100) };
+  }
+  const finalPrice = (override != null) ? override : def;
+  return { price: finalPrice, original: null, hasOffer: false, pct: 0 };
+}
+
+// Markup για τιμή: αν προσφορά → strike-through original + νέα τιμή + %
+function renderPriceHTML(p){
+  const o = getProductOffer(p);
+  if(o.hasOffer){
+    return `
+      <span class="product-price product-price--offer">
+        <span class="price-was">${o.original.toFixed(2)}€</span>
+        <span class="price-now">${o.price.toFixed(2)}€</span>
+        <span class="price-pct">−${o.pct}%</span>
+      </span>
+    `;
+  }
+  return `<span class="product-price">${o.price.toFixed(2)}€</span>`;
 }
 
 // ───── BADGE LABELS ─────

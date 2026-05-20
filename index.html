@@ -837,11 +837,11 @@
         <h3>Όλη η πρωινή σου <em>ρουτίνα.</em></h3>
         <p>Και τα 6 προϊόντα μαζί, με την επιμέλεια των founders — και έκπτωση που κάνει το να ξεκινήσεις σωστά, ακόμα πιο εύκολο.</p>
         <div class="m-bundle-cta-row">
-          <button type="button" class="btn-primary" onclick="addBundle(['cl4','t1','s9','e3','m4','sp1'], 'Πρωινή ρουτίνα')"><span>Πάρε το σετ · −5%</span></button>
+          <button type="button" class="btn-primary" id="morningBundleBtn" data-discount="0.05" onclick="addBundleFromSection('morning_routine','Πρωινή ρουτίνα',0.05)"><span>Πάρε το σετ · −5%</span></button>
           <span class="m-bundle-price">
             <small>Σύνολο</small>
-            <s>156,90€</s>
-            <strong>148,55€</strong>
+            <s id="morningBundleOriginal">—</s>
+            <strong id="morningBundleFinal">—</strong>
           </span>
         </div>
       </div>
@@ -1059,11 +1059,11 @@
         <h3>Όλη η βραδινή σου <em>ρουτίνα.</em></h3>
         <p>Και τα 7 προϊόντα μαζί, με επιμελημένη σειρά εφαρμογής — και έκπτωση που τιμά τη δέσμευσή σου να σε φροντίζεις σωστά.</p>
         <div class="m-bundle-cta-row">
-          <button type="button" class="btn-primary" onclick="addBundle(['cl1','cl2','t4','s1','s7','e1','m1'], 'Βραδινή ρουτίνα')"><span>Πάρε το σετ · −8%</span></button>
+          <button type="button" class="btn-primary" id="nightBundleBtn" data-discount="0.08" onclick="addBundleFromSection('night_routine','Βραδινή ρουτίνα',0.08)"><span>Πάρε το σετ · −8%</span></button>
           <span class="m-bundle-price">
             <small>Σύνολο</small>
-            <s>198,40€</s>
-            <strong>182,55€</strong>
+            <s id="nightBundleOriginal">—</s>
+            <strong id="nightBundleFinal">—</strong>
           </span>
         </div>
       </div>

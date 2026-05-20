@@ -110,10 +110,13 @@ function renderSearchResults(query){
     <ul class="search-results-list">
       ${results.map(p=>{
         const cat = (typeof categories !== 'undefined') ? categories.find(c=>c.id===p.cat) : null;
-        const price = getProductPrice(p);
+        const offer = (typeof getProductOffer === 'function') ? getProductOffer(p) : { price: getProductPrice(p), hasOffer:false };
         const visual = p.img
           ? `<img src="${p.img}" alt="${escapeHTML(p.brand)} ${escapeHTML(p.name)}" loading="lazy">`
           : `<span class="search-result-initial">${escapeHTML((p.brand||'?').charAt(0))}</span>`;
+        const priceHTML = offer.hasOffer
+          ? `<span class="search-result-price has-offer"><s>${offer.original.toFixed(2)}€</s> <b>${offer.price.toFixed(2)}€</b></span>`
+          : `<span class="search-result-price">${offer.price.toFixed(2)}€</span>`;
         return `
           <li>
             <button class="search-result" type="button" data-id="${p.id}" data-cat="${p.cat}">
@@ -122,7 +125,7 @@ function renderSearchResults(query){
                 <span class="search-result-brand">${escapeHTML(p.brand||'')}${cat?` · ${escapeHTML(cat.name)}`:''}</span>
                 <span class="search-result-name">${highlightMatch(p.name||'', q)}</span>
               </span>
-              <span class="search-result-price">${price.toFixed(2)}€</span>
+              ${priceHTML}
             </button>
           </li>
         `;
