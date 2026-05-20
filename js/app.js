@@ -244,6 +244,9 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   if (typeof renderHomeFavorites === 'function') {
     await renderHomeFavorites();
   }
+  if (typeof renderFounders === 'function') {
+    await renderFounders();
+  }
 
   // ───── Router: όλα τα [data-route] links ─────
   // Αν το link έχει και data-cat, μετά το navigateTo κάνουμε smooth scroll
@@ -460,8 +463,16 @@ document.addEventListener('DOMContentLoaded', async ()=>{
     const FADE_MS = 750;
     const CYCLE_MS = 4200;
 
-    // 3 hero products ανά κατηγορία — featured first, μετά υπόλοιπα στη σειρά
+    // Hero products ανά κατηγορία — πρώτα ψάχνει admin-managed section, μετά fallback σε featured
     const pickThree = (catId)=>{
+      const section = window.siteSections?.['home_shop_' + catId];
+      if(section && Array.isArray(section.items) && section.items.length){
+        const ordered = section.items
+          .map(it => products.find(p => p.id === it.sku))
+          .filter(Boolean);
+        if(ordered.length) return ordered.slice(0, section.max_items || 4);
+      }
+      // Fallback: featured first, then rest
       const items = products.filter(p=>p.cat===catId);
       const featured = items.find(p=>p.featured);
       const rest = items.filter(p=>!p.featured);

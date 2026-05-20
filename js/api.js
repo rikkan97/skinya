@@ -85,7 +85,8 @@ async function loadDataFromSupabase(){
   try {
     const [dbProducts, dbCategories] = await Promise.all([
       fetchProductsDB(),
-      fetchCategoriesDB()
+      fetchCategoriesDB(),
+      fetchAllSiteSections()
     ]);
 
     if(dbProducts.length){
@@ -120,6 +121,20 @@ async function fetchSiteSection(id){
   if(error){ console.warn('[Skinya] fetchSiteSection', id, error); return null; }
   _sectionsCache[id] = data;
   return data;
+}
+
+// Φέρε ΟΛΑ τα sections με μία αίτηση — populate window.siteSections map
+async function fetchAllSiteSections(){
+  const { data, error } = await window.sb
+    .from('site_sections').select('id, kind, max_items, items');
+  if(error){ console.warn('[Skinya] fetchAllSiteSections error:', error); return {}; }
+  const map = {};
+  for(const s of (data||[])){
+    map[s.id] = s;
+    _sectionsCache[s.id] = s;
+  }
+  window.siteSections = map;
+  return map;
 }
 
 // Map κατηγορίας → ωραίο label για το CTA button
@@ -196,4 +211,36 @@ async function renderHomeFavorites(){
 
 function escapeHTMLSafe(s){
   return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function splitFounderName(name){
+  const parts = (name||'').trim().split(/\s+/);
+  if(parts.length === 0) return { first:'', em:'' };
+  if(parts.length === 1) return { first:'', em: parts[0] };
+  return { first: parts.slice(0, -1).join(' '), em: parts[parts.length-1] };
+}
+
+async function renderFounders(){
+  const grid = document.getElementById('foundersGrid');
+  if(!grid) return;
+
+  const section = window.siteSections?.['founders'] || await fetchSiteSection('founders');
+  if(!section || !Array.isArray(section.items) || section.items.length === 0) return;
+
+  grid.innerHTML = section.items.map((f, idx)=> {
+    const { first, em } = splitFounderName(f.name);
+    const initial = (f.name||'').charAt(0).toUpperCase() || '·';
+    const portraitClass = idx === 0 ? 'founder-portrait--one' : (idx === 1 ? 'founder-portrait--two' : 'founder-portrait--three');
+    const hasPhoto = !!f.photo;
+    return `
+      <article class="founder-card">
+        <div class="founder-portrait ${portraitClass}" ${hasPhoto ? `style="background-image:url('${escapeHTMLSafe(f.photo)}');background-size:cover;background-position:center"` : ''}>
+          ${hasPhoto ? '' : `<span class="founder-initial">${escapeHTMLSafe(initial)}</span>`}
+          <span class="founder-tag">${escapeHTMLSafe(f.role || 'Co-Founder')}</span>
+        </div>
+        <h3>${escapeHTMLSafe(first)} ${first ? '<em>'+escapeHTMLSafe(em)+'</em>' : escapeHTMLSafe(em)}</h3>
+        <p class="founder-bio">${escapeHTMLSafe(f.bio||'')}</p>
+      </article>
+    `;
+  }).join('');
 }
