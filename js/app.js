@@ -244,6 +244,9 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   if (typeof renderHomeFavorites === 'function') {
     await renderHomeFavorites();
   }
+  if (typeof renderRoutines === 'function') {
+    await renderRoutines();
+  }
   if (typeof renderFounders === 'function') {
     await renderFounders();
   }

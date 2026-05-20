@@ -220,6 +220,111 @@ function splitFounderName(name){
   return { first: parts.slice(0, -1).join(' '), em: parts[parts.length-1] };
 }
 
+// ──────────────────────────────────────────────────────────────
+// RENDER ROUTINES — Morning / Night / Weekly
+// Ενημερώνει μόνο τα προϊόντα ανά step. Το step copy (title, time, why)
+// μένει στατικό στο HTML.
+// ──────────────────────────────────────────────────────────────
+function applyProductToCfCard(card, p){
+  if(!card || !p) return;
+  const img    = card.querySelector('.cf-photo img');
+  const brand  = card.querySelector('.cf-brand');
+  const name   = card.querySelector('.cf-product');
+  const cta    = card.querySelector('.cf-cta');
+  if(img){
+    img.src = p.img || '';
+    img.alt = `${p.brand} ${p.name}`;
+  }
+  if(brand) brand.textContent = p.brand;
+  if(name)  name.textContent  = p.name;
+  if(cta){
+    cta.setAttribute('onclick', `addToCart('${p.id}')`);
+  }
+}
+
+function applyProductToWeeklyHero(hero, p){
+  if(!hero || !p) return;
+  const img   = hero.querySelector('.m-hero-photo img');
+  const brand = hero.querySelector('.m-product-brand');
+  const name  = hero.querySelector('.m-product-name');
+  const ctaPrimary = hero.querySelector('.m-cta-primary');
+  const ctaLink    = hero.querySelector('.m-cta-link');
+  if(img){
+    img.src = p.img || '';
+    img.alt = `${p.brand} ${p.name}`;
+  }
+  if(brand) brand.textContent = p.brand;
+  if(name)  name.textContent  = p.name;
+  if(ctaPrimary) ctaPrimary.setAttribute('onclick', `viewProduct('${p.id}')`);
+  if(ctaLink)    ctaLink.setAttribute('onclick', `addToCart('${p.id}')`);
+}
+
+function applyProductToWeeklyCard(card, p){
+  if(!card || !p) return;
+  const img   = card.querySelector('.m-card-visual img');
+  const small = card.querySelector('.m-card-pick small');
+  const name  = card.querySelector('.m-card-pick strong');
+  const cta   = card.querySelector('.m-card-cta');
+  if(img){
+    img.src = p.img || '';
+    img.alt = `${p.brand} ${p.name}`;
+  }
+  if(small) small.textContent = p.brand;
+  if(name)  name.textContent  = p.name;
+  if(cta){
+    cta.setAttribute('onclick', `addToCart('${p.id}')`);
+  }
+}
+
+async function renderRoutines(){
+  await fetchAllSiteSections();  // ensure cache
+  const sections = window.siteSections || {};
+
+  // MORNING
+  const morning = sections['morning_routine'];
+  if(morning?.items?.length){
+    const cards = document.querySelectorAll('#morningFan .cf-card[data-index]');
+    cards.forEach((card, idx)=>{
+      const sku = morning.items[idx]?.sku;
+      if(!sku) return;
+      const p = products.find(x => x.id === sku);
+      if(p) applyProductToCfCard(card, p);
+    });
+  }
+
+  // NIGHT
+  const night = sections['night_routine'];
+  if(night?.items?.length){
+    const cards = document.querySelectorAll('#nightFan .cf-card[data-index]');
+    cards.forEach((card, idx)=>{
+      const sku = night.items[idx]?.sku;
+      if(!sku) return;
+      const p = products.find(x => x.id === sku);
+      if(p) applyProductToCfCard(card, p);
+    });
+  }
+
+  // WEEKLY (hero card + 2 grid cards)
+  const weekly = sections['weekly_routine'];
+  if(weekly?.items?.length){
+    // 1st item → hero
+    const hero = document.querySelector('.routine-weekly .m-hero');
+    const heroSku = weekly.items[0]?.sku;
+    if(hero && heroSku){
+      const p = products.find(x => x.id === heroSku);
+      if(p) applyProductToWeeklyHero(hero, p);
+    }
+    // 2nd & 3rd → grid cards (data-step="02", "03")
+    const gridCards = document.querySelectorAll('.routine-weekly .m-card[data-step]');
+    gridCards.forEach((card, idx)=>{
+      const sku = weekly.items[idx + 1]?.sku;
+      if(!sku) return;
+      const p = products.find(x => x.id === sku);
+      if(p) applyProductToWeeklyCard(card, p);
+    });
+  }
+}
+
 async function renderFounders(){
   const grid = document.getElementById('foundersGrid');
   if(!grid) return;
