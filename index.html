@@ -68,7 +68,13 @@
         <circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/>
       </svg>
     </button>
-    <button class="icon-btn" id="cartBtn" aria-label="Καλάθι">ΚΑΛΑΘΙ <span class="cart-count" id="cartCount">0</span></button>
+    <button class="icon-btn" id="cartBtn" aria-label="Καλάθι">
+      <svg class="cart-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>
+      </svg>
+      <span class="cart-label">ΚΑΛΑΘΙ</span>
+      <span class="cart-count" id="cartCount">0</span>
+    </button>
     <button class="menu-toggle" id="menuToggle" aria-label="Μενού"><span></span><span></span><span></span></button>
   </div>
 </nav>
@@ -113,12 +119,10 @@
 
   <div class="marquee">
     <div class="marquee-track">
-      <div class="marquee-item">Δωρεάν αποστολή άνω των 60€</div>
       <div class="marquee-item">Korean Beauty</div>
       <div class="marquee-item">Δερματολογικά Ελεγμένα</div>
       <div class="marquee-item">Vegan · Cruelty Free</div>
       <div class="marquee-item">16 brands · 60+ προϊόντα</div>
-      <div class="marquee-item">Δωρεάν αποστολή άνω των 60€</div>
       <div class="marquee-item">Korean Beauty</div>
       <div class="marquee-item">Δερματολογικά Ελεγμένα</div>
       <div class="marquee-item">Vegan · Cruelty Free</div>
@@ -416,11 +420,11 @@
     <div class="news-content">
       <div class="eyebrow">Skin Updates · Weekly</div>
       <h2>Μπες στη <em>λίστα μας</em></h2>
-      <p class="news-lead">Νέα προϊόντα, μυστικά ρουτίνας, και -10% στην πρώτη σου παραγγελία.</p>
+      <p class="news-lead">Νέα προϊόντα, μυστικά ρουτίνας και exclusive προσφορές, πρώτοι εσύ.</p>
       <div class="news-form">
         <label for="newsEmail" class="visually-hidden">Email για newsletter</label>
         <input type="email" placeholder="ΤΟ EMAIL ΣΟΥ" id="newsEmail" aria-label="Email για newsletter">
-        <button onclick="subscribeNews()" aria-label="Εγγραφή στο newsletter">Μέσα →</button>
+        <button onclick="subscribeNews()" aria-label="Εγγραφή στο newsletter">Εγγραφή →</button>
       </div>
       <p class="news-disclaimer">No spam ποτέ. Unsubscribe όποτε θες.</p>
     </div>
@@ -1207,9 +1211,6 @@
     <div class="notes-ornament notes-ornament--left" aria-hidden="true"></div>
     <div class="notes-ornament notes-ornament--right" aria-hidden="true"></div>
 
-    <!-- 1b) small label — έξω από το content ώστε να anchor-άρει στο banner -->
-    <div class="eyebrow">Our Story</div>
-
     <div class="page-header-content">
       <!-- 1c) hero title -->
       <h1>Μια ιστορία φροντίδας,<br>γραμμένη από δύο <em>μαμάδες</em>.</h1>
@@ -1496,7 +1497,7 @@
               </div>
               <div class="contact-row-text">
                 <small>Email</small>
-                <a href="mailto:hello@skinya.gr">hello@skinya.gr</a>
+                <a href="mailto:info@skinya.gr">info@skinya.gr</a>
               </div>
             </li>
             <li>
@@ -1507,7 +1508,7 @@
               </div>
               <div class="contact-row-text">
                 <small>Τηλέφωνο</small>
-                <a href="tel:+302100000000">+30 210 000 0000</a>
+                <a href="tel:+306942588862">+30 694 258 8862</a>
               </div>
             </li>
             <li>
@@ -1535,18 +1536,6 @@
           </ul>
         </div>
 
-        <!-- ωράριο card -->
-        <div class="contact-card contact-card--hours">
-          <span class="eyebrow">Ώρες φροντίδας</span>
-          <h3>Πότε είμαστε <em>διαθέσιμες.</em></h3>
-          <ul class="hours-list">
-            <li><span>Δευτέρα — Παρασκευή</span><span>10:00 — 18:00</span></li>
-            <li><span>Σάββατο</span><span>11:00 — 15:00</span></li>
-            <li><span>Κυριακή</span><span class="closed">Κλειστά</span></li>
-          </ul>
-          <p class="hours-note">Παραγγελίες λαμβάνονται 24/7 από το e-shop. Αποστολή σε 1–3 εργάσιμες ημέρες.</p>
-        </div>
-
       </aside>
 
     </div>
@@ -1565,7 +1554,7 @@
 
         <details class="faq-item" open>
           <summary>Πόσο γρήγορα γίνεται η αποστολή;</summary>
-          <p>Οι παραγγελίες αποστέλλονται σε 1–3 εργάσιμες ημέρες με courier σε όλη την Ελλάδα. Δωρεάν αποστολή για παραγγελίες άνω των 60€.</p>
+          <p>Οι παραγγελίες αποστέλλονται σε 1–3 εργάσιμες ημέρες με courier σε όλη την Ελλάδα.</p>
         </details>
 
         <details class="faq-item">
@@ -1603,6 +1592,171 @@
 
 </div>
 
+<!-- ============ CHECKOUT · ΟΛΟΚΛΗΡΩΣΗ ΠΑΡΑΓΓΕΛΙΑΣ ============ -->
+<div class="page" id="page-checkout">
+  <div class="checkout-page">
+    <div class="checkout-page-head">
+      <div class="eyebrow">Skinya · Checkout</div>
+      <h1>Ολοκλήρωση <em>παραγγελίας</em></h1>
+    </div>
+
+    <!-- CHECKOUT FORM -->
+    <form class="checkout-page-grid" id="checkoutForm" autocomplete="on" onsubmit="submitOrder(event)">
+      <div class="checkout-main">
+
+        <!-- 1 · ΣΤΟΙΧΕΙΑ ΑΠΟΣΤΟΛΗΣ -->
+        <section class="checkout-card">
+          <h2><span class="step-n">1</span> Στοιχεία αποστολής</h2>
+
+          <label class="ck-field"><span>Email</span>
+            <input type="email" name="email" required autocomplete="email" placeholder="Θα λάβεις εδώ την επιβεβαίωση">
+          </label>
+
+          <div class="ck-row">
+            <label class="ck-field"><span>Όνομα</span>
+              <input type="text" name="first_name" required autocomplete="given-name">
+            </label>
+            <label class="ck-field"><span>Επώνυμο</span>
+              <input type="text" name="last_name" required autocomplete="family-name">
+            </label>
+          </div>
+
+          <label class="ck-field"><span>Τηλέφωνο</span>
+            <input type="tel" name="phone" required autocomplete="tel" pattern="[0-9+\s\-]{8,}">
+          </label>
+
+          <label class="ck-field"><span>Διεύθυνση</span>
+            <input type="text" name="line1" required autocomplete="address-line1" placeholder="Οδός, αριθμός">
+          </label>
+
+          <label class="ck-field"><span>Όροφος / Διαμέρισμα <i>(προαιρετικό)</i></span>
+            <input type="text" name="line2" autocomplete="address-line2">
+          </label>
+
+          <div class="ck-row">
+            <label class="ck-field"><span>Πόλη</span>
+              <input type="text" name="city" required autocomplete="address-level2">
+            </label>
+            <label class="ck-field ck-field--small"><span>Τ.Κ.</span>
+              <input type="text" name="postcode" required autocomplete="postal-code" pattern="[0-9]{5}">
+            </label>
+          </div>
+
+          <label class="ck-field"><span>Περιφέρεια</span>
+            <select name="region" required autocomplete="address-level1">
+              <option value="" disabled selected>Επίλεξε περιφέρεια…</option>
+              <option>Ανατολική Μακεδονία &amp; Θράκη</option>
+              <option>Κεντρική Μακεδονία</option>
+              <option>Δυτική Μακεδονία</option>
+              <option>Ήπειρος</option>
+              <option>Θεσσαλία</option>
+              <option>Ιόνια Νησιά</option>
+              <option>Δυτική Ελλάδα</option>
+              <option>Στερεά Ελλάδα</option>
+              <option>Αττική</option>
+              <option>Πελοπόννησος</option>
+              <option>Βόρειο Αιγαίο</option>
+              <option>Νότιο Αιγαίο</option>
+              <option>Κρήτη</option>
+            </select>
+          </label>
+
+          <label class="ck-field"><span>Σημειώσεις παραγγελίας <i>(προαιρετικό)</i></span>
+            <textarea name="notes" rows="2" placeholder="π.χ. αφήστε στη ρεσεψιόν"></textarea>
+          </label>
+        </section>
+
+        <!-- 2 · ΤΡΟΠΟΣ ΠΛΗΡΩΜΗΣ -->
+        <section class="checkout-card">
+          <h2><span class="step-n">2</span> Τρόπος πληρωμής</h2>
+
+          <label class="pay-option">
+            <input type="radio" name="payment_method" value="card" checked onchange="onPaymentMethodChange()">
+            <span class="pay-option-body">
+              <strong>Κάρτα (Viva Wallet)</strong>
+              <small>Ασφαλής πληρωμή με κάρτα. Θα μεταφερθείς στο ασφαλές περιβάλλον της Viva.</small>
+            </span>
+          </label>
+
+          <label class="pay-option">
+            <input type="radio" name="payment_method" value="bank_transfer" onchange="onPaymentMethodChange()">
+            <span class="pay-option-body">
+              <strong>Τραπεζική κατάθεση</strong>
+              <small>Κατάθεση/έμβασμα στον λογαριασμό μας. Η παραγγελία αποστέλλεται μόλις λάβουμε την πληρωμή.</small>
+            </span>
+          </label>
+
+          <div class="bank-details" id="bankDetails" hidden>
+            <div class="bank-box">
+              <div><span>Τράπεζα</span><strong class="bank-val-name">—</strong></div>
+              <div><span>Δικαιούχος</span><strong class="bank-val-holder">Skinya</strong></div>
+              <div><span>IBAN</span><strong class="iban bank-val-iban">—</strong></div>
+              <div class="bank-row-swift" hidden><span>BIC/SWIFT</span><strong class="bank-val-swift">—</strong></div>
+            </div>
+            <p class="bank-note bank-val-note">Στην αιτιολογία βάλε τον <strong>αριθμό παραγγελίας</strong> που θα δεις στην επόμενη οθόνη.</p>
+          </div>
+        </section>
+      </div>
+
+      <!-- ΣΥΝΟΨΗ (sidebar) -->
+      <aside class="checkout-summary-col">
+        <div class="checkout-card checkout-summary-card">
+          <h2>Η παραγγελία σου</h2>
+          <div class="checkout-items" id="checkoutItems"></div>
+
+          <div class="coupon-row">
+            <input type="text" id="couponInput" name="coupon_input" placeholder="Κωδικός κουπονιού" autocomplete="off" style="text-transform:uppercase">
+            <button type="button" class="coupon-apply" id="couponBtn" onclick="applyCoupon()">Εφαρμογή</button>
+          </div>
+          <p class="coupon-msg" id="couponMsg" hidden></p>
+
+          <div class="checkout-summary">
+            <div><span>Υποσύνολο</span><span id="pgSubtotal">0,00€</span></div>
+            <div id="pgDiscountRow" class="checkout-discount" hidden><span>Έκπτωση <small id="pgCouponLabel"></small></span><span id="pgDiscount">-0,00€</span></div>
+            <div><span>Μεταφορικά</span><span id="pgShipping">3,90€</span></div>
+            <div class="checkout-summary-total"><span>Σύνολο</span><span id="pgTotal">0,00€</span></div>
+          </div>
+
+          <label class="ck-terms">
+            <input type="checkbox" name="terms" id="pgTerms" required>
+            <span>Έχω διαβάσει και αποδέχομαι τους <a href="#terms" target="_blank" rel="noopener">Όρους &amp; Προϋποθέσεις</a>.</span>
+          </label>
+
+          <button type="submit" class="checkout-btn" id="pgSubmitBtn">Πληρωμή με κάρτα</button>
+          <button type="button" class="continue-btn" onclick="navigateTo('products')">← Συνέχεια αγορών</button>
+        </div>
+      </aside>
+    </form>
+  </div>
+</div>
+
+<!-- ============ ORDER CONFIRMED · ΕΠΙΒΕΒΑΙΩΣΗ ΠΑΡΑΓΓΕΛΙΑΣ (ξεχωριστή σελίδα) ============ -->
+<div class="page" id="page-order-confirmed">
+  <div class="checkout-page">
+    <div class="checkout-page-success" id="checkoutPageSuccess">
+      <div class="success-icon" aria-hidden="true">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+          <circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-6"/>
+        </svg>
+      </div>
+      <h2>Ευχαριστούμε <em>❀</em></h2>
+      <p class="success-msg">Η παραγγελία σου καταχωρήθηκε.<br>Αριθμός: <strong id="pgSuccessOrderNum">—</strong></p>
+      <div class="success-bank" id="pgSuccessBank" hidden>
+        <p>Για να ολοκληρωθεί, κάνε <strong>τραπεζική κατάθεση</strong> του ποσού <strong id="pgSuccessAmount">—</strong> στον παρακάτω λογαριασμό, με <strong>αιτιολογία τον αριθμό παραγγελίας</strong>:</p>
+        <div class="bank-box">
+          <div><span>Τράπεζα</span><strong class="bank-val-name">—</strong></div>
+          <div><span>Δικαιούχος</span><strong class="bank-val-holder">Skinya</strong></div>
+          <div><span>IBAN</span><strong class="iban bank-val-iban">—</strong></div>
+          <div class="bank-row-swift" hidden><span>BIC/SWIFT</span><strong class="bank-val-swift">—</strong></div>
+        </div>
+        <p class="success-note">Μόλις λάβουμε την κατάθεση, η παραγγελία προχωράει σε αποστολή.</p>
+      </div>
+      <p class="success-note">Θα σου στείλουμε email επιβεβαίωσης σύντομα.</p>
+      <button type="button" class="checkout-btn" onclick="navigateTo('products')">Συνέχεια αγορών</button>
+    </div>
+  </div>
+</div>
+
 <!-- ============ LEGAL · ΟΡΟΙ & ΠΡΟΫΠΟΘΕΣΕΙΣ ============ -->
 <div class="page legal-page" id="page-terms">
   <header class="page-header legal-header">
@@ -1622,7 +1776,7 @@
         <li><strong>Έδρα:</strong> Αθήνα, Ελλάδα</li>
         <li><strong>ΑΦΜ:</strong> <em>[συμπληρώνεται]</em> — <strong>Δ.Ο.Υ.:</strong> <em>[συμπληρώνεται]</em></li>
         <li><strong>Αρ. ΓΕΜΗ:</strong> <em>[συμπληρώνεται]</em></li>
-        <li><strong>Email επικοινωνίας:</strong> <a href="mailto:hello@skinya.gr">hello@skinya.gr</a></li>
+        <li><strong>Email επικοινωνίας:</strong> <a href="mailto:info@skinya.gr">info@skinya.gr</a></li>
         <li><strong>Ιστότοπος:</strong> www.skinya.gr</li>
       </ul>
       <p>Η περιήγηση και η αγορά στο skinya.gr προϋποθέτει ότι έχεις διαβάσει, κατανοήσει και αποδεχθεί ανεπιφύλακτα τους παρόντες Όρους. Αν δεν συμφωνείς με κάποιο σημείο, σε παρακαλούμε να μην προχωρήσεις σε χρήση του ιστότοπου.</p>
@@ -1672,8 +1826,7 @@
       <ul>
         <li><strong>Χρόνος επεξεργασίας:</strong> 1-2 εργάσιμες ημέρες.</li>
         <li><strong>Παράδοση:</strong> 1-3 εργάσιμες για Αττική, 2-5 εργάσιμες για υπόλοιπη Ελλάδα, 3-7 εργάσιμες για δυσπρόσιτες περιοχές &amp; νησιά.</li>
-        <li><strong>Δωρεάν αποστολή</strong> για παραγγελίες <strong>άνω των 60€</strong>.</li>
-        <li>Τα έξοδα αποστολής για παραγγελίες κάτω του ορίου υπολογίζονται στο checkout.</li>
+        <li><strong>Έξοδα αποστολής:</strong> 3,90€, υπολογίζονται στο checkout.</li>
       </ul>
       <p>Οι χρόνοι παράδοσης είναι ενδεικτικοί και ενδέχεται να επηρεαστούν από παράγοντες εκτός του ελέγχου μας (καιρικές συνθήκες, αργίες, απεργίες κ.ά.).</p>
     </section>
@@ -1681,7 +1834,7 @@
     <section>
       <h2>Δικαίωμα Υπαναχώρησης (14 ημέρες)</h2>
       <p>Σύμφωνα με τον <strong>Ν. 2251/1994</strong> και την <strong>Υ.Α. Z1-891/2013</strong> (που ενσωμάτωσε την Οδηγία 2011/83/ΕΕ), έχεις δικαίωμα να υπαναχωρήσεις αναιτιολόγητα από τη σύμβαση εντός <strong>δεκατεσσάρων (14) ημερολογιακών ημερών</strong> από την ημέρα παραλαβής των προϊόντων.</p>
-      <p>Για να ασκήσεις το δικαίωμα, στείλε μας email στο <a href="mailto:hello@skinya.gr">hello@skinya.gr</a> με σαφή δήλωση της απόφασής σου, τον αριθμό παραγγελίας και τα προϊόντα που επιθυμείς να επιστρέψεις. Στη συνέχεια, σου αποστέλλουμε οδηγίες για την επιστροφή.</p>
+      <p>Για να ασκήσεις το δικαίωμα, στείλε μας email στο <a href="mailto:info@skinya.gr">info@skinya.gr</a> με σαφή δήλωση της απόφασής σου, τον αριθμό παραγγελίας και τα προϊόντα που επιθυμείς να επιστρέψεις. Στη συνέχεια, σου αποστέλλουμε οδηγίες για την επιστροφή.</p>
       <p><strong>Σημαντική εξαίρεση — σφραγισμένα καλλυντικά:</strong> Σύμφωνα με το άρθρο 3ιβ παρ. 5 της Υ.Α. Z1-891/2013, <strong>δεν γίνονται δεκτές επιστροφές για προϊόντα που, λόγω της φύσης τους, δεν είναι κατάλληλα προς επιστροφή για λόγους υγιεινής ή προστασίας της υγείας, εφόσον έχει αφαιρεθεί η προστατευτική σφραγίδα / μεμβράνη μετά την παράδοση</strong>. Δηλαδή, καλλυντικά που έχουν ανοιχτεί, χρησιμοποιηθεί ή έχει αφαιρεθεί το προστατευτικό seal δεν επιστρέφονται.</p>
       <ul>
         <li>Το προϊόν επιστρέφεται στην αρχική, άθικτη συσκευασία του, με όλες τις ετικέτες και σφραγίδες ανέπαφες.</li>
@@ -1693,7 +1846,7 @@
 
     <section>
       <h2>Ελαττωματικά Προϊόντα — Νόμιμη Εγγύηση</h2>
-      <p>Σύμφωνα με τα άρθρα 534 επ. του Αστικού Κώδικα και τον Ν. 2251/1994, αν το προϊόν που έλαβες είναι <strong>ελαττωματικό ή δεν ανταποκρίνεται στη συμφωνημένη περιγραφή</strong>, δικαιούσαι, κατ' επιλογή σου: <em>(α)</em> διόρθωση ή αντικατάσταση, <em>(β)</em> μείωση του τιμήματος, ή <em>(γ)</em> υπαναχώρηση από τη σύμβαση. Επικοινώνησε μαζί μας στο <a href="mailto:hello@skinya.gr">hello@skinya.gr</a> εντός εύλογου χρόνου από τη διαπίστωση του ελαττώματος, επισυνάπτοντας φωτογραφίες και τον αριθμό παραγγελίας.</p>
+      <p>Σύμφωνα με τα άρθρα 534 επ. του Αστικού Κώδικα και τον Ν. 2251/1994, αν το προϊόν που έλαβες είναι <strong>ελαττωματικό ή δεν ανταποκρίνεται στη συμφωνημένη περιγραφή</strong>, δικαιούσαι, κατ' επιλογή σου: <em>(α)</em> διόρθωση ή αντικατάσταση, <em>(β)</em> μείωση του τιμήματος, ή <em>(γ)</em> υπαναχώρηση από τη σύμβαση. Επικοινώνησε μαζί μας στο <a href="mailto:info@skinya.gr">info@skinya.gr</a> εντός εύλογου χρόνου από τη διαπίστωση του ελαττώματος, επισυνάπτοντας φωτογραφίες και τον αριθμό παραγγελίας.</p>
     </section>
 
     <section>
@@ -1724,7 +1877,7 @@
     <section>
       <h2>Εφαρμοστέο Δίκαιο &amp; Επίλυση Διαφορών</h2>
       <p>Οι παρόντες Όροι διέπονται από το <strong>ελληνικό δίκαιο</strong> και τις εφαρμοστέες διατάξεις του ενωσιακού δικαίου. Για κάθε διαφορά που ενδέχεται να προκύψει, αρμόδια ορίζονται τα <strong>Δικαστήρια των Αθηνών</strong>, με την επιφύλαξη ευνοϊκότερων διατάξεων προστασίας του καταναλωτή.</p>
-      <p>Πριν την προσφυγή στη δικαιοσύνη, σε ενθαρρύνουμε να επικοινωνήσεις πρώτα μαζί μας στο <a href="mailto:hello@skinya.gr">hello@skinya.gr</a>. Επιπλέον, έχεις πρόσβαση σε:</p>
+      <p>Πριν την προσφυγή στη δικαιοσύνη, σε ενθαρρύνουμε να επικοινωνήσεις πρώτα μαζί μας στο <a href="mailto:info@skinya.gr">info@skinya.gr</a>. Επιπλέον, έχεις πρόσβαση σε:</p>
       <ul>
         <li><strong>Συνήγορος του Καταναλωτή</strong> (Λ. Αλεξάνδρας 144, 11471 Αθήνα — <a href="https://www.synigoroskatanaloti.gr" target="_blank" rel="noopener noreferrer">synigoroskatanaloti.gr</a>) — αναγνωρισμένος φορέας Εναλλακτικής Επίλυσης Διαφορών (ΕΕΔ).</li>
         <li><strong>Ευρωπαϊκή Πλατφόρμα ODR:</strong> <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener noreferrer">ec.europa.eu/consumers/odr</a></li>
@@ -1735,7 +1888,7 @@
     <div class="legal-footer-card">
       <h3>Έχεις κάποια <em>απορία;</em></h3>
       <p>Είμαστε εδώ για κάθε διευκρίνιση — γράψε μας.</p>
-      <a class="legal-cta" href="mailto:hello@skinya.gr">Στείλε μας email</a>
+      <a class="legal-cta" href="mailto:info@skinya.gr">Στείλε μας email</a>
     </div>
   </article>
 </div>
@@ -1758,7 +1911,7 @@
         <li><strong>Υπεύθυνος Επεξεργασίας:</strong> Skinya <em>[πλήρης επωνυμία: συμπληρώνεται]</em></li>
         <li><strong>Έδρα:</strong> Αθήνα, Ελλάδα</li>
         <li><strong>ΑΦΜ:</strong> <em>[συμπληρώνεται]</em></li>
-        <li><strong>Email για θέματα δεδομένων:</strong> <a href="mailto:hello@skinya.gr">hello@skinya.gr</a></li>
+        <li><strong>Email για θέματα δεδομένων:</strong> <a href="mailto:info@skinya.gr">info@skinya.gr</a></li>
       </ul>
     </section>
 
@@ -1833,7 +1986,7 @@
         <li><strong>Δικαίωμα ανάκλησης της συγκατάθεσης</strong> οποτεδήποτε, χωρίς αυτό να επηρεάζει τη νομιμότητα προηγούμενης επεξεργασίας.</li>
         <li><strong>Δικαίωμα μη υποβολής σε αυτοματοποιημένη ατομική λήψη αποφάσεων</strong> (συμπεριλαμβανομένου του profiling).</li>
       </ul>
-      <p>Για άσκηση οποιουδήποτε δικαιώματος, στείλε μας email στο <a href="mailto:hello@skinya.gr">hello@skinya.gr</a>. Θα ανταποκριθούμε εντός <strong>ενός (1) μηνός</strong>, χωρίς χρέωση (με την εξαίρεση προδήλως αβάσιμων ή υπερβολικών αιτημάτων).</p>
+      <p>Για άσκηση οποιουδήποτε δικαιώματος, στείλε μας email στο <a href="mailto:info@skinya.gr">info@skinya.gr</a>. Θα ανταποκριθούμε εντός <strong>ενός (1) μηνός</strong>, χωρίς χρέωση (με την εξαίρεση προδήλως αβάσιμων ή υπερβολικών αιτημάτων).</p>
     </section>
 
     <section>
@@ -1871,7 +2024,7 @@
     <div class="legal-footer-card">
       <h3>Έχεις απορίες για τα <em>δεδομένα σου;</em></h3>
       <p>Για κάθε αίτημα GDPR ή ερώτηση — απαντάμε εντός 30 ημερών.</p>
-      <a class="legal-cta" href="mailto:hello@skinya.gr">Επικοινώνησε μαζί μας</a>
+      <a class="legal-cta" href="mailto:info@skinya.gr">Επικοινώνησε μαζί μας</a>
     </div>
   </article>
 </div>
@@ -2006,7 +2159,7 @@
 
     <section>
       <h2>Επικοινωνία &amp; Αλλαγές</h2>
-      <p>Για οποιαδήποτε ερώτηση σχετικά με τα cookies και τα δεδομένα σου, στείλε μας email στο <a href="mailto:hello@skinya.gr">hello@skinya.gr</a>. Η παρούσα Πολιτική ενδέχεται να επικαιροποιείται για να αντικατοπτρίζει αλλαγές σε τεχνολογίες, νομοθεσία ή συνεργάτες. Η εκάστοτε ισχύουσα έκδοση φέρει <em>ημερομηνία τελευταίας ενημέρωσης</em> στην κορυφή της σελίδας.</p>
+      <p>Για οποιαδήποτε ερώτηση σχετικά με τα cookies και τα δεδομένα σου, στείλε μας email στο <a href="mailto:info@skinya.gr">info@skinya.gr</a>. Η παρούσα Πολιτική ενδέχεται να επικαιροποιείται για να αντικατοπτρίζει αλλαγές σε τεχνολογίες, νομοθεσία ή συνεργάτες. Η εκάστοτε ισχύουσα έκδοση φέρει <em>ημερομηνία τελευταίας ενημέρωσης</em> στην κορυφή της σελίδας.</p>
     </section>
 
     <div class="legal-footer-card">
@@ -2061,15 +2214,15 @@
     <div class="foot-col">
       <h5>Επικοινωνία</h5>
       <ul>
-        <li><a href="mailto:hello@skinya.gr">hello@skinya.gr</a></li>
-        <li><a href="tel:+302100000000">+30 210 000 0000</a></li>
+        <li><a href="mailto:info@skinya.gr">info@skinya.gr</a></li>
+        <li><a href="tel:+306942588862">+30 694 258 8862</a></li>
         <li><a data-route="contact">Φόρμα επικοινωνίας</a></li>
       </ul>
     </div>
   </div>
   <div class="foot-bottom">
     <span>© 2026 Skinya · All rights reserved</span>
-    <span>Made with ❀ love by Kan²Go</span>
+    <span>Made with ❤ by Kan²Go</span>
   </div>
 </footer>
 
@@ -2095,7 +2248,7 @@
     <button class="cart-close" id="cartClose">✕</button>
   </div>
 
-  <!-- VIEW 1: Cart items -->
+  <!-- Cart items (το checkout έγινε πλέον σε δική του σελίδα: #page-checkout) -->
   <div class="cart-view is-active" data-cart-view="cart">
     <div class="cart-items" id="cartItems"></div>
     <div class="cart-foot">
@@ -2103,72 +2256,6 @@
       <button class="checkout-btn" onclick="checkout()">Ολοκλήρωση Αγοράς</button>
       <button class="continue-btn" onclick="closeCart()">← Συνέχεια Αγορών</button>
     </div>
-  </div>
-
-  <!-- VIEW 2: Checkout form -->
-  <form class="cart-view checkout-form" data-cart-view="checkout" autocomplete="on" onsubmit="submitOrder(event)">
-    <div class="checkout-scroll">
-      <p class="checkout-step">Στοιχεία αποστολής</p>
-
-      <div class="ck-row">
-        <label class="ck-field"><span>Όνομα</span>
-          <input type="text" name="first_name" required autocomplete="given-name">
-        </label>
-        <label class="ck-field"><span>Επώνυμο</span>
-          <input type="text" name="last_name" required autocomplete="family-name">
-        </label>
-      </div>
-
-      <label class="ck-field"><span>Τηλέφωνο</span>
-        <input type="tel" name="phone" required autocomplete="tel" pattern="[0-9+\s\-]{8,}">
-      </label>
-
-      <label class="ck-field"><span>Διεύθυνση</span>
-        <input type="text" name="line1" required autocomplete="address-line1" placeholder="Οδός, αριθμός">
-      </label>
-
-      <label class="ck-field"><span>Όροφος / Διαμέρισμα <i>(προαιρετικό)</i></span>
-        <input type="text" name="line2" autocomplete="address-line2">
-      </label>
-
-      <div class="ck-row">
-        <label class="ck-field"><span>Πόλη</span>
-          <input type="text" name="city" required autocomplete="address-level2">
-        </label>
-        <label class="ck-field ck-field--small"><span>Τ.Κ.</span>
-          <input type="text" name="postcode" required autocomplete="postal-code" pattern="[0-9]{5}">
-        </label>
-      </div>
-
-      <label class="ck-field"><span>Σημειώσεις <i>(προαιρετικό)</i></span>
-        <textarea name="notes" rows="2" placeholder="π.χ. αφήστε στη ρεσεψιόν"></textarea>
-      </label>
-
-      <div class="checkout-summary">
-        <div><span>Υποσύνολο</span><span id="ckSubtotal">0,00€</span></div>
-        <div><span>Μεταφορικά</span><span id="ckShipping">3,90€</span></div>
-        <div class="checkout-summary-total"><span>Σύνολο</span><span id="ckTotal">0,00€</span></div>
-      </div>
-    </div>
-
-    <div class="cart-foot">
-      <button type="submit" class="checkout-btn" id="ckSubmitBtn">Ολοκλήρωση παραγγελίας</button>
-      <button type="button" class="continue-btn" onclick="cartViewSwitch('cart')">← Πίσω στο καλάθι</button>
-    </div>
-  </form>
-
-  <!-- VIEW 3: Success -->
-  <div class="cart-view checkout-success" data-cart-view="success">
-    <div class="success-icon" aria-hidden="true">
-      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
-        <circle cx="12" cy="12" r="10"/>
-        <path d="M8 12l3 3 5-6"/>
-      </svg>
-    </div>
-    <h4>Ευχαριστούμε <em>❀</em></h4>
-    <p class="success-msg">Η παραγγελία σου καταχωρήθηκε.<br>Αριθμός: <strong id="successOrderNum">—</strong></p>
-    <p class="success-note">Θα σου στείλουμε email επιβεβαίωσης σύντομα.</p>
-    <button type="button" class="checkout-btn" onclick="closeCart()">Συνέχεια αγορών</button>
   </div>
 </div>
 
@@ -2215,6 +2302,7 @@
       <div class="account-row-mini">
         <a class="account-link" data-go="forgot">Ξέχασα τον κωδικό μου</a>
       </div>
+      <p class="account-msg" data-account-msg hidden></p>
       <button type="submit" class="btn-primary account-submit"><span>Σύνδεση</span></button>
       <p class="account-foot">Δεν έχεις λογαριασμό; <a class="account-link" data-go="register">Δημιούργησε έναν</a></p>
     </form>
@@ -2248,6 +2336,7 @@
           </button>
         </span>
       </label>
+      <p class="account-msg" data-account-msg hidden></p>
       <button type="submit" class="btn-primary account-submit"><span>Δημιουργία λογαριασμού</span></button>
       <p class="account-foot">Έχεις ήδη λογαριασμό; <a class="account-link" data-go="login">Σύνδεση</a></p>
     </form>
@@ -2273,6 +2362,7 @@
         <span>Email</span>
         <input type="email" name="email" required placeholder="esy@skinya.gr">
       </label>
+      <p class="account-msg" data-account-msg hidden></p>
       <button type="submit" class="btn-primary account-submit"><span>Αποστολή συνδέσμου</span></button>
       <p class="account-foot"><a class="account-link" data-go="login">← Πίσω στη σύνδεση</a></p>
     </form>

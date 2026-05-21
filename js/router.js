@@ -43,6 +43,10 @@ function navigateTo(route){
   if(route === 'account' && typeof loadAccountPage === 'function'){
     loadAccountPage();
   }
+  // Σελίδα checkout — γέμισε σύνοψη/totals από το καλάθι
+  if(route === 'checkout' && typeof renderCheckout === 'function'){
+    renderCheckout();
+  }
 }
 
 // Όταν ο user πατάει το back/forward button του browser ή ένα anchor link

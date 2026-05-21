@@ -43,7 +43,7 @@ html,body{max-width:100%;overflow-x:hidden}
     min-height:44px;
   }
   .menu-toggle{min-width:44px;min-height:44px}
-  .icon-btn:first-child,.icon-btn:nth-child(2){min-width:44px;min-height:44px}
+  .icon-btn:first-child,.icon-btn:nth-child(2),#cartBtn{min-width:44px;min-height:44px}
 }
 
 @media(max-width:968px){
@@ -52,13 +52,22 @@ html,body{max-width:100%;overflow-x:hidden}
   .nav-links.open{right:0}
   .nav-links a{font-size:1rem}
   .menu-toggle{display:flex}
+  /* Cart → εικονίδιο καλαθιού (όχι μεγάλο pill) σε mobile, με count badge — εξοικονομεί χώρο */
+  #cartBtn{background:none;color:var(--aubergine);padding:0;border-radius:0;box-shadow:none;letter-spacing:normal}
+  #cartBtn:hover{background:none;color:var(--gold-leaf);transform:none;box-shadow:none;letter-spacing:normal}
+  .cart-icon{display:inline-flex}
+  .cart-label{display:none}
+  .cart-count{position:absolute;top:2px;right:2px;background:var(--gold-leaf);color:#fff;min-width:16px;height:16px;padding:0 4px;font-size:.55rem;margin:0;box-shadow:0 2px 6px rgba(192,133,122,0.5)}
   section{padding:5rem 1.5rem}
-  /* Mobile hero — vertical fade overlay instead of horizontal, content below photo */
-  .hero{padding:0;min-height:auto;flex-direction:column;align-items:stretch}
-  .hero-visual{position:relative;width:100%;height:62vh;min-height:62vh;order:1}
-  .hero-visual::after{background:linear-gradient(180deg, transparent 0%, transparent 55%, rgba(244,231,220,0.85) 100%)}
-  .hero-content{order:2;padding:2.5rem 1.5rem 4rem;text-align:left;max-width:100%;background:var(--ivory);margin-top:-3rem;position:relative;z-index:5}
+  /* Mobile hero — κείμενο overlay στο ΠΑΝΩ μέρος της φωτό, με fade στην κορυφή.
+     min-height:auto → χωρίς κενό κάτω (τα επόμενα sections ανεβαίνουν). */
+  .hero{padding:0;min-height:auto;flex-direction:column;justify-content:flex-start;align-items:stretch}
+  .hero-visual{position:absolute;inset:0;width:100%;height:100%;min-height:0;order:0}
+  .hero-visual::after{background:linear-gradient(180deg, rgba(244,231,220,0.94) 0%, rgba(244,231,220,0.6) 30%, rgba(244,231,220,0.18) 52%, transparent 70%)}
+  .hero-content{order:2;padding:4.5rem 1.5rem 5rem;text-align:left;max-width:100%;background:transparent;margin-top:0;position:relative;z-index:5}
   .hero h1{font-size:clamp(2.2rem,9vw,3.4rem)}
+  /* Lead στενότερο ώστε να μη φτάνει στο μπουκάλι/μοντέλο δεξιά (περισσότερες σειρές) */
+  .hero p.lead{max-width:60%}
   /* Announce bar mobile — compact: icons + main label only, hide subline */
   .announce{padding:.6rem 1rem;grid-template-columns:repeat(3,1fr)}
   .announce-item{padding:0 .4rem;gap:.4rem}
@@ -96,22 +105,26 @@ html,body{max-width:100%;overflow-x:hidden}
   .concern-text h3{font-size:1.3rem}
   .concern-text small{font-size:.66rem}
   .concern-num{font-size:1.3rem}
-  .slide{grid-template-columns:1fr;padding:2rem}
-  .slide-visual{height:300px}
+  /* Mobile: φωτο ΑΝΑΜΕΣΑ σε περιγραφή και συστατικά (όχι στο τέλος) */
+  .slide{display:flex;flex-direction:column;align-items:stretch;gap:1.3rem;padding:2rem}
+  .slide-text{display:contents}            /* προωθεί τα παιδιά ως flex items του .slide */
+  .slide-brand{order:1}
+  .slide-text h3{order:2}
+  .slide-text p{order:3}
+  .slide-visual{order:4;height:300px;width:100%}   /* full-width φωτο (όχι στενή) */
+  .slide-meta{order:5}
+  .slide .btn-primary{order:6}
   .quick-grid{grid-template-columns:1fr}
   .explore{padding:4rem 1.5rem 5rem}
   .explore .section-head{margin-bottom:3rem}
   .explore-stack{gap:1.6rem}
-  /* Mobile: keep full-bleed photo bg + vertical white fade στο bottom για text */
-  .explore-card{padding:1.8rem 1.6rem 2rem;min-height:380px;border-radius:18px;align-items:flex-end}
-  .explore-card--routine{padding:1.8rem 1.6rem 2rem;justify-content:flex-start}
-  .explore-card::before,.explore-card--routine::before{
-    background:linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.30) 30%, rgba(255,255,255,0.82) 55%, rgba(255,255,255,0.96) 100%)}
-  .explore-num{top:1.4rem;left:1.6rem;font-size:1.4rem}
-  .explore-card--routine .explore-num{left:1.6rem;right:auto}
-  .explore-card--routine .explore-num::after{left:-30px;right:auto}
-  .explore-num::after{width:14px;left:-22px}
-  .explore-text{gap:.7rem;max-width:100%}
+  /* Mobile: stacked card — φωτό πάνω, κείμενο σε καθαρό λευκό από κάτω (χωρίς overlap) */
+  .explore-card,.explore-card--routine{flex-direction:column;align-items:stretch;justify-content:flex-start;padding:0;min-height:0;border-radius:18px;gap:0}
+  .explore-visual{position:relative;order:0;inset:auto;height:220px;flex-shrink:0;border-radius:0}
+  .explore-visual > img{position:absolute;inset:0;transform:none!important}
+  .explore-card::before,.explore-card--routine::before{display:none}
+  .explore-num{display:none}
+  .explore-text{order:1;max-width:100%;gap:.7rem;padding:1.7rem 1.6rem 2rem;background:#fff}
   .explore-text h3{font-size:clamp(1.7rem,7vw,2.2rem)}
   .explore-text p{font-size:.88rem;max-width:100%}
   .ritual-grid{grid-template-columns:1fr;gap:3rem}
@@ -127,10 +140,11 @@ html,body{max-width:100%;overflow-x:hidden}
   .routine-tips{padding:4.5rem 1.5rem}
   .tips-grid{grid-template-columns:repeat(2,1fr);gap:1rem}
   .tip{padding:1.5rem 1rem}
-  .values-grid{grid-template-columns:repeat(2,1fr)}
 
   /* ----- Founder's Notes responsive ----- */
-  .notes-header{min-height:auto;padding:4rem 1.5rem 0}
+  /* Ύψος στο banner → η φωτό εκτείνεται πιο κάτω και το fade γίνεται
+     σταδιακό (όχι απότομο κόψιμο κάτω από τον τίτλο). */
+  .notes-header{min-height:72vh;padding:5rem 1.5rem 3rem}
   .notes-header h1{font-size:clamp(2rem,8vw,3rem)!important;line-height:1.08}
   /* Mobile: eyebrow + tagline επιστρέφουν στο flow, χωρίς rotation (η φωτό δεν φαίνεται ως βιβλίο σε στενά viewports) */
   .notes-header .eyebrow{position:static;transform:none;margin:0 0 1.4rem;font-size:.7rem;letter-spacing:.45em;text-align:center;white-space:normal}
@@ -201,6 +215,27 @@ html,body{max-width:100%;overflow-x:hidden}
    ≤ 768px — phones portrait, further tightening
    ==================================================================== */
 @media (max-width:768px){
+  /* Routine flow chips: stack κάθετα (αλλιώς το οριζόντιο bar ξεχειλίζει
+     και τραβάει όλο το text column εκτός viewport). Gradient πάνω→κάτω
+     = η σειρά της ρουτίνας (ανάλαφρο → πλούσιο/SPF). */
+  .routine-flow{
+    flex-direction:column;
+    background:linear-gradient(180deg,
+      var(--ivory) 0%, var(--lilac-cream) 33%, var(--gold-soft) 66%, var(--gold-leaf) 100%);
+  }
+  .flow-chip{padding:1rem 1.1rem;font-size:.78rem;letter-spacing:.2em}
+  .flow-chip:not(:last-child)::after{
+    left:30%;right:30%;top:auto;bottom:0;width:auto;height:1px;
+  }
+
+  /* Values (from women, for women) — μία στήλη, full-width panels (όχι
+     στενές/ψηλές κάρτες). Πιο άνετο reading, σωστό spacing. */
+  .values-section{padding:5rem 1.5rem}
+  .values-grid{grid-template-columns:1fr;gap:1rem;max-width:440px}
+  .value{padding:1.8rem 1.6rem;border-radius:12px}
+  .value h4{font-size:1.4rem;margin-bottom:.6rem}
+  .value p{font-size:.98rem}
+
   /* Hero fine-tuning */
   .hero-content{padding:2.2rem 1.4rem 3.5rem}
   .hero h1{font-size:clamp(2rem,8.5vw,2.8rem);line-height:1.05}
@@ -238,7 +273,8 @@ html,body{max-width:100%;overflow-x:hidden}
   .meta-item strong{font-size:.95rem}
 
   /* Explore cards — tighter */
-  .explore-card{min-height:340px;padding:1.6rem 1.4rem 1.8rem}
+  .explore-visual{height:200px}
+  .explore-text{padding:1.5rem 1.4rem 1.8rem}
   .explore-text h3{font-size:clamp(1.6rem,7vw,2rem)}
   .explore-text p{font-size:.85rem;line-height:1.6}
   .explore-link{font-size:.65rem;letter-spacing:.22em;gap:.6rem}
@@ -254,6 +290,9 @@ html,body{max-width:100%;overflow-x:hidden}
   /* Footer — single column για narrow phones, foot-brand full width */
   .footer-grid{grid-template-columns:1fr;gap:2.5rem}
   .foot-brand{grid-column:auto}
+  /* Logo: το wordmark είναι centered στο box του → φαίνεται indented σε σχέση
+     με το κείμενο. Νudge αριστερά για να ευθυγραμμιστεί με το text/social. */
+  .foot-brand .logo{margin-left:-1.5rem}
   .foot-col h5{margin-bottom:1.2rem;padding-bottom:.7rem}
   .foot-col li{margin-bottom:.7rem}
 
@@ -294,7 +333,9 @@ html,body{max-width:100%;overflow-x:hidden}
   .marquee-item::after{margin-left:2.5rem}
 
   /* Explore */
-  .explore-card{min-height:320px;padding:1.4rem 1.2rem 1.6rem;border-radius:14px}
+  .explore-card,.explore-card--routine{border-radius:14px}
+  .explore-visual{height:185px}
+  .explore-text{padding:1.4rem 1.2rem 1.6rem}
   .explore-text h3{font-size:clamp(1.5rem,7vw,1.8rem)}
   .explore-text p{font-size:.82rem}
 

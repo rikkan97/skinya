@@ -12,8 +12,9 @@
 
 /* NAV — minimal editorial, transparent on blush, no glass effect */
 nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(244,231,220,0.92);backdrop-filter:saturate(120%) blur(12px);-webkit-backdrop-filter:saturate(120%) blur(12px);border-bottom:1px solid rgba(31,24,19,0.06);padding:.7rem 2.6rem;display:flex;align-items:center;justify-content:space-between}
-.logo{display:inline-flex;align-items:center;width:170px;height:70px;text-decoration:none;cursor:pointer;font-size:0;line-height:0;transition:opacity .3s var(--ease-luxe)}
-.logo img{display:block;width:100%;height:100%;object-fit:contain;object-position:left center}
+.logo{display:inline-flex;align-items:center;width:170px;height:70px;text-decoration:none;cursor:pointer;font-size:0;line-height:0;transition:opacity .3s var(--ease-luxe);overflow:hidden}
+/* Το PNG έχει μεγάλο διαφανές περιθώριο — zoom in ώστε το wordmark να γεμίζει το κουτί (ίδιο για header & footer) */
+.logo img{display:block;width:100%;height:100%;object-fit:contain;object-position:center;transform:scale(2.2);transform-origin:52% 46%}
 .logo:hover{opacity:.7}
 .logo::before{content:none}
 .nav-links{display:flex;gap:2.6rem;list-style:none}
@@ -31,7 +32,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(244,231,220,
 #cartBtn:hover{background:var(--plum-deep);color:#fff;opacity:1;transform:translateY(-1px);box-shadow:0 12px 22px -6px rgba(154,88,79,0.45);letter-spacing:.26em}
 #cartBtn:hover .cart-count{background:rgba(255,255,255,0.32)}
 .cart-count{background:rgba(255,255,255,0.25);color:#fff;border-radius:var(--radius-pill);width:auto;min-width:18px;height:18px;padding:0 6px;font-size:.62rem;display:inline-flex;align-items:center;justify-content:center;position:static;font-weight:600;letter-spacing:.05em;box-shadow:none;margin-left:.2rem;transition:background .3s var(--ease-luxe)}
-.menu-toggle{display:none;background:none;border:none;flex-direction:column;gap:5px;cursor:pointer;padding:0}
+.cart-count.bump{animation:cartBump .45s var(--ease-luxe)}
+@keyframes cartBump{0%{transform:scale(1)}30%{transform:scale(1.45);background:var(--gold-leaf,#c0857a);color:#fff}60%{transform:scale(.92)}100%{transform:scale(1)}}
+.cart-icon{display:none}   /* desktop: pill με κείμενο· το εικονίδιο φαίνεται μόνο σε mobile */
+.menu-toggle{display:none;background:none;border:none;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;padding:0}
 .menu-toggle span{display:block;width:22px;height:2px;background:var(--aubergine);transition:all .3s}
 
 /* Eyebrow — clay caps, no ornament dashes (reference) */
@@ -83,9 +87,9 @@ section{padding:7rem 3rem;position:relative;z-index:2}
 footer{background:var(--aubergine);color:var(--ivory);padding:6rem 3rem 2rem;border-top:none;position:relative;z-index:2}
 footer::before{content:none}
 .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:5rem;max-width:1400px;margin:0 auto 4rem}
-/* Footer logo — invert for visibility on dark aubergine background */
-.foot-brand .logo{margin-bottom:1.8rem;display:inline-block;color:var(--ivory);width:200px;height:92px;filter:brightness(0) invert(1) opacity(.92)}
-.foot-brand .logo:hover{filter:brightness(0) invert(1) opacity(1)}
+/* Footer logo — φυσικό clay/μπεζ χρώμα (ίδιο με το header), όχι λευκό */
+.foot-brand .logo{margin-bottom:1.8rem;display:inline-block;width:200px;height:92px;filter:none;opacity:.95}
+.foot-brand .logo:hover{filter:none;opacity:1}
 .foot-brand .logo::before{content:none}
 .foot-brand p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;color:var(--lavender-dust);opacity:.7;max-width:340px;line-height:1.6}
 .social{display:flex;gap:.8rem;margin-top:2.5rem}

@@ -125,6 +125,16 @@
 }
 .account-foot .account-link{margin-left:.3rem}
 
+/* Inline μήνυμα μέσα στη φόρμα (σφάλμα / επιτυχία) — αντί για toast πίσω από το modal */
+.account-msg{
+  margin:.4rem 0 0;padding:.6rem .85rem;border-radius:10px;
+  font-size:.82rem;line-height:1.45;text-align:center;
+  font-family:'Inter',sans-serif;
+}
+.account-msg[hidden]{display:none}
+.account-msg.is-error{background:rgba(176,58,58,0.10);color:#a83232;border:1px solid rgba(176,58,58,0.28)}
+.account-msg.is-ok{background:rgba(120,150,90,0.12);color:#5f7a3e;border:1px solid rgba(120,150,90,0.32)}
+
 .account-menu{list-style:none;margin:.6rem 0;padding:0;display:flex;flex-direction:column;gap:0}
 .account-menu li{border-bottom:1px solid rgba(31,24,19,0.08)}
 .account-menu li:first-child{border-top:1px solid rgba(31,24,19,0.08)}

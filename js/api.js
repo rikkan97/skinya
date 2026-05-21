@@ -191,7 +191,10 @@ async function renderHomeFavorites(){
           </div>
           <a class="btn-primary" data-route="products" data-cat="${escapeHTMLSafe(p.cat)}"><span>Δες στα ${escapeHTMLSafe(catGen)}</span></a>
         </div>
-        <div class="slide-visual"><img class="slide-img" src="${escapeHTMLSafe(p.img||'')}" alt="${escapeHTMLSafe(p.brand+' '+p.name)}"></div>
+        <div class="slide-visual">
+          <span class="slide-visual-initial">${escapeHTMLSafe((p.brand||'Skinya').charAt(0))}</span>
+          ${p.img ? `<img class="slide-img" src="${escapeHTMLSafe(p.img)}" alt="${escapeHTMLSafe(p.brand+' '+p.name)}" onerror="this.remove()">` : ''}
+        </div>
       </div>
     `;
   }).join('');
@@ -287,48 +290,81 @@ function effectivePrice(p){
   return 0;
 }
 
-// Υπολογίζει & ενημερώνει τα bundle prices στο DOM (discount από section.config)
-function renderBundlePrice(sectionId, btnId, origElId, finalElId){
+// Fallback SKUs για τα routine bundles — ΜΟΝΟ για offline (όταν λείπει το DB
+// section), ώστε το ΣΥΝΟΛΟ να μπορεί να υπολογιστεί. Αφορά «ποια προϊόντα», ΟΧΙ
+// ποσοστό. Το ποσοστό έκπτωσης ορίζεται πάντα από το admin (config.discount).
+const ROUTINE_BUNDLE_FALLBACK_SKUS = {
+  morning_routine: ['cl4','t1','s9','e3','m4','sp1'],
+  night_routine:   ['cl1','cl2','t4','s1','s7','e1','m1']
+};
+
+// Επιστρέφει τα items ({sku}) + discount ενός bundle.
+//  • items    : DB section first, αλλιώς offline fallback SKUs
+//  • discount : ΑΠΟΚΛΕΙΣΤΙΚΑ από το admin (site_sections.config.discount).
+//               Δέχεται είτε fraction (0.08) είτε ακέραιο ποσοστό (8) → normalize.
+function resolveBundle(sectionId){
   const section = window.siteSections?.[sectionId];
+  const fallbackSkus = ROUTINE_BUNDLE_FALLBACK_SKUS[sectionId] || [];
+  const items = (section?.items?.length)
+    ? section.items
+    : fallbackSkus.map(sku => ({ sku }));
+
+  let discount = Number(section?.config?.discount);
+  if(isNaN(discount) || discount <= 0) discount = 0;
+  else if(discount > 1) discount = discount / 100;
+
+  return { items, discount };
+}
+
+// Υπολογίζει & ενημερώνει τα bundle prices στο DOM (discount από section.config ή fallback)
+function renderBundlePrice(sectionId, btnId, origElId, finalElId){
   const origEl  = document.getElementById(origElId);
   const finalEl = document.getElementById(finalElId);
   const btn     = document.getElementById(btnId);
-  if(!section || !origEl || !finalEl) return;
+  if(!origEl || !finalEl) return;
 
-  const discount = Number(section.config?.discount) || 0;
+  const { items, discount } = resolveBundle(sectionId);
 
-  const total = (section.items||[])
+  const total = items
     .map(it => products.find(p => p.id === it.sku))
     .filter(Boolean)
     .reduce((s, p) => s + effectivePrice(p), 0);
 
+  // Αν δεν μπορεί να υπολογιστεί τίποτα, άσε το placeholder ("—") αντί για "0,00€"
+  if(total <= 0) return;
+
   const discounted = total * (1 - discount);
   const fmt = n => n.toFixed(2).replace('.', ',') + '€';
+  const pctLabel = `−${Math.round(discount * 1000) / 10}%`;
 
   origEl.textContent  = fmt(total);
   finalEl.textContent = fmt(discounted);
+  // Strikethrough «αρχικής» τιμής μόνο όταν υπάρχει έκπτωση από το admin
+  origEl.style.display = discount > 0 ? '' : 'none';
 
-  // Ενημέρωσε & το κουμπί label (π.χ. "Πάρε το σετ · −5%")
-  if(btn && discount > 0){
-    const pct = Math.round(discount * 100 * 10) / 10;
+  if(btn){
+    // Button label — δυναμικό από το admin discount
     const span = btn.querySelector('span');
-    if(span) span.textContent = `Πάρε το σετ · −${pct}%`;
-  } else if(btn){
-    const span = btn.querySelector('span');
-    if(span) span.textContent = 'Πάρε το σετ';
+    if(span) span.textContent = discount > 0 ? `Πάρε το σετ · ${pctLabel}` : 'Πάρε το σετ';
+    // Badge δίπλα στο bundle — επίσης δυναμικό (όχι hardcoded)
+    const badge = btn.closest('.m-bundle-body')?.querySelector('.m-bundle-badge');
+    if(badge){
+      badge.textContent = pctLabel;
+      badge.style.display = discount > 0 ? '' : 'none';
+    }
   }
 }
 
 // Καλείται από bundle buttons (data-driven add — discount διαβάζεται από section)
 function addBundleFromSection(sectionId, bundleName){
-  const section = window.siteSections?.[sectionId];
-  if(!section?.items?.length){
+  const { items, discount } = resolveBundle(sectionId);
+  const skus = items.map(it => it.sku).filter(Boolean);
+  if(!skus.length){
     if(typeof showToast === 'function') showToast('Δεν βρέθηκε το set');
     return;
   }
-  const skus = section.items.map(it => it.sku).filter(Boolean);
   if(typeof addBundle === 'function'){
-    addBundle(skus, bundleName);
+    addBundle(skus, bundleName, discount);
   }
 }
 window.addBundleFromSection = addBundleFromSection;
@@ -366,23 +402,24 @@ async function renderRoutines(){
   }
 
   // WEEKLY (hero card + 2 grid cards)
+  // • Αν το admin (Site UI → weekly) έχει προϊόντα → δείξε ΑΚΡΙΒΩΣ αυτά (κρύψε τα extra).
+  // • Αν είναι κενό (ή τα SKU δεν αντιστοιχούν) → άσε τα default hardcoded ως έχουν.
   const weekly = sections['weekly_routine'];
-  if(weekly?.items?.length){
-    // 1st item → hero
-    const hero = document.querySelector('.routine-weekly .m-hero');
-    const heroSku = weekly.items[0]?.sku;
-    if(hero && heroSku){
-      const p = products.find(x => x.id === heroSku);
-      if(p) applyProductToWeeklyHero(hero, p);
-    }
-    // 2nd & 3rd → grid cards (data-step="02", "03")
-    const gridCards = document.querySelectorAll('.routine-weekly .m-card[data-step]');
-    gridCards.forEach((card, idx)=>{
-      const sku = weekly.items[idx + 1]?.sku;
-      if(!sku) return;
-      const p = products.find(x => x.id === sku);
-      if(p) applyProductToWeeklyCard(card, p);
+  const findP  = sku => sku ? products.find(x => x.id === sku) : null;
+  const show   = (el, on) => { if(el) el.style.display = on ? '' : 'none'; };
+
+  const wItems = (weekly?.items || []).map(it => findP(it.sku)).filter(Boolean);
+  if(wItems.length){
+    const heroEl = document.querySelector('.routine-weekly .m-hero');
+    if(heroEl){ applyProductToWeeklyHero(heroEl, wItems[0]); show(heroEl, true); }
+
+    let shownGrid = 0;
+    document.querySelectorAll('.routine-weekly .m-card[data-step]').forEach((card, idx)=>{
+      const p = wItems[idx + 1];
+      if(p){ applyProductToWeeklyCard(card, p); shownGrid++; show(card, true); }
+      else show(card, false);
     });
+    show(document.querySelector('.routine-weekly .m-grid'), shownGrid > 0);
   }
 }
 

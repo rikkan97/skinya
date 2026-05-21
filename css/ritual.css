@@ -906,10 +906,11 @@
   counter-increment:morningstep;
 }
 .m-order-list{counter-reset:morningstep}
-.m-order-list li::before{display:none}
-.m-order-list li:not(:last-child)::after{
+.m-order-list li::after{display:none}
+/* Βέλος ΠΡΙΝ κάθε item (εκτός του 1ου) → όταν σπάει η σειρά δεν μένει κρεμασμένο στο τέλος */
+.m-order-list li:not(:first-child)::before{
   content:'→';color:var(--gold-leaf);opacity:.7;
-  margin-left:.4rem;font-size:1.15rem;font-style:normal;
+  margin-right:.1rem;font-size:1.15rem;font-style:normal;display:inline-block;
 }
 .m-order-rule{
   font-family:'Cormorant Garamond',serif;font-style:italic;
@@ -1082,24 +1083,24 @@
 }
 .routine-section--night .m-order-label{color:var(--gold-soft)}
 .routine-section--night .m-order-list li{color:var(--ivory)}
-.routine-section--night .m-order-list li::before{display:none}
-.routine-section--night .m-order-list li:not(:last-child)::after{
+.routine-section--night .m-order-list li:not(:first-child)::before{
   color:var(--gold-soft);opacity:.85;
 }
 .routine-section--night .m-order-rule{color:var(--lavender-dust);opacity:.85}
 .routine-section--night .m-order-rule em{color:var(--gold-soft)}
 @media(max-width:900px){
-  .cf-stage{height:560px}
-  .cf-card{width:360px;height:500px}
-  .cf-step{font-size:2.1rem}
-  .cf-name{font-size:1.6rem}
+  .cf-stage{height:500px}
+  .cf-card{width:320px;height:440px}
+  .cf-step{font-size:2rem}
+  .cf-name{font-size:1.5rem}
 }
 @media(max-width:600px){
-  .cf-stage{height:480px}
-  .cf-card{width:280px;height:420px;border-width:3px}
-  .cf-name{font-size:1.4rem}
-  .cf-step{font-size:1.7rem}
-  .cf-why{-webkit-line-clamp:3}
+  .cf-wrap{margin-top:1rem}
+  .cf-stage{height:370px}
+  .cf-card{width:236px;height:330px;border-width:3px;bottom:20px}
+  .cf-name{font-size:1.3rem}
+  .cf-step{font-size:1.5rem}
+  .cf-why{-webkit-line-clamp:2}
 }
 
 
@@ -1417,8 +1418,12 @@
   .m-flow-card > .m-flow-pick{grid-column:1;grid-row:4}
   .m-flow-card > .m-flow-why{grid-column:1;grid-row:5;margin-top:.5rem}
   .m-flow-card > .m-flow-cta{grid-column:1;grid-row:6;justify-self:start;margin-top:.8rem}
-  .morning-order{flex-direction:column;align-items:flex-start;gap:.8rem}
-  .m-order-list li{font-size:.9rem}
+  .morning-order{flex-direction:column;align-items:center;gap:.7rem;text-align:center}
+  /* Label static (όχι absolute) → δεν πέφτει πάνω στις σειρές· μπαίνει σαν τίτλος πάνω */
+  .m-order-label{position:static;transform:none;left:auto;top:auto;order:-1}
+  .m-order-list{justify-content:center}
+  .m-order-list li{font-size:.95rem}
+  .m-order-rule{text-align:center}
 }
 
 

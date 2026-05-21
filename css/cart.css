@@ -62,7 +62,7 @@
 .ck-field{display:flex;flex-direction:column;gap:.3rem;margin-bottom:.9rem}
 .ck-field span{font-size:.62rem;letter-spacing:.24em;text-transform:uppercase;color:var(--plum-deep);font-weight:600}
 .ck-field span i{font-style:normal;font-weight:400;opacity:.7;text-transform:none;letter-spacing:.05em;font-size:.7rem}
-.ck-field input, .ck-field textarea{
+.ck-field input, .ck-field textarea, .ck-field select{
   width:100%;border:0;border-bottom:1px solid rgba(31,24,19,0.18);
   background:transparent;outline:0;
   font-family:'Inter',sans-serif;font-size:.92rem;
@@ -70,7 +70,18 @@
   transition:border-color .25s;resize:vertical;
 }
 .ck-field input::placeholder, .ck-field textarea::placeholder{color:var(--mauve-soft);opacity:.55}
-.ck-field input:focus, .ck-field textarea:focus{border-bottom-color:var(--gold-leaf)}
+.ck-field input:focus, .ck-field textarea:focus, .ck-field select:focus{border-bottom-color:var(--gold-leaf)}
+
+/* Select → ίδιο underline-style με τα inputs + custom chevron */
+.ck-field select{
+  -webkit-appearance:none;-moz-appearance:none;appearance:none;
+  cursor:pointer;padding-right:1.8rem;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%239a584f' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right .15rem center;background-size:12px 8px;
+}
+.ck-field select:focus{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23c0857a' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+.ck-field select option{color:var(--aubergine);background:#fffdfb}
+.ck-field select:invalid{color:var(--mauve-soft)}
 
 /* Summary box στο τέλος της φόρμας */
 .checkout-summary{
@@ -79,12 +90,26 @@
   font-family:'Inter',sans-serif;
 }
 .checkout-summary > div{display:flex;justify-content:space-between;font-size:.82rem;color:var(--aubergine);padding:.32rem 0}
+.checkout-summary > div[hidden]{display:none}  /* αλλιώς το display:flex υπερισχύει του [hidden] */
 .checkout-summary-total{
   border-top:1px solid rgba(31,24,19,0.14);
   margin-top:.4rem;padding-top:.8rem !important;
   font-family:'Cormorant Garamond',serif;font-size:1.1rem !important;
   color:var(--aubergine) !important;font-weight:500;
 }
+
+/* Αποδοχή όρων — απαιτείται πριν την ολοκλήρωση */
+.ck-terms{
+  display:flex;align-items:flex-start;gap:.6rem;
+  margin-top:1.1rem;font-family:'Inter',sans-serif;
+  font-size:.78rem;line-height:1.45;color:var(--aubergine);cursor:pointer;
+}
+.ck-terms input[type="checkbox"]{
+  flex:0 0 auto;width:17px;height:17px;margin-top:.1rem;
+  accent-color:var(--gold-leaf);cursor:pointer;
+}
+.ck-terms a{color:var(--plum-deep);text-decoration:underline;text-underline-offset:2px}
+.ck-terms a:hover{color:var(--gold-leaf)}
 
 /* ============ SUCCESS VIEW ============ */
 .checkout-success{align-items:center;justify-content:center;text-align:center;padding:2.5rem 2rem;gap:.6rem}
@@ -98,6 +123,127 @@
 .success-msg strong{font-weight:500;color:var(--plum-deep);letter-spacing:.06em}
 .success-note{font-size:.78rem;color:var(--aubergine);opacity:.75;margin:0 0 1.4rem}
 .checkout-success .checkout-btn{max-width:280px}
+
+/* ============================================================
+   FULL CHECKOUT PAGE  (#page-checkout)
+   ============================================================ */
+.checkout-page{max-width:1080px;margin:0 auto;padding:2.4rem 1.5rem 4rem}
+.checkout-page-head{margin-bottom:1.8rem}
+.checkout-page-head .eyebrow{
+  font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--gold-leaf);font-weight:700;margin-bottom:.5rem;
+}
+.checkout-page-head h1{
+  font-family:'Cormorant Garamond',serif;font-weight:500;
+  font-size:clamp(2rem,5vw,2.8rem);color:var(--aubergine);margin:0;line-height:1.05;
+}
+.checkout-page-head h1 em{font-style:italic;color:var(--gold-leaf)}
+
+/* Grid: form αριστερά, σύνοψη δεξιά (sticky) */
+.checkout-page-grid{
+  display:grid;grid-template-columns:1fr 380px;gap:1.6rem;align-items:start;
+}
+.checkout-main{display:flex;flex-direction:column;gap:1.4rem;min-width:0}
+
+.checkout-card{
+  background:#fff;border:1px solid rgba(31,24,19,0.08);
+  border-radius:12px;padding:1.5rem 1.6rem;
+  box-shadow:0 8px 30px rgba(61,42,30,0.05);
+}
+.checkout-card h2{
+  font-family:'Cormorant Garamond',serif;font-weight:500;
+  font-size:1.4rem;color:var(--aubergine);margin:0 0 1.1rem;
+  display:flex;align-items:center;gap:.6rem;
+}
+.checkout-card .step-n{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:26px;height:26px;border-radius:50%;background:var(--aubergine);
+  color:var(--ivory);font-family:'Inter',sans-serif;font-size:.8rem;font-weight:700;flex:0 0 auto;
+}
+
+/* Σύνοψη sidebar */
+.checkout-summary-col{position:sticky;top:100px}
+.checkout-summary-card h2{font-size:1.25rem;margin-bottom:1rem}
+.checkout-items{display:flex;flex-direction:column;gap:.85rem;margin-bottom:1rem;max-height:320px;overflow-y:auto}
+.checkout-line{display:flex;gap:.7rem;align-items:center}
+.checkout-line-img{
+  width:46px;height:46px;border-radius:8px;flex:0 0 auto;overflow:hidden;
+  background:var(--lavender-mist);display:flex;align-items:center;justify-content:center;
+  font-family:'Cormorant Garamond',serif;color:var(--plum-deep);font-size:1.2rem;
+}
+.checkout-line-img img{width:100%;height:100%;object-fit:cover}
+.checkout-line-info{flex:1;min-width:0}
+.checkout-line-info h5{margin:0;font-size:.82rem;font-weight:600;color:var(--aubergine);line-height:1.25}
+.checkout-line-info small{color:var(--mauve-soft);font-size:.72rem}
+.checkout-line-price{font-family:'Cormorant Garamond',serif;font-size:.98rem;color:var(--aubergine);white-space:nowrap}
+
+/* Payment options (radio cards) */
+.pay-option{
+  display:flex;gap:.8rem;align-items:flex-start;
+  border:1.5px solid rgba(31,24,19,0.12);border-radius:10px;
+  padding:.95rem 1.1rem;margin-bottom:.7rem;cursor:pointer;transition:border-color .2s,background .2s;
+}
+.pay-option:hover{border-color:var(--gold-leaf)}
+.pay-option:has(input:checked){border-color:var(--gold-leaf);background:var(--lavender-mist)}
+.pay-option input[type="radio"]{margin-top:.25rem;width:17px;height:17px;accent-color:var(--gold-leaf);flex:0 0 auto;cursor:pointer}
+.pay-option-body{display:flex;flex-direction:column;gap:.18rem}
+.pay-option-body strong{font-size:.92rem;color:var(--aubergine);font-weight:600}
+.pay-option-body small{font-size:.76rem;color:var(--mauve-soft);line-height:1.4}
+
+/* Κουπόνι */
+.coupon-row{display:flex;gap:.5rem;margin:.2rem 0 .3rem}
+.coupon-row input{
+  flex:1;min-width:0;background:transparent;border:1px solid rgba(31,24,19,0.18);
+  border-radius:8px;padding:.6rem .75rem;font-size:.82rem;color:var(--aubergine);
+  font-family:'Inter',sans-serif;letter-spacing:.04em;
+}
+.coupon-row input:focus{outline:none;border-color:var(--gold-leaf)}
+.coupon-apply{
+  flex:0 0 auto;background:var(--aubergine);color:var(--ivory);border:none;
+  border-radius:8px;padding:0 1rem;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  font-weight:600;cursor:pointer;transition:opacity .2s;
+}
+.coupon-apply:hover{opacity:.85}
+.coupon-apply:disabled{opacity:.5;cursor:default}
+.coupon-msg{font-size:.76rem;margin:.1rem 0 .4rem;line-height:1.4}
+.coupon-msg.is-ok{color:#4a8a5f}
+.coupon-msg.is-err{color:var(--plum-deep)}
+.checkout-discount span:first-child{color:var(--plum-deep)}
+.checkout-discount small{color:var(--mauve-soft);font-size:.72rem;letter-spacing:.04em}
+.checkout-discount span:last-child{color:var(--plum-deep)}
+
+/* Τραπεζικά στοιχεία */
+.bank-details{margin-top:.4rem;padding-top:.4rem}
+.bank-box{
+  background:var(--lavender-mist);border-radius:10px;padding:1rem 1.1rem;
+  display:flex;flex-direction:column;gap:.55rem;font-family:'Inter',sans-serif;
+}
+.bank-box > div{display:flex;justify-content:space-between;gap:1rem;font-size:.82rem}
+.bank-box span{color:var(--mauve-soft);letter-spacing:.04em}
+.bank-box strong{color:var(--aubergine);font-weight:600;text-align:right}
+.bank-box .iban{letter-spacing:.06em;font-variant-numeric:tabular-nums}
+.bank-note{font-size:.76rem;color:var(--mauve-soft);margin:.7rem 0 0;line-height:1.45}
+
+/* Success state μέσα στη σελίδα */
+.checkout-page-success{
+  max-width:560px;margin:1rem auto 0;text-align:center;
+  background:#fff;border:1px solid rgba(31,24,19,0.08);border-radius:14px;
+  padding:2.6rem 2rem;box-shadow:0 8px 30px rgba(61,42,30,0.06);
+}
+.checkout-page-success .success-icon{color:var(--gold-leaf)}
+.checkout-page-success h2{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:2rem;color:var(--aubergine);margin:.4rem 0}
+.checkout-page-success h2 em{font-style:italic;color:var(--gold-leaf)}
+.success-bank{margin:1.4rem 0;text-align:left}
+.success-bank > p{font-size:.85rem;color:var(--aubergine);line-height:1.55;margin:0 0 .8rem}
+.success-bank .bank-box{margin-bottom:.6rem}
+.checkout-page-success .checkout-btn{max-width:280px;margin:.6rem auto 0}
+
+/* Responsive — σύνοψη πάνω, form κάτω σε μικρές οθόνες */
+@media (max-width:860px){
+  .checkout-page-grid{grid-template-columns:1fr}
+  .checkout-summary-col{position:static;order:-1}
+  .checkout-items{max-height:none}
+}
 
 /* TOAST — αναδυόμενα μηνύματα */
 .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(150%);background:var(--aubergine);color:var(--ivory);padding:1rem 2rem;font-size:.8rem;letter-spacing:.2em;text-transform:uppercase;z-index:300;transition:transform .4s ease;box-shadow:0 20px 40px rgba(61,42,30,0.3);max-width:90vw;text-align:center}

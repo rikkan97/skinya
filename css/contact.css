@@ -422,21 +422,26 @@
    ==================================================================== */
 @media(max-width:968px){
   .contact-header{
-    min-height:auto;padding:3.5rem 1.5rem 4rem;
-    grid-template-columns:1fr;gap:2.6rem;text-align:center;
+    min-height:auto;padding:3rem 1.5rem 4rem;
+    grid-template-columns:1fr;gap:3.6rem;text-align:center;   /* περισσότερος αέρας photo↔κείμενο */
   }
   .contact-ornament{display:none}
   .contact-header .page-header-content{
     padding:0;align-items:center;text-align:center;max-width:100%;
     order:2;
   }
+  .contact-header .eyebrow{margin-bottom:1.1rem}
+  .contact-header h1{margin-bottom:1.1rem}
   .contact-header h1 br{display:none}
   .contact-header p{max-width:100%}
   .contact-header-visual{
-    order:1;max-width:300px;margin:0 auto;justify-self:center;gap:1rem;
+    order:1;max-width:280px;margin:0 auto;justify-self:center;gap:1.6rem;
   }
   .contact-header-photo{transform:rotate(-1.6deg)}
-  .contact-header-caption p{font-size:.98rem !important}
+  /* caption: ξεκολλάει το ✦ / quote / «promise» */
+  .contact-header-caption{gap:.9rem}
+  .contact-header-caption p{font-size:.98rem !important;line-height:1.5 !important}
+  .contact-header-caption small{margin-top:.2rem}
   .contact-section{padding:4.5rem 1.5rem 4rem}
   .contact-grid{grid-template-columns:1fr;gap:2.6rem}
   .contact-side{position:static;top:auto}

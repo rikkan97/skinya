@@ -4,3 +4,5 @@ Thumbs.db
 *.log
 .vscode/
 node_modules/
+.env
+supabase/.temp/

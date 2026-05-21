@@ -37,11 +37,27 @@ function closeAccount(){
 function accountSwitch(view){
   const ov = document.getElementById('accountOverlay');
   if(!ov) return;
+  clearAccountMsgs();
   ov.querySelectorAll('.account-view').forEach(v=>{
     v.classList.toggle('is-active', v.dataset.view===view);
   });
   const first = ov.querySelector('.account-view.is-active input');
   if(first) setTimeout(()=>first.focus(), 50);
+}
+
+// Inline μήνυμα μέσα στη φόρμα (αντί για toast πίσω από το modal)
+function setAccountMsg(form, text, type){
+  const el = form?.querySelector('[data-account-msg]');
+  if(!el) return;
+  if(!text){ el.hidden = true; el.textContent = ''; el.className = 'account-msg'; return; }
+  el.textContent = text;
+  el.className = 'account-msg ' + (type === 'ok' ? 'is-ok' : 'is-error');
+  el.hidden = false;
+}
+function clearAccountMsgs(){
+  document.querySelectorAll('#accountOverlay [data-account-msg]').forEach(el=>{
+    el.hidden = true; el.textContent = ''; el.className = 'account-msg';
+  });
 }
 
 // ──────────────────────────────────────────────────────────────
@@ -61,24 +77,30 @@ async function accountSubmit(e, type){
   const email = form.querySelector('input[name="email"]')?.value?.trim();
   const password = form.querySelector('input[name="password"]')?.value;
 
+  setAccountMsg(form, '');   // καθάρισε προηγούμενο μήνυμα
+
   try {
     if(type === 'register'){
       const password2 = form.querySelector('input[name="password2"]').value;
       if(password !== password2){
-        showToast('Οι κωδικοί δεν ταιριάζουν');
+        setAccountMsg(form, 'Οι κωδικοί δεν ταιριάζουν', 'error');
         return;
       }
       const { data, error } = await window.sb.auth.signUp({ email, password });
       if(error) throw error;
+      // Welcome email (#11) — best-effort, δεν μπλοκάρει τη ροή
+      window.sb.functions.invoke('send-welcome', { body:{ email } })
+        .catch(err => console.warn('[Skinya] welcome email failed:', err));
       // Αν το Supabase project έχει "Confirm email" ON, δεν δίνεται session αμέσως
       if(data.session){
         showToast('Καλώς ήρθες ❀');
         form.reset();
         closeAccount();
       } else {
-        showToast('Στείλαμε email επιβεβαίωσης ✉');
         form.reset();
         accountSwitch('login');
+        const loginForm = document.querySelector('.account-view[data-view="login"]');
+        setAccountMsg(loginForm, 'Σου στείλαμε email επιβεβαίωσης ✉ — επιβεβαίωσε το και μετά συνδέσου.', 'ok');
       }
     }
     else if(type === 'forgot'){
@@ -86,9 +108,7 @@ async function accountSubmit(e, type){
         redirectTo: window.location.origin + window.location.pathname + '#reset'
       });
       if(error) throw error;
-      showToast('Στείλαμε σύνδεσμο επαναφοράς στο email σου ✉');
-      form.reset();
-      accountSwitch('login');
+      setAccountMsg(form, 'Σου στείλαμε σύνδεσμο επαναφοράς στο email σου ✉ (έλεγξε και τα spam).', 'ok');
     }
     else { // login
       const { error } = await window.sb.auth.signInWithPassword({ email, password });
@@ -99,7 +119,7 @@ async function accountSubmit(e, type){
     }
   } catch(err) {
     console.error('[Skinya] Auth error:', err);
-    showToast(translateAuthError(err.message));
+    setAccountMsg(form, translateAuthError(err.message), 'error');
   } finally {
     if(submitBtn){
       submitBtn.disabled = false;
@@ -133,6 +153,8 @@ async function accountLogout(){
   }
   showToast('Αποσυνδέθηκες ✓');
   closeAccount();
+  // Μετά το logout → αρχική (όχι στις παραγγελίες/λογαριασμό)
+  if(typeof navigateTo === 'function') navigateTo('home');
 }
 
 // ──────────────────────────────────────────────────────────────

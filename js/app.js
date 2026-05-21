@@ -81,7 +81,12 @@ function setupFanCarousel(wrapId){
   const inactiveScale = 0.90;
   const maxOffset = 3;         // max abs offset για visibility (κρύβει cards πέρα απ' αυτό)
 
-  const cardSpacing = Math.round(cardWidth * (1 - overlap));
+  // Το spacing υπολογίζεται από το ΠΡΑΓΜΑΤΙΚΟ πλάτος του card (που αλλάζει
+  // responsive μέσω CSS), ώστε σε mobile να μη ξεχειλίζουν / overlap-άρουν.
+  function spacing(){
+    const w = cards[0]?.offsetWidth || cardWidth;
+    return Math.round(w * (1 - overlap));
+  }
 
   // Signed offset με wrap-around (loop)
   function signedOffset(i, act){
@@ -91,6 +96,7 @@ function setupFanCarousel(wrapId){
   }
 
   function update(){
+    const cardSpacing = spacing();
     cards.forEach((card, i)=>{
       const off = signedOffset(i, active);
       const abs = Math.abs(off);
@@ -492,13 +498,27 @@ document.addEventListener('DOMContentLoaded', async ()=>{
     let currentCat = null;
     let swapTimer = null;
     // Smooth crossfade right→left: fade out + glide αριστερά → swap → snap δεξιά (αόρατο) → fade in
-    const setActiveTab = (catId)=>{
+    const setActiveTab = (catId, userInitiated)=>{
       if(catId === currentCat) return;
       currentCat = catId;
       homeShopTabs.querySelectorAll('.home-shop-tab').forEach(t=>{
         t.classList.toggle('is-active', t.dataset.cat === catId);
       });
       if(homeShopMoreLink) homeShopMoreLink.dataset.cat = catId;
+
+      // Mobile scroll-strip: scroll-άρουμε το active tab στο view ΜΟΝΟ όταν το
+      // διάλεξε ο χρήστης. Στο auto-cycle κρατάμε το strip ακίνητο (ξεκινά από
+      // την 1η κατηγορία), αλλιώς το strip "ταξιδεύει" και κρύβει τις πρώτες.
+      // Η ενεργή κατηγορία φαίνεται ούτως ή άλλως στο "STEP 0X / Name" heading.
+      if(userInitiated){
+        const activeTab = homeShopTabs.querySelector('.home-shop-tab.is-active');
+        if(activeTab){
+          const tabRect = activeTab.getBoundingClientRect();
+          const contRect = homeShopTabs.getBoundingClientRect();
+          const target = homeShopTabs.scrollLeft + (tabRect.left - contRect.left) - (contRect.width - tabRect.width)/2;
+          homeShopTabs.scrollTo({ left: Math.max(0, target), behavior:'smooth' });
+        }
+      }
 
       const firstRender = !homeShopGrid.children.length;
       if(firstRender){
@@ -545,10 +565,30 @@ document.addEventListener('DOMContentLoaded', async ()=>{
       if(!tab) return;
       stopHomeShopCycle();
       homeShopIdx = categories.findIndex(c=>c.id===tab.dataset.cat);
-      setActiveTab(tab.dataset.cat);
+      setActiveTab(tab.dataset.cat, true);
     };
     homeShopTabs.addEventListener('mouseover', tabSelectHandler);
     homeShopTabs.addEventListener('click', tabSelectHandler);
+
+    // ── Mobile scroll-indicator bar: thumb που δείχνει πόσο έχεις σκρολάρει
+    //    στα tabs, ώστε να καταλαβαίνει ο χρήστης ότι η σειρά συνεχίζει.
+    const scrollInd = document.createElement('div');
+    scrollInd.className = 'home-shop-scroll-ind';
+    scrollInd.innerHTML = '<span class="home-shop-scroll-thumb"></span>';
+    homeShopTabs.insertAdjacentElement('afterend', scrollInd);
+    const scrollThumb = scrollInd.querySelector('.home-shop-scroll-thumb');
+    const updateScrollInd = ()=>{
+      const max = homeShopTabs.scrollWidth - homeShopTabs.clientWidth;
+      if(max <= 4){ scrollInd.classList.remove('is-on'); return; }
+      scrollInd.classList.add('is-on');
+      const widthPct = homeShopTabs.clientWidth / homeShopTabs.scrollWidth * 100;
+      const leftPct = (homeShopTabs.scrollLeft / max) * (100 - widthPct);
+      scrollThumb.style.width = widthPct + '%';
+      scrollThumb.style.left = leftPct + '%';
+    };
+    homeShopTabs.addEventListener('scroll', updateScrollInd, { passive:true });
+    window.addEventListener('resize', updateScrollInd);
+    updateScrollInd();
 
     // Resume cycle όταν φύγει το mouse από το section
     const homeShopSection = homeShopTabs.closest('.home-shop');
@@ -592,18 +632,25 @@ document.addEventListener('DOMContentLoaded', async ()=>{
         return;
       }
 
-      // pretend-send + UX feedback
+      // Πραγματική αποστολή μέσω edge function (Resend → admin inbox)
       const btn = contactForm.querySelector('button[type="submit"]');
       const originalHTML = btn.innerHTML;
       btn.disabled = true;
       btn.innerHTML = '<span>Αποστολή…</span>';
 
-      setTimeout(()=>{
+      window.sb.functions.invoke('send-contact', {
+        body: { name, email, topic, message }
+      }).then(({ error })=>{
+        if(error) throw error;
         showToast(`Σε ευχαριστούμε ${name.split(' ')[0]} ❀ — απαντάμε σύντομα`);
         contactForm.reset();
+      }).catch(err=>{
+        console.error('[Skinya] contact send error:', err);
+        showToast('Κάτι πήγε στραβά — δοκίμασε ξανά ή στείλε email στο info@skinya.gr');
+      }).finally(()=>{
         btn.disabled = false;
         btn.innerHTML = originalHTML;
-      }, 700);
+      });
     });
   }
 
