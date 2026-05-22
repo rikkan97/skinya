@@ -88,10 +88,10 @@ footer{background:var(--aubergine);color:var(--ivory);padding:6rem 3rem 2rem;bor
 footer::before{content:none}
 .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:5rem;max-width:1400px;margin:0 auto 4rem}
 /* Footer logo — φυσικό clay/μπεζ χρώμα (ίδιο με το header), όχι λευκό */
-.foot-brand .logo{margin-bottom:1.8rem;display:inline-block;width:200px;height:92px;filter:none;opacity:.95}
+.foot-brand .logo{margin-bottom:.4rem;margin-left:-2.5rem;display:inline-block;width:200px;height:92px;filter:none;opacity:.95}
 .foot-brand .logo:hover{filter:none;opacity:1}
 .foot-brand .logo::before{content:none}
-.foot-brand p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;color:var(--lavender-dust);opacity:.7;max-width:340px;line-height:1.6}
+.foot-brand p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;color:var(--lavender-dust);opacity:.7;max-width:340px;line-height:1.6;margin-top:-.8rem}
 .social{display:flex;gap:.8rem;margin-top:2.5rem}
 .social a{width:40px;height:40px;border:1px solid rgba(192,133,122,0.4);border-radius:0;display:flex;align-items:center;justify-content:center;color:var(--gold-leaf);text-decoration:none;transition:all .3s;font-size:.85rem;cursor:pointer}
 .social a:hover{background:var(--gold-leaf);color:var(--aubergine);border-color:var(--gold-leaf);transform:translateY(-3px)}

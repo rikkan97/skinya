@@ -212,6 +212,11 @@ html,body{max-width:100%;overflow-x:hidden}
   .cat-grid{grid-template-columns:1fr}
   .featured-info h3{font-size:1.6rem}
   .visual-initial{font-size:5rem}
+  /* Featured badges: compact ώστε το «★ Best of Category» (αριστερά) και το
+     seal «Leaping Bunny ✓» (δεξιά) να μη συναντιούνται στη στενή κάρτα. */
+  .featured-tag{top:1rem;left:1rem;font-size:.48rem;letter-spacing:.12em;padding:.34rem .55rem;white-space:nowrap}
+  .featured-visual .product-seals{top:.8rem;right:.8rem;gap:.3rem}
+  .featured-visual .product-seal{font-size:.46rem;letter-spacing:.1em;padding:.3rem .5rem}
 }
 
 /* ====================================================================
@@ -351,6 +356,12 @@ html,body{max-width:100%;overflow-x:hidden}
   .slide-meta{flex-direction:column;gap:0;padding:1rem 0}
   .meta-item{padding:.6rem 0;border-right:none;border-bottom:1px solid rgba(31,24,19,0.08);text-align:left}
   .meta-item:last-child{border-bottom:none}
+
+  /* Products header fan — ακόμα πιο compact: μικρότερη κεντρική + στενότερες
+     πλαϊνές ώστε να μένει χώρος να φανούν χωρίς να κόβονται. */
+  .ph-frame--main{max-width:220px;padding:1.2rem}
+  .ph-frame--back-left{width:46%;transform:translate(-9%,-50%) rotate(-6deg)}
+  .ph-frame--back-right{width:46%;transform:translate(9%,-50%) rotate(6deg)}
 
   /* Featured product (catalog page) */
   .featured-product{padding:1.6rem;gap:1.8rem;border-radius:12px}

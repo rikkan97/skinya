@@ -158,6 +158,11 @@ async function loadProfile(){
     form.querySelector('input[name="last_name"]').value  = data?.last_name  || '';
     form.querySelector('input[name="phone"]').value      = data?.phone      || '';
     form.querySelector('input[name="newsletter"]').checked = !!data?.newsletter;
+
+    // Greeting: όνομα αν υπάρχει, αλλιώς email
+    const full = [data?.first_name, data?.last_name].filter(Boolean).join(' ').trim();
+    const greet = document.getElementById('accountPageEmail');
+    if(greet) greet.textContent = full || data?.email || window.currentUser.email || '';
   } catch(err){
     console.error('[Skinya] loadProfile error:', err);
   }
@@ -185,6 +190,7 @@ async function saveProfile(e){
 
     if(error) throw error;
     showToast('Τα στοιχεία αποθηκεύτηκαν ✓');
+    if(typeof updateAccountUI === 'function') updateAccountUI();   // refresh greeting με το νέο όνομα
   } catch(err){
     console.error('[Skinya] saveProfile error:', err);
     showToast('Σφάλμα αποθήκευσης');

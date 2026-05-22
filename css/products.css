@@ -134,7 +134,11 @@
   .hs-item strong{font-size:1.9rem}
   .hs-divider{height:30px}
   .ph-stack{max-width:100%;padding:1rem 0 3rem}
-  .ph-frame--main{max-width:300px;padding:1.8rem}
+  .ph-frame--main{max-width:260px;padding:1.4rem}
+  /* Πλαϊνές φωτό: πιο στενές + τραβηγμένες προς τα μέσα ώστε να ξεμυτίζουν
+     καθαρά πίσω από την κεντρική, αντί να κόβονται στην άκρη της οθόνης. */
+  .ph-frame--back-left{width:48%;transform:translate(-12%,-50%) rotate(-7deg)}
+  .ph-frame--back-right{width:48%;transform:translate(12%,-50%) rotate(7deg)}
   .ph-glow{width:380px;height:380px}
   .ph-strip-track{font-size:1.2rem;gap:1.6rem}
   /* Mobile: stats κάτω horizontally, όχι absolute side */

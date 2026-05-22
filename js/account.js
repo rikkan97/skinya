@@ -164,13 +164,24 @@ async function updateAccountUI(){
   const { data: { session } } = await window.sb.auth.getSession();
   window.currentUser = session?.user || null;
 
-  // Ενημέρωσε το profile view με το email του χρήστη
-  const profileEmail = document.getElementById('profileEmail');
-  if(profileEmail) profileEmail.textContent = window.currentUser?.email || '';
-
   // Ενημέρωσε το nav button — δείξε ένα small dot αν logged in
   const btn = document.getElementById('accountBtn');
   if(btn) btn.classList.toggle('is-logged-in', !!window.currentUser);
+
+  // Greeting: δείξε το όνομα (αν υπάρχει) αλλιώς το email
+  let displayName = window.currentUser?.email || '';
+  if(window.currentUser){
+    try {
+      const { data } = await window.sb.from('customers')
+        .select('first_name, last_name').eq('id', window.currentUser.id).single();
+      const full = [data?.first_name, data?.last_name].filter(Boolean).join(' ').trim();
+      if(full) displayName = full;
+    } catch(_){ /* fallback στο email */ }
+  }
+  const profileEmail = document.getElementById('profileEmail');
+  if(profileEmail) profileEmail.textContent = displayName;
+  const pageEmail = document.getElementById('accountPageEmail');
+  if(pageEmail) pageEmail.textContent = displayName;
 }
 
 // ──────────────────────────────────────────────────────────────
