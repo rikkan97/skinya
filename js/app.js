@@ -548,8 +548,9 @@ document.addEventListener('DOMContentLoaded', async ()=>{
     // Auto-cycle 3 sec (pause on hover)
     let homeShopIdx = 0;
     let homeShopTimer = null;
+    let homeShopPaused = false;   // ο χρήστης άγγιξε προϊόν → σταμάτα μόνιμα το auto-cycle
     const startHomeShopCycle = ()=>{
-      if(homeShopTimer) return;
+      if(homeShopTimer || homeShopPaused) return;
       homeShopTimer = setInterval(()=>{
         homeShopIdx = (homeShopIdx + 1) % categories.length;
         setActiveTab(categories[homeShopIdx].id);
@@ -569,6 +570,9 @@ document.addEventListener('DOMContentLoaded', async ()=>{
     };
     homeShopTabs.addEventListener('mouseover', tabSelectHandler);
     homeShopTabs.addEventListener('click', tabSelectHandler);
+
+    // Κλικ σε προϊόν/info μέσα στο grid → σταμάτα ΜΟΝΙΜΑ το auto-cycle (να προλαβαίνεις να διαβάσεις)
+    homeShopGrid.addEventListener('click', ()=>{ homeShopPaused = true; stopHomeShopCycle(); });
 
     // ── Mobile scroll-indicator bar: thumb που δείχνει πόσο έχεις σκρολάρει
     //    στα tabs, ώστε να καταλαβαίνει ο χρήστης ότι η σειρά συνεχίζει.
