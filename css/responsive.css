@@ -48,7 +48,9 @@ html,body{max-width:100%;overflow-x:hidden}
 
 @media(max-width:968px){
   nav{padding:1rem 1.5rem}
-  .nav-links{position:fixed;top:0;right:-100%;width:80%;height:100vh;background:var(--ivory);flex-direction:column;justify-content:center;padding:3rem;gap:2.5rem;transition:right .4s ease;box-shadow:-20px 0 40px rgba(61,42,30,0.15);z-index:60}
+  .nav-links{position:fixed;top:0;right:-100%;width:80%;height:100vh;background:var(--ivory);flex-direction:column;justify-content:flex-start;align-items:flex-start;padding:5.5rem 3rem 3rem;gap:2.2rem;transition:right .4s ease;box-shadow:-20px 0 40px rgba(61,42,30,0.15);z-index:60}
+  /* Skinya wordmark στην κορυφή του menu (όπως το logo) */
+  .nav-links::before{content:'Skinya';font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500;font-size:2rem;line-height:1;color:var(--gold-leaf);letter-spacing:.02em;margin-bottom:1.4rem}
   .nav-links.open{right:0}
   .nav-links a{font-size:1rem}
   .menu-toggle{display:flex}
@@ -201,7 +203,8 @@ html,body{max-width:100%;overflow-x:hidden}
   .cat-grid{grid-template-columns:repeat(2,1fr);gap:1.2rem}
   .category-section{padding:4rem 1.5rem}
   /* Category-nav sticky top adjusted για ψηλότερο mobile nav (logo 78px + padding) */
-  .category-nav{padding:.8rem 1rem;gap:1rem;top:110px}
+  /* flex-start (όχι center) → ξεκινά από την 1η κατηγορία· με center οι πρώτες έφευγαν εκτός αριστερά */
+  .category-nav{padding:.8rem 1rem;gap:1rem;top:110px;justify-content:flex-start}
   .cat-link{font-size:.7rem;letter-spacing:.22em;padding:.6rem .3rem}
 }
 

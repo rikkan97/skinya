@@ -1421,8 +1421,10 @@
   .morning-order{flex-direction:column;align-items:center;gap:.7rem;text-align:center}
   /* Label static (όχι absolute) → δεν πέφτει πάνω στις σειρές· μπαίνει σαν τίτλος πάνω */
   .m-order-label{position:static;transform:none;left:auto;top:auto;order:-1}
-  .m-order-list{justify-content:center}
-  .m-order-list li{font-size:.95rem}
+  /* Κάθετη σειρά (πάνω→κάτω) — όλα τα βήματα φαίνονται, με βελάκι ↓ ανάμεσα. Ποτέ δεν ξεχειλίζει. */
+  .m-order-list{flex-direction:column;flex-wrap:nowrap;align-items:center;gap:.12rem;overflow:visible;max-width:100%}
+  .m-order-list li{flex-direction:column;gap:.12rem;font-size:1rem;white-space:nowrap}
+  .m-order-list li:not(:first-child)::before{content:'↓';margin:0;font-size:.82rem;opacity:.6}
   .m-order-rule{text-align:center}
 }
 

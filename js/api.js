@@ -246,7 +246,7 @@ function applyProductToCfCard(card, p){
   }
 }
 
-function applyProductToWeeklyHero(hero, p){
+function applyProductToWeeklyHero(hero, p, editorial){
   if(!hero || !p) return;
   const img   = hero.querySelector('.m-hero-photo img');
   const brand = hero.querySelector('.m-product-brand');
@@ -261,9 +261,60 @@ function applyProductToWeeklyHero(hero, p){
   if(name)  name.textContent  = p.name;
   if(ctaPrimary) ctaPrimary.setAttribute('onclick', `viewProduct('${p.id}')`);
   if(ctaLink)    ctaLink.setAttribute('onclick', `addToCart('${p.id}')`);
+  applyEditorialToWeeklyHero(hero, editorial);
 }
 
-function applyProductToWeeklyCard(card, p){
+// Εφαρμόζει τα editorial κείμενα του weekly hero (από admin → config.editorial).
+// Κάθε πεδίο που είναι κενό αφήνει το hardcoded HTML ως έχει (fallback).
+function applyEditorialToWeeklyHero(hero, ed){
+  if(!hero || !ed || typeof ed !== 'object') return;
+  const setText = (sel, val) => {
+    if(val == null || String(val).trim() === '') return;
+    const el = hero.querySelector(sel);
+    if(el) el.textContent = String(val);
+  };
+
+  setText('.m-step-tag', ed.tag);
+  setText('.m-step-time', ed.time);
+  // m-step-best: κρατάμε το πρόθεμα «Best for: » σταθερό
+  if(ed.bestFor != null && String(ed.bestFor).trim() !== ''){
+    const best = hero.querySelector('.m-step-best');
+    if(best) best.textContent = `Best for: ${ed.bestFor}`;
+  }
+
+  // Τίτλος: κανονικό κομμάτι + έμφαση (italic)
+  if((ed.title != null && String(ed.title).trim() !== '') ||
+     (ed.titleEm != null && String(ed.titleEm).trim() !== '')){
+    const h = hero.querySelector('.m-hero-content h3');
+    if(h){
+      const lead = escapeHTMLSafe(ed.title || '');
+      const em   = ed.titleEm ? ` <em>${escapeHTMLSafe(ed.titleEm)}</em>` : '';
+      h.innerHTML = lead + em;
+    }
+  }
+
+  setText('.m-hero-lead', ed.lead);
+  setText('.m-result strong', ed.result);
+
+  // Chips: comma-separated → ένα <span class="m-chip"> ανά τιμή
+  if(ed.chips != null && String(ed.chips).trim() !== ''){
+    const wrap = hero.querySelector('.m-chips');
+    if(wrap){
+      const chips = String(ed.chips).split(',').map(c => c.trim()).filter(Boolean);
+      if(chips.length){
+        wrap.innerHTML = chips.map(c => `<span class="m-chip">${escapeHTMLSafe(c)}</span>`).join('');
+      }
+    }
+  }
+
+  // «Γιατί το επιλέξαμε»: κρατάμε το <em> label σταθερό, αλλάζει μόνο το κείμενο
+  if(ed.why != null && String(ed.why).trim() !== ''){
+    const why = hero.querySelector('.m-why');
+    if(why) why.innerHTML = `<em>Γιατί το επιλέξαμε:</em> ${escapeHTMLSafe(ed.why)}`;
+  }
+}
+
+function applyProductToWeeklyCard(card, p, editorial){
   if(!card || !p) return;
   const img   = card.querySelector('.m-card-visual img');
   const small = card.querySelector('.m-card-pick small');
@@ -277,6 +328,55 @@ function applyProductToWeeklyCard(card, p){
   if(name)  name.textContent  = p.name;
   if(cta){
     cta.setAttribute('onclick', `addToCart('${p.id}')`);
+  }
+  applyEditorialToWeeklyCard(card, editorial);
+}
+
+// Editorial κείμενα μικρής κάρτας weekly (από admin → config.cards[idx]).
+// Κενό πεδίο → κρατάει το hardcoded HTML (fallback).
+function applyEditorialToWeeklyCard(card, ed){
+  if(!card || !ed || typeof ed !== 'object') return;
+  const setText = (sel, val) => {
+    if(val == null || String(val).trim() === '') return;
+    const el = card.querySelector(sel);
+    if(el) el.textContent = String(val);
+  };
+
+  setText('.m-card-step', ed.step);
+  // m-card-time: κρατάμε το «· » prefix σταθερό
+  if(ed.time != null && String(ed.time).trim() !== ''){
+    const t = card.querySelector('.m-card-time');
+    if(t) t.textContent = `· ${ed.time}`;
+  }
+
+  // Τίτλος h4: κανονικό + έμφαση (italic)
+  if((ed.title != null && String(ed.title).trim() !== '') ||
+     (ed.titleEm != null && String(ed.titleEm).trim() !== '')){
+    const h = card.querySelector('h4');
+    if(h){
+      const lead = escapeHTMLSafe(ed.title || '');
+      const em   = ed.titleEm ? ` <em>${escapeHTMLSafe(ed.titleEm)}</em>` : '';
+      h.innerHTML = lead + em;
+    }
+  }
+
+  setText('.m-card-result', ed.result);
+
+  // Chips (comma-separated)
+  if(ed.chips != null && String(ed.chips).trim() !== ''){
+    const wrap = card.querySelector('.m-chips--sm');
+    if(wrap){
+      const chips = String(ed.chips).split(',').map(c => c.trim()).filter(Boolean);
+      if(chips.length){
+        wrap.innerHTML = chips.map(c => `<span class="m-chip">${escapeHTMLSafe(c)}</span>`).join('');
+      }
+    }
+  }
+
+  // «Γιατί το επιλέξαμε»: label σταθερό, αλλάζει το κείμενο
+  if(ed.why != null && String(ed.why).trim() !== ''){
+    const why = card.querySelector('.m-card-pick p');
+    if(why) why.innerHTML = `<em>Γιατί το επιλέξαμε:</em> ${escapeHTMLSafe(ed.why)}`;
   }
 }
 
@@ -355,6 +455,18 @@ function renderBundlePrice(sectionId, btnId, origElId, finalElId){
   }
 }
 
+// Γεμίζει το marquee photo-strip ενός bundle με τις εικόνες των προϊόντων της ενότητας.
+// Αν δεν υπάρχουν αρκετές εικόνες από admin, κρατά τις default hardcoded.
+function applyMarquee(selector, prods){
+  const track = document.querySelector(selector);
+  if(!track) return;
+  const imgs = (prods || []).map(p => p?.img).filter(Boolean);
+  if(imgs.length < 2) return;
+  const set = aria => imgs.map(src =>
+    `<img src="${escapeHTMLSafe(src)}" alt="" class="m-marquee-img"${aria ? ' aria-hidden="true"' : ''}>`).join('');
+  track.innerHTML = set(false) + set(true);   // διπλό set για seamless loop
+}
+
 // Καλείται από bundle buttons (data-driven add — discount διαβάζεται από section)
 function addBundleFromSection(sectionId, bundleName){
   const { items, discount } = resolveBundle(sectionId);
@@ -380,25 +492,23 @@ async function renderRoutines(){
   // MORNING
   const morning = sections['morning_routine'];
   if(morning?.items?.length){
-    const cards = document.querySelectorAll('#morningFan .cf-card[data-index]');
-    cards.forEach((card, idx)=>{
-      const sku = morning.items[idx]?.sku;
-      if(!sku) return;
-      const p = products.find(x => x.id === sku);
+    document.querySelectorAll('#morningFan .cf-card[data-index]').forEach((card, idx)=>{
+      const p = products.find(x => x.id === morning.items[idx]?.sku);
       if(p) applyProductToCfCard(card, p);
     });
+    const mProds = morning.items.map(it => products.find(x => x.id === it.sku)).filter(Boolean);
+    applyMarquee('.routine-section--morning .m-marquee-track', mProds);
   }
 
   // NIGHT
   const night = sections['night_routine'];
   if(night?.items?.length){
-    const cards = document.querySelectorAll('#nightFan .cf-card[data-index]');
-    cards.forEach((card, idx)=>{
-      const sku = night.items[idx]?.sku;
-      if(!sku) return;
-      const p = products.find(x => x.id === sku);
+    document.querySelectorAll('#nightFan .cf-card[data-index]').forEach((card, idx)=>{
+      const p = products.find(x => x.id === night.items[idx]?.sku);
       if(p) applyProductToCfCard(card, p);
     });
+    const nProds = night.items.map(it => products.find(x => x.id === it.sku)).filter(Boolean);
+    applyMarquee('.routine-section--night .m-marquee-track', nProds);
   }
 
   // WEEKLY (hero card + 2 grid cards)
@@ -411,12 +521,13 @@ async function renderRoutines(){
   const wItems = (weekly?.items || []).map(it => findP(it.sku)).filter(Boolean);
   if(wItems.length){
     const heroEl = document.querySelector('.routine-weekly .m-hero');
-    if(heroEl){ applyProductToWeeklyHero(heroEl, wItems[0]); show(heroEl, true); }
+    if(heroEl){ applyProductToWeeklyHero(heroEl, wItems[0], weekly?.config?.editorial); show(heroEl, true); }
 
     let shownGrid = 0;
+    const cardEditorials = weekly?.config?.cards || [];
     document.querySelectorAll('.routine-weekly .m-card[data-step]').forEach((card, idx)=>{
       const p = wItems[idx + 1];
-      if(p){ applyProductToWeeklyCard(card, p); shownGrid++; show(card, true); }
+      if(p){ applyProductToWeeklyCard(card, p, cardEditorials[idx]); shownGrid++; show(card, true); }
       else show(card, false);
     });
     show(document.querySelector('.routine-weekly .m-grid'), shownGrid > 0);
