@@ -112,7 +112,7 @@
 .ph-strip-track{display:flex;align-items:center;gap:2.4rem;width:max-content;animation:brandMarquee 60s linear infinite;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.6rem;color:var(--aubergine);letter-spacing:.01em;padding:0 2rem}
 .ph-strip-track span{flex-shrink:0;opacity:.7;transition:opacity .3s ease,color .3s ease;cursor:default}
 .ph-strip-track span:hover{opacity:1;color:var(--plum-deep)}
-.ph-strip-track .dot{color:var(--gold-leaf);font-size:1.2rem;font-style:normal;line-height:1}
+.ph-strip-track .dot{color:var(--gold-leaf);font-size:1.2rem;font-style:normal;line-height:1;display:inline-flex;align-items:center;align-self:center;transform:translateY(0.06em)}
 .ph-strip-marquee:hover .ph-strip-track{animation-play-state:paused}
 @keyframes brandMarquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
