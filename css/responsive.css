@@ -267,8 +267,8 @@ html,body{max-width:100%;overflow-x:hidden}
   .concern-stage-cta{padding:.75rem 1.2rem;font-size:.62rem;letter-spacing:.22em}
 
   /* Marquee — smaller text, tighter pacing */
-  .marquee-item{font-size:.95rem;gap:3rem}
-  .marquee-item::after{margin-left:3rem}
+  .marquee-item{font-size:.95rem;gap:1rem}
+  .marquee-item::after{margin-left:0}
 
   /* Carousel slide mobile — controls scaled */
   .carousel-controls{margin-top:2rem;padding:0 1rem;gap:1rem}
@@ -337,8 +337,8 @@ html,body{max-width:100%;overflow-x:hidden}
   .concern-text small{font-size:.6rem;letter-spacing:.16em}
 
   /* Marquee */
-  .marquee-item{font-size:.85rem;gap:2.5rem}
-  .marquee-item::after{margin-left:2.5rem}
+  .marquee-item{font-size:.85rem;gap:.9rem}
+  .marquee-item::after{margin-left:0}
 
   /* Explore */
   .explore-card,.explore-card--routine{border-radius:14px}
