@@ -110,6 +110,8 @@
 }
 .ck-terms a{color:var(--plum-deep);text-decoration:underline;text-underline-offset:2px}
 .ck-terms a:hover{color:var(--gold-leaf)}
+/* Λίγο κενό μεταξύ Όρων και κουμπιού παραγγελίας */
+.ck-terms + .checkout-btn{margin-top:1.2rem}
 
 /* ============ SUCCESS VIEW ============ */
 .checkout-success{align-items:center;justify-content:center;text-align:center;padding:2.5rem 2rem;gap:.6rem}
