@@ -91,6 +91,8 @@
 .hero h1{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(2.6rem,5.6vw,5rem);line-height:1.02;letter-spacing:-.018em;color:var(--aubergine);margin-bottom:1.8rem;text-align:left}
 .hero h1 em{font-style:italic;color:var(--gold-leaf);font-weight:500}
 .hero h1 br{display:block}
+/* Ροζ accent στην τελεία του hero τίτλου */
+.hero h1 .dot-accent{color:var(--plum-deep);font-weight:600}
 .hero p.lead{font-family:'Inter',sans-serif;font-style:normal;font-size:1rem;font-weight:400;color:var(--ink-soft);opacity:.82;margin:0 0 2.6rem;max-width:440px;line-height:1.7;text-align:left;letter-spacing:.001em}
 .hero-cta{display:flex;gap:1.4rem;align-items:center;flex-wrap:wrap;justify-content:flex-start}
 /* Botanical SVG leaves — barely-there, premium watermark only */

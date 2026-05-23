@@ -105,7 +105,7 @@
     </svg>
     <div class="hero-content">
       <div class="eyebrow">Selected with Purpose</div>
-      <h1>Η φροντίδα σου,<br><em>επιλεγμένη σωστά</em>.</h1>
+      <h1>Η φροντίδα σου,<br><em>επιλεγμένη σωστά</em><span class="dot-accent">.</span></h1>
       <p class="lead">Από καθημερινά essentials έως skincare που πραγματικά αξίζει χώρο στη ρουτίνα σου — κάθε επιλογή εδώ γίνεται με κριτήριο την ποιότητα, όχι την υπερβολή.</p>
       <div class="hero-cta">
         <a class="btn-primary" data-route="products"><span>Ανακάλυψε τη συλλογή</span></a>
@@ -1670,18 +1670,18 @@
           <h2><span class="step-n">2</span> Τρόπος πληρωμής</h2>
 
           <label class="pay-option">
-            <input type="radio" name="payment_method" value="card" checked onchange="onPaymentMethodChange()">
+            <input type="radio" name="payment_method" value="bank_transfer" checked onchange="onPaymentMethodChange()">
             <span class="pay-option-body">
-              <strong>Κάρτα (Viva Wallet)</strong>
-              <small>Ασφαλής πληρωμή με κάρτα. Θα μεταφερθείς στο ασφαλές περιβάλλον της Viva.</small>
+              <strong>Τραπεζική κατάθεση</strong>
+              <small>Κατάθεση/έμβασμα στον λογαριασμό μας. Η παραγγελία αποστέλλεται μόλις λάβουμε την πληρωμή.</small>
             </span>
           </label>
 
           <label class="pay-option">
-            <input type="radio" name="payment_method" value="bank_transfer" onchange="onPaymentMethodChange()">
+            <input type="radio" name="payment_method" value="card" onchange="onPaymentMethodChange()">
             <span class="pay-option-body">
-              <strong>Τραπεζική κατάθεση</strong>
-              <small>Κατάθεση/έμβασμα στον λογαριασμό μας. Η παραγγελία αποστέλλεται μόλις λάβουμε την πληρωμή.</small>
+              <strong>Κάρτα (Viva Wallet)</strong>
+              <small>Ασφαλής πληρωμή με κάρτα. Θα μεταφερθείς στο ασφαλές περιβάλλον της Viva.</small>
             </span>
           </label>
 
@@ -2368,7 +2368,7 @@
   </div>
 </div>
 
-<div class="toast" id="toast">Προστέθηκε στο καλάθι ✓</div>
+<div class="toast" id="toast" aria-live="polite" role="status"></div>
 
 <!-- JS — η σειρά φόρτωσης έχει σημασία: supabase → data → router/cart/ui/catalog → app (init τελευταίο) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
