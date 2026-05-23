@@ -1694,6 +1694,13 @@
             </div>
             <p class="bank-note bank-val-note">Στην αιτιολογία βάλε τον <strong>αριθμό παραγγελίας</strong> που θα δεις στην επόμενη οθόνη.</p>
           </div>
+
+          <label class="ck-terms">
+            <input type="checkbox" name="terms" id="pgTerms" required>
+            <span>Έχω διαβάσει και αποδέχομαι τους <a href="#terms" target="_blank" rel="noopener">Όρους &amp; Προϋποθέσεις</a>.</span>
+          </label>
+
+          <button type="submit" class="checkout-btn" id="pgSubmitBtn">Πληρωμή με κάρτα</button>
         </section>
       </div>
 
@@ -1716,13 +1723,7 @@
             <div class="checkout-summary-total"><span>Σύνολο</span><span id="pgTotal">0,00€</span></div>
           </div>
 
-          <label class="ck-terms">
-            <input type="checkbox" name="terms" id="pgTerms" required>
-            <span>Έχω διαβάσει και αποδέχομαι τους <a href="#terms" target="_blank" rel="noopener">Όρους &amp; Προϋποθέσεις</a>.</span>
-          </label>
-
           <button type="button" class="continue-btn" onclick="navigateTo('products')">← Συνέχεια αγορών</button>
-          <button type="submit" class="checkout-btn" id="pgSubmitBtn">Πληρωμή με κάρτα</button>
         </div>
       </aside>
     </form>
