@@ -113,9 +113,11 @@ html,body{max-width:100%;overflow-x:hidden}
   .slide-brand{order:1}
   .slide-text h3{order:2}
   .slide-text p{order:3}
-  .slide-visual{order:4;height:300px;width:100%}   /* full-width φωτο (όχι στενή) */
-  .slide-meta{order:5}
-  .slide .btn-primary{order:6}
+  .slide-benefits{order:4}                  /* «Βοηθάει» κάτω από την περιγραφή */
+  .slide-tip{order:5}                       /* «Tip» αμέσως μετά τα benefits */
+  .slide-visual{order:6;height:300px;width:100%}   /* full-width φωτο (όχι στενή) */
+  .slide-meta{order:7}
+  .slide .btn-primary{order:8}
   .quick-grid{grid-template-columns:1fr}
   .explore{padding:4rem 1.5rem 5rem}
   .explore .section-head{margin-bottom:3rem}
