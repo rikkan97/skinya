@@ -129,11 +129,24 @@
 .search-result-price{
   font-size:.92rem;color:var(--aubergine);
   font-weight:500;padding-left:.5rem;white-space:nowrap;
+  display:flex;flex-direction:column;align-items:flex-end;gap:.18rem;
 }
 .search-result-price.has-offer s{
   color:#8d8088;font-weight:400;font-size:.78rem;margin-right:.25rem;opacity:.75;
 }
 .search-result-price.has-offer b{color:var(--aubergine);font-weight:600}
+
+/* Sold out — μικρό label κάτω από την τιμή στα search results */
+.search-result-soldout{
+  font-size:.55rem;letter-spacing:.28em;text-transform:uppercase;
+  font-weight:600;color:#a94a4a;
+  padding:.15rem .45rem;
+  background:rgba(169,74,74,0.10);
+  border:1px solid rgba(169,74,74,0.28);
+  border-radius:3px;line-height:1;
+}
+.search-result.is-soldout .search-result-price-num{opacity:.55;text-decoration:line-through;text-decoration-color:rgba(61,42,30,0.4)}
+.search-result.is-soldout .search-result-name{opacity:.7}
 
 /* highlight pulse μετά από navigate */
 .search-highlight{

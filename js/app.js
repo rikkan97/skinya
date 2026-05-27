@@ -253,6 +253,9 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   if (typeof renderRoutines === 'function') {
     await renderRoutines();
   }
+  if (typeof renderProductsHeader === 'function') {
+    await renderProductsHeader();
+  }
   if (typeof renderFounders === 'function') {
     await renderFounders();
   }
@@ -560,7 +563,8 @@ document.addEventListener('DOMContentLoaded', async ()=>{
       if(homeShopTimer){ clearInterval(homeShopTimer); homeShopTimer = null; }
     };
 
-    // Hover/click σε tab → άμεση αλλαγή (ίδιο pattern με Skinya Diagnostic)
+    // ΜΟΝΟ click αλλάζει tab — όχι hover (το hover άλλαζε τη σελίδα ενώ
+    // ο χρήστης διάβαζε τα cards του τρέχοντος tab).
     const tabSelectHandler = (e)=>{
       const tab = e.target.closest('.home-shop-tab');
       if(!tab) return;
@@ -568,11 +572,15 @@ document.addEventListener('DOMContentLoaded', async ()=>{
       homeShopIdx = categories.findIndex(c=>c.id===tab.dataset.cat);
       setActiveTab(tab.dataset.cat, true);
     };
-    homeShopTabs.addEventListener('mouseover', tabSelectHandler);
     homeShopTabs.addEventListener('click', tabSelectHandler);
 
-    // Κλικ σε προϊόν/info μέσα στο grid → σταμάτα ΜΟΝΙΜΑ το auto-cycle (να προλαβαίνεις να διαβάσεις)
-    homeShopGrid.addEventListener('click', ()=>{ homeShopPaused = true; stopHomeShopCycle(); });
+    // Pause auto-cycle ΟΣΟ ο cursor είναι μέσα στο grid (desktop) ή ο
+    // χρήστης άγγιξε κάτι μέσα στο grid (mobile · pointerdown). Έτσι ο
+    // χρήστης προλαβαίνει να διαβάσει τα cards/tooltips χωρίς να αλλάζει
+    // το tab από κάτω του.
+    homeShopGrid.addEventListener('mouseenter', stopHomeShopCycle);
+    homeShopGrid.addEventListener('pointerdown', ()=>{ homeShopPaused = true; stopHomeShopCycle(); });
+    homeShopGrid.addEventListener('click',       ()=>{ homeShopPaused = true; stopHomeShopCycle(); });
 
     // ── Mobile scroll-indicator bar: thumb που δείχνει πόσο έχεις σκρολάρει
     //    στα tabs, ώστε να καταλαβαίνει ο χρήστης ότι η σειρά συνεχίζει.

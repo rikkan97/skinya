@@ -16,6 +16,8 @@
      tech_name      → tech
      tech_desc      → techDesc
      description    → desc
+     benefits       → benefits  (string[] — έως 3 bullets για "Βοηθάει")
+     tip            → tip       (single line)
      is_featured    → featured
    ==================================================================== */
 
@@ -32,6 +34,8 @@ function mapProduct(row){
     tech:     row.tech_name || '',
     techDesc: row.tech_desc || '',
     desc:     row.description || '',
+    benefits: Array.isArray(row.benefits) ? row.benefits.filter(Boolean).slice(0,3) : [],
+    tip:      row.tip || '',
     featured: !!row.is_featured,
     price:    row.price != null ? Number(row.price) : null,
     defaultPrice: row.default_price != null ? Number(row.default_price) : null,
@@ -53,7 +57,7 @@ function mapCategory(row){
 async function fetchProductsDB(){
   const { data, error } = await window.sb
     .from('products')
-    .select('sku, name, brand_id, category_id, size, img, key_ingredient, tech_name, tech_desc, description, price, default_price, stock, is_featured, badges, brand:brands(name)')
+    .select('sku, name, brand_id, category_id, size, img, key_ingredient, tech_name, tech_desc, description, benefits, tip, price, default_price, stock, is_featured, badges, brand:brands(name)')
     .eq('is_active', true);
 
   if(error){
@@ -178,12 +182,25 @@ async function renderHomeFavorites(){
     const ingLabel = p.tech ? (p.tech.length > 22 ? p.tech.split(/[·+]/)[0].trim() : p.tech) : (p.keyIng || '—');
     const catGen   = CAT_LABEL_GENITIVE[p.cat] || 'Προϊόντα';
 
+    // Βοηθάει (max 3) + Tip — εμφανίζονται μόνο όταν υπάρχουν δεδομένα
+    const benefits = Array.isArray(p.benefits) ? p.benefits.filter(Boolean).slice(0,3) : [];
+    const tipText  = (p.tip || '').trim();
+    const benefitsHTML = benefits.length ? `
+      <div class="slide-benefits">
+        <span class="slide-benefits-title">Βοηθάει</span>
+        <ul>${benefits.map(b=>`<li>${escapeHTMLSafe(b)}</li>`).join('')}</ul>
+      </div>` : '';
+    const tipHTML = tipText ? `
+      <p class="slide-tip"><span class="slide-tip-ico">💡</span><span><strong>Tip:</strong> ${escapeHTMLSafe(tipText)}</span></p>` : '';
+
     return `
       <div class="slide">
         <div class="slide-text">
           <span class="slide-brand">${escapeHTMLSafe(p.brand)}</span>
           <h3>${escapeHTMLSafe(main)} <em>${escapeHTMLSafe(em)}</em></h3>
           <p>${escapeHTMLSafe(p.desc || p.techDesc || p.keyIng || '')}</p>
+          ${benefitsHTML}
+          ${tipHTML}
           <div class="slide-meta">
             <div class="meta-item"><small>Κύριο Συστατικό</small><strong>${escapeHTMLSafe(ingLabel)}</strong></div>
             <div class="meta-item"><small>Μέγεθος</small><strong>${escapeHTMLSafe(p.size||'—')}</strong></div>
@@ -532,6 +549,76 @@ async function renderRoutines(){
     });
     show(document.querySelector('.routine-weekly .m-grid'), shownGrid > 0);
   }
+}
+
+// ──────────────────────────────────────────────────────────────
+// PRODUCTS PAGE HEADER — 3 product frames (Left / Center / Right)
+// admin-managed via site_sections → products_header
+//
+// items[].slot   — 'left' | 'center' | 'right'
+// items[].sku    — SKU (κάθε product με sku → φέρνει αυτόματα img/alt)
+// items[].tag    — marketing label («★ Cult Favorite» κλπ) → fills .ph-tag
+// items[].brand  — optional short brand label → .ph-mini-label small
+//                  (αλλιώς fallback σε p.brand)
+// items[].label  — optional short product name → .ph-mini-label strong
+//                  (αλλιώς fallback σε p.name)
+//
+// Fallback: items[0]=left, items[1]=center, items[2]=right
+// Το «N° 01» (.ph-edition) μένει hardcoded — purely decorative.
+// ──────────────────────────────────────────────────────────────
+async function renderProductsHeader(){
+  const slotSelector = {
+    left:   '.page-header--products .ph-frame--back-left',
+    center: '.page-header--products .ph-frame--main',
+    right:  '.page-header--products .ph-frame--back-right'
+  };
+
+  // Bail early αν δεν είμαστε στη σελίδα (κανένα frame στο DOM)
+  const anyFrame = document.querySelector(slotSelector.center);
+  if(!anyFrame) return;
+
+  const section = window.siteSections?.['products_header']
+                  || await fetchSiteSection('products_header');
+  if(!section || !Array.isArray(section.items)) return;
+
+  const slots = ['left', 'center', 'right'];
+  const itemBySlot = (slot, idx) =>
+    section.items.find(it => it && it.slot === slot) || section.items[idx] || null;
+
+  slots.forEach((slot, idx) => {
+    const item = itemBySlot(slot, idx);
+    if(!item) return;
+    const frame = document.querySelector(slotSelector[slot]);
+    if(!frame) return;
+    const p = item.sku ? products.find(pr => pr.id === item.sku) : null;
+
+    // 1) Product image + alt (μόνο αν υπάρχει product με εικόνα)
+    if(p && p.img){
+      const img = frame.querySelector('.ph-product-main img');
+      if(img){
+        img.src = p.img;
+        img.alt = `${p.brand} ${p.name}`;
+      }
+    }
+
+    // 2) Marketing tag (★ Cult Favorite κλπ) — επιλέγει .ph-tag εντός του frame
+    if(typeof item.tag === 'string' && item.tag.length){
+      const tag = frame.querySelector('.ph-tag');
+      if(tag) tag.textContent = item.tag;
+    }
+
+    // 3) Mini-label (brand + short name) — υπάρχει μόνο σε back-left / back-right
+    const miniBrand = frame.querySelector('.ph-mini-label small');
+    const miniName  = frame.querySelector('.ph-mini-label strong');
+    if(miniBrand){
+      const brandTxt = (item.brand && item.brand.length) ? item.brand : (p?.brand || '');
+      if(brandTxt) miniBrand.textContent = brandTxt;
+    }
+    if(miniName){
+      const labelTxt = (item.label && item.label.length) ? item.label : (p?.name || '');
+      if(labelTxt) miniName.textContent = labelTxt;
+    }
+  });
 }
 
 async function renderFounders(){

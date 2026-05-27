@@ -91,8 +91,8 @@
 .hero h1{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(2.6rem,5.6vw,5rem);line-height:1.02;letter-spacing:-.018em;color:var(--aubergine);margin-bottom:1.8rem;text-align:left}
 .hero h1 em{font-style:italic;color:var(--gold-leaf);font-weight:500}
 .hero h1 br{display:block}
-/* Ροζ accent στην τελεία του hero τίτλου */
-.hero h1 .dot-accent{color:var(--plum-deep);font-weight:600}
+/* Τελεία — match με το em για ομοιόμορφο styling */
+.hero h1 .dot-accent{color:var(--gold-leaf);font-style:italic;font-weight:500}
 .hero p.lead{font-family:'Inter',sans-serif;font-style:normal;font-size:1rem;font-weight:400;color:var(--ink-soft);opacity:.82;margin:0 0 2.6rem;max-width:440px;line-height:1.7;text-align:left;letter-spacing:.001em}
 .hero-cta{display:flex;gap:1.4rem;align-items:center;flex-wrap:wrap;justify-content:flex-start}
 /* Botanical SVG leaves — barely-there, premium watermark only */
@@ -171,10 +171,15 @@
 /* (Hero trust strip removed — μετακινήθηκε στο top announce bar) */
 
 /* MARQUEE — Cormorant italic editorial accent */
-.marquee{background:var(--lavender-mist);padding:1.4rem 0;overflow:hidden;border-bottom:1px solid rgba(31,24,19,0.06)}
-.marquee-track{display:flex;gap:1.3rem;animation:scroll 8s linear infinite;white-space:nowrap}
-.marquee-item{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:400;font-size:1.2rem;color:var(--aubergine);opacity:.82;display:flex;align-items:center;gap:1.3rem;letter-spacing:.005em}
-.marquee-item::after{content:'✦';color:var(--gold-leaf);margin-left:0;font-style:normal;font-size:.7rem;opacity:.8;letter-spacing:0}
+.marquee{background:var(--lavender-mist);padding:2.4rem 0;overflow:hidden;border-bottom:1px solid rgba(31,24,19,0.06)}
+/* Το track πρέπει να έχει 0 padding ώστε το translateX(-50%) να συμπίπτει
+   ακριβώς με το πλάτος του ενός set (το HTML έχει 2x duplicated items για
+   seamless loop). Padding στο track → δημιουργεί κενό στο τέλος. */
+.marquee-track{display:flex;align-items:center;gap:2.4rem;animation:scroll 60s linear infinite;white-space:nowrap;width:max-content}
+/* Pause όταν ο cursor είναι πάνω από το marquee — ο χρήστης προλαβαίνει να διαβάσει */
+.marquee:hover .marquee-track{animation-play-state:paused}
+.marquee-item{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:400;font-size:1.6rem;color:var(--aubergine);opacity:.82;display:inline-flex;align-items:center;gap:2.4rem;letter-spacing:.005em;line-height:1}
+.marquee-item::after{content:'✦';color:var(--gold-leaf);margin-left:0;font-style:normal;font-size:1rem;opacity:.85;letter-spacing:0}
 @keyframes scroll{to{transform:translateX(-50%)}}
 
 /* CAROUSEL — editorial spread με τα 3 collections */
@@ -188,6 +193,39 @@
 .slide-text h3{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(2.2rem,4vw,3.4rem);line-height:1.04;margin:0;color:var(--aubergine);letter-spacing:-.012em}
 .slide-text h3 em{font-style:italic;color:var(--gold-leaf);font-weight:500}
 .slide-text p{font-family:'Inter',sans-serif;font-size:1rem;font-style:normal;color:var(--ink-soft);opacity:.78;margin:0;max-width:440px;line-height:1.7}
+
+/* Βοηθάει + Tip — εμφανίζονται κάτω από την περιγραφή στο home carousel */
+.slide-benefits{max-width:440px;margin:-.4rem 0 0}
+.slide-benefits-title{
+  display:block;font-family:'Inter',sans-serif;font-weight:600;
+  font-size:.58rem;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--gold-leaf);margin-bottom:.55rem;
+}
+.slide-benefits ul{
+  list-style:none;padding:0;margin:0;
+  display:flex;flex-direction:column;gap:.35rem;
+}
+.slide-benefits li{
+  position:relative;padding-left:1.1rem;
+  font-family:'Inter',sans-serif;font-size:.86rem;line-height:1.55;
+  color:var(--aubergine);opacity:.88;
+}
+.slide-benefits li::before{
+  content:'';position:absolute;left:0;top:.6em;
+  width:5px;height:5px;border-radius:50%;background:var(--gold-leaf);
+}
+.slide-tip{
+  display:flex;align-items:flex-start;gap:.55rem;
+  max-width:440px;margin:-.3rem 0 0;
+  padding:.65rem .85rem;
+  background:rgba(212,173,138,0.10);
+  border-left:2px solid var(--gold-leaf);
+  border-radius:0 4px 4px 0;
+  font-family:'Inter',sans-serif;font-size:.82rem;line-height:1.55;color:var(--aubergine);
+}
+.slide-tip-ico{flex-shrink:0;font-size:.98rem;line-height:1.3}
+.slide-tip strong{font-weight:600;letter-spacing:.04em;color:var(--plum-deep)}
+
 .slide-meta{display:flex;gap:0;margin:.6rem 0 .6rem;padding:1.5rem 0;border-top:1px solid rgba(31,24,19,0.10);border-bottom:1px solid rgba(31,24,19,0.10)}
 .meta-item{flex:1;padding:0 1.4rem;border-right:1px solid rgba(31,24,19,0.08)}
 .meta-item:first-child{padding-left:0}

@@ -266,9 +266,9 @@ html,body{max-width:100%;overflow-x:hidden}
   .ing-chip{font-size:.55rem;padding:.4rem .75rem;letter-spacing:.15em}
   .concern-stage-cta{padding:.75rem 1.2rem;font-size:.62rem;letter-spacing:.22em}
 
-  /* Marquee — smaller text, tighter pacing */
-  .marquee-item{font-size:.95rem;gap:1rem}
-  .marquee-item::after{margin-left:0}
+  /* Marquee — slightly smaller σε tablet αλλά διατηρεί editorial scale */
+  .marquee-item{font-size:1.3rem;gap:1.6rem}
+  .marquee-item::after{margin-left:0;font-size:.85rem}
 
   /* Carousel slide mobile — controls scaled */
   .carousel-controls{margin-top:2rem;padding:0 1rem;gap:1rem}
@@ -336,9 +336,9 @@ html,body{max-width:100%;overflow-x:hidden}
   .concern-text h3{font-size:1.15rem}
   .concern-text small{font-size:.6rem;letter-spacing:.16em}
 
-  /* Marquee */
-  .marquee-item{font-size:.85rem;gap:.9rem}
-  .marquee-item::after{margin-left:0}
+  /* Marquee — mobile: μεγαλύτερο από πριν, διατηρεί editorial vibe */
+  .marquee-item{font-size:1.15rem;gap:1.3rem}
+  .marquee-item::after{margin-left:0;font-size:.75rem}
 
   /* Explore */
   .explore-card,.explore-card--routine{border-radius:14px}

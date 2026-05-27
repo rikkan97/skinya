@@ -114,12 +114,18 @@ function renderSearchResults(query){
         const visual = p.img
           ? `<img src="${p.img}" alt="${escapeHTML(p.brand)} ${escapeHTML(p.name)}" loading="lazy">`
           : `<span class="search-result-initial">${escapeHTML((p.brand||'?').charAt(0))}</span>`;
-        const priceHTML = offer.hasOffer
-          ? `<span class="search-result-price has-offer"><s>${offer.original.toFixed(2)}€</s> <b>${offer.price.toFixed(2)}€</b></span>`
-          : `<span class="search-result-price">${offer.price.toFixed(2)}€</span>`;
+        const soldOut = (typeof isSoldOut === 'function') && isSoldOut(p);
+        const priceInner = offer.hasOffer
+          ? `<s>${offer.original.toFixed(2)}€</s> <b>${offer.price.toFixed(2)}€</b>`
+          : `${offer.price.toFixed(2)}€`;
+        const priceHTML = `
+          <span class="search-result-price${offer.hasOffer?' has-offer':''}${soldOut?' is-soldout':''}">
+            <span class="search-result-price-num">${priceInner}</span>
+            ${soldOut?`<small class="search-result-soldout">Sold out</small>`:''}
+          </span>`;
         return `
           <li>
-            <button class="search-result" type="button" data-id="${p.id}" data-cat="${p.cat}">
+            <button class="search-result${soldOut?' is-soldout':''}" type="button" data-id="${p.id}" data-cat="${p.cat}">
               <span class="search-result-visual">${visual}</span>
               <span class="search-result-body">
                 <span class="search-result-brand">${escapeHTML(p.brand||'')}${cat?` · ${escapeHTML(cat.name)}`:''}</span>

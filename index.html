@@ -119,14 +119,32 @@
 
   <div class="marquee">
     <div class="marquee-track">
+      <!-- 4× duplication ώστε το track να είναι πάντα φαρδύτερο από οποιοδήποτε
+           viewport (4K monitors) και το translateX(-50%) να μη δείχνει κενό. -->
+      <!-- Set 1 -->
       <div class="marquee-item">Korean Beauty</div>
       <div class="marquee-item">Δερματολογικά Ελεγμένα</div>
       <div class="marquee-item">Vegan · Cruelty Free</div>
       <div class="marquee-item">16 brands · 60+ προϊόντα</div>
+      <div class="marquee-item">Authentic K-Beauty</div>
+      <!-- Set 2 -->
       <div class="marquee-item">Korean Beauty</div>
       <div class="marquee-item">Δερματολογικά Ελεγμένα</div>
       <div class="marquee-item">Vegan · Cruelty Free</div>
       <div class="marquee-item">16 brands · 60+ προϊόντα</div>
+      <div class="marquee-item">Authentic K-Beauty</div>
+      <!-- Set 3 -->
+      <div class="marquee-item">Korean Beauty</div>
+      <div class="marquee-item">Δερματολογικά Ελεγμένα</div>
+      <div class="marquee-item">Vegan · Cruelty Free</div>
+      <div class="marquee-item">16 brands · 60+ προϊόντα</div>
+      <div class="marquee-item">Authentic K-Beauty</div>
+      <!-- Set 4 -->
+      <div class="marquee-item">Korean Beauty</div>
+      <div class="marquee-item">Δερματολογικά Ελεγμένα</div>
+      <div class="marquee-item">Vegan · Cruelty Free</div>
+      <div class="marquee-item">16 brands · 60+ προϊόντα</div>
+      <div class="marquee-item">Authentic K-Beauty</div>
     </div>
   </div>
 
@@ -1529,7 +1547,7 @@
               </div>
               <div class="contact-row-text">
                 <small>Έδρα</small>
-                <a>Αθήνα · Ελλάδα</a>
+                <a>Καβάλα · Ελλάδα</a>
               </div>
             </li>
           </ul>
@@ -1600,7 +1618,7 @@
     </div>
 
     <!-- CHECKOUT FORM -->
-    <form class="checkout-page-grid" id="checkoutForm" autocomplete="on" onsubmit="submitOrder(event)">
+    <form class="checkout-page-grid" id="checkoutForm" autocomplete="on" novalidate onsubmit="submitOrder(event)">
       <div class="checkout-main">
 
         <!-- 1 · ΣΤΟΙΧΕΙΑ ΑΠΟΣΤΟΛΗΣ -->
@@ -1665,9 +1683,62 @@
           </label>
         </section>
 
-        <!-- 2 · ΤΡΟΠΟΣ ΠΛΗΡΩΜΗΣ -->
+        <!-- 2 · ΤΡΟΠΟΣ ΑΠΟΣΤΟΛΗΣ -->
         <section class="checkout-card">
-          <h2><span class="step-n">2</span> Τρόπος πληρωμής</h2>
+          <h2><span class="step-n">2</span> Τρόπος αποστολής</h2>
+
+          <label class="pay-option">
+            <input type="radio" name="shipping_method" value="box_now" checked onchange="onShippingMethodChange()">
+            <span class="pay-option-body">
+              <strong>Box Now <small style="color:var(--gold-leaf);font-weight:500;letter-spacing:.15em">· 4,00€</small></strong>
+              <small>Παραλαβή 24/7 από locker της επιλογής σου.</small>
+            </span>
+          </label>
+
+          <label class="pay-option">
+            <input type="radio" name="shipping_method" value="elta_courier" onchange="onShippingMethodChange()">
+            <span class="pay-option-body">
+              <strong>ΕΛΤΑ Courier <small style="color:var(--gold-leaf);font-weight:500;letter-spacing:.15em">· 4,00€</small></strong>
+              <small>Παράδοση στη διεύθυνσή σου σε 1–3 εργάσιμες.</small>
+            </span>
+          </label>
+
+          <div id="boxNowLockerWrap" class="boxnow-locker-wrap">
+            <div class="ck-field">
+              <span>Σημείο παραλαβής Box Now <i>(υποχρεωτικό)</i></span>
+
+              <!-- Picker — ανοίγει το official Box Now map widget σε popup.
+                   ΣΗΜΑΝΤΙΚΟ: η Box Now docs απαιτεί <a href="javascript:;"> με την
+                   class boxnow-map-widget-button, όχι <button>. Ο script κάνει
+                   auto-wire αυτά τα anchors κατά τη φόρτωση. -->
+              <a href="javascript:;" id="boxNowPickerBtn" class="boxnow-picker-btn boxnow-map-widget-button" role="button">
+                <span class="boxnow-picker-icon" aria-hidden="true">📍</span>
+                <span class="boxnow-picker-text">Επίλεξε σημείο παραλαβής στον χάρτη</span>
+              </a>
+
+              <!-- Selected locker display — εμφανίζεται μετά την επιλογή -->
+              <div id="boxNowSelectedDisplay" class="boxnow-selected" hidden>
+                <div class="boxnow-selected-info">
+                  <strong id="boxNowSelectedTitle">—</strong>
+                  <small id="boxNowSelectedAddress">—</small>
+                </div>
+                <!-- Αλλαγή: επαναφέρει το UI και προγραμματικά κλικάρει τον picker
+                     (που είναι αυτός που έχει wire-up από το BoxNow widget) -->
+                <a href="javascript:;" class="boxnow-change-btn" role="button" onclick="resetBoxNowSelection()">Αλλαγή</a>
+              </div>
+
+              <!-- Hidden field που αποθηκεύει το JSON του locker -->
+              <input type="hidden" name="boxnow_locker" id="boxNowLockerInput">
+            </div>
+            <!-- Container για τυχόν iframe mode (το popup mode δεν τον χρησιμοποιεί,
+                 αλλά τον αφήνουμε empty γιατί το script τον αναφέρει στο config) -->
+            <div id="boxnowmap"></div>
+          </div>
+        </section>
+
+        <!-- 3 · ΤΡΟΠΟΣ ΠΛΗΡΩΜΗΣ -->
+        <section class="checkout-card">
+          <h2><span class="step-n">3</span> Τρόπος πληρωμής</h2>
 
           <label class="pay-option">
             <input type="radio" name="payment_method" value="bank_transfer" checked onchange="onPaymentMethodChange()">
@@ -1677,22 +1748,13 @@
             </span>
           </label>
 
-          <label class="pay-option">
-            <input type="radio" name="payment_method" value="card" onchange="onPaymentMethodChange()">
-            <span class="pay-option-body">
-              <strong>Κάρτα (Viva Wallet)</strong>
-              <small>Ασφαλής πληρωμή με κάρτα. Θα μεταφερθείς στο ασφαλές περιβάλλον της Viva.</small>
-            </span>
-          </label>
-
-          <div class="bank-details" id="bankDetails" hidden>
+          <div class="bank-details" id="bankDetails">
             <div class="bank-box">
               <div><span>Τράπεζα</span><strong class="bank-val-name">—</strong></div>
               <div><span>Δικαιούχος</span><strong class="bank-val-holder">Skinya</strong></div>
               <div><span>IBAN</span><strong class="iban bank-val-iban">—</strong></div>
               <div class="bank-row-swift" hidden><span>BIC/SWIFT</span><strong class="bank-val-swift">—</strong></div>
             </div>
-            <p class="bank-note bank-val-note">Στην αιτιολογία βάλε τον <strong>αριθμό παραγγελίας</strong> που θα δεις στην επόμενη οθόνη.</p>
           </div>
 
           <label class="ck-terms">
@@ -1742,7 +1804,7 @@
       <h2>Ευχαριστούμε <em>❀</em></h2>
       <p class="success-msg">Η παραγγελία σου καταχωρήθηκε.<br>Αριθμός: <strong id="pgSuccessOrderNum">—</strong></p>
       <div class="success-bank" id="pgSuccessBank" hidden>
-        <p>Για να ολοκληρωθεί, κάνε <strong>τραπεζική κατάθεση</strong> του ποσού <strong id="pgSuccessAmount">—</strong> στον παρακάτω λογαριασμό, με <strong>αιτιολογία τον αριθμό παραγγελίας</strong>:</p>
+        <p class="success-bank-intro">Σχεδόν έτοιμοι, κατάθεσε το συνολικό ποσό (<strong id="pgSuccessAmount">—</strong>) στον παρακάτω λογαριασμό με αιτιολογία τον αριθμό παραγγελίας ♡</p>
         <div class="bank-box">
           <div><span>Τράπεζα</span><strong class="bank-val-name">—</strong></div>
           <div><span>Δικαιούχος</span><strong class="bank-val-holder">Skinya</strong></div>
@@ -1773,7 +1835,7 @@
       <p>Καλώς ήρθες στη <strong>Skinya</strong>. Είμαστε δύο μαμάδες με αγάπη για το K-Beauty και επιμελούμαστε στο skinya.gr καλλυντικά που έχουμε πραγματικά δοκιμάσει και αγαπήσει. Οι παρόντες Όροι ρυθμίζουν τη σχέση σου με το ηλεκτρονικό μας κατάστημα.</p>
       <ul class="legal-deflist">
         <li><strong>Επωνυμία:</strong> Skinya <em>[πλήρης επωνυμία: συμπληρώνεται]</em></li>
-        <li><strong>Έδρα:</strong> Αθήνα, Ελλάδα</li>
+        <li><strong>Έδρα:</strong> Καβάλα, Ελλάδα</li>
         <li><strong>ΑΦΜ:</strong> <em>[συμπληρώνεται]</em> — <strong>Δ.Ο.Υ.:</strong> <em>[συμπληρώνεται]</em></li>
         <li><strong>Αρ. ΓΕΜΗ:</strong> <em>[συμπληρώνεται]</em></li>
         <li><strong>Email επικοινωνίας:</strong> <a href="mailto:info@skinya.gr">info@skinya.gr</a></li>
@@ -1909,7 +1971,7 @@
       <p>Στη <strong>Skinya</strong> σεβόμαστε την ιδιωτικότητά σου. Η παρούσα Πολιτική εξηγεί ποια προσωπικά δεδομένα συλλέγουμε, γιατί, για πόσο τα διατηρούμε και ποια δικαιώματα έχεις σύμφωνα με τον <strong>Γενικό Κανονισμό Προστασίας Δεδομένων (ΕΕ) 2016/679 — GDPR</strong> και τον <strong>Ν. 4624/2019</strong>.</p>
       <ul class="legal-deflist">
         <li><strong>Υπεύθυνος Επεξεργασίας:</strong> Skinya <em>[πλήρης επωνυμία: συμπληρώνεται]</em></li>
-        <li><strong>Έδρα:</strong> Αθήνα, Ελλάδα</li>
+        <li><strong>Έδρα:</strong> Καβάλα, Ελλάδα</li>
         <li><strong>ΑΦΜ:</strong> <em>[συμπληρώνεται]</em></li>
         <li><strong>Email για θέματα δεδομένων:</strong> <a href="mailto:info@skinya.gr">info@skinya.gr</a></li>
       </ul>

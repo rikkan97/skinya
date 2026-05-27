@@ -13,10 +13,41 @@
 
 let cart = [];
 
+// Επιστρέφει true όταν το προϊόν έχει αποθεματικό > 0 (ή stock = null/unset)
+function isProductAvailable(p){
+  return !p || p.stock == null || Number(p.stock) > 0;
+}
+
+// Διαθέσιμο stock τη στιγμή αυτή από το global products array.
+// Επιστρέφει null όταν δεν παρακολουθείται stock (δεν επιβάλλεται όριο).
+function getProductStock(id){
+  const p = products.find(x => x.id === id);
+  if(!p || p.stock == null) return null;
+  return Number(p.stock);
+}
+
+// Toast όταν ο χρήστης προσπαθεί να ξεπεράσει το διαθέσιμο stock.
+// Διαφορετικό μήνυμα όταν είναι το «τελευταίο τεμάχιο» για να μην
+// απογοητεύσει — του λέμε ότι ΑΥΤΟ που έχει είναι το τελευταίο.
+function notifyStockLimit(stock){
+  if(stock === 1) showToast('Τελευταίο τεμάχιο — δεν υπάρχει άλλο διαθέσιμο');
+  else            showToast(`Διαθέσιμα μόνο ${stock} τεμάχια`);
+}
+
 function addToCart(id){
   const product = products.find(p=>p.id===id);
   if(!product) return;
+  if(!isProductAvailable(product)){
+    showToast('Sold out — δεν είναι διαθέσιμο αυτή τη στιγμή');
+    return;
+  }
   const existing = cart.find(i=>i.id===id);
+  const stock = getProductStock(id);
+  const currentQty = existing ? existing.qty : 0;
+  if(stock != null && currentQty + 1 > stock){
+    notifyStockLimit(stock);
+    return;
+  }
   if(existing){
     existing.qty++;
   } else {
@@ -36,6 +67,7 @@ function addBundle(ids, bundleName, discount){
   ids.forEach(id => {
     const product = products.find(p => p.id === id);
     if(!product) return;
+    if(!isProductAvailable(product)) return;
     const existing = cart.find(i => i.id === id);
     if(existing){
       existing.qty++;
@@ -62,11 +94,17 @@ function bumpCartCount(){
 
 function changeQty(id, delta){
   const item = cart.find(i=>i.id===id);
-  if(item){
-    item.qty += delta;
-    if(item.qty<=0) cart = cart.filter(i=>i.id!==id);
-    updateCart();
+  if(!item) return;
+  if(delta > 0){
+    const stock = getProductStock(id);
+    if(stock != null && item.qty + delta > stock){
+      notifyStockLimit(stock);
+      return;
+    }
   }
+  item.qty += delta;
+  if(item.qty<=0) cart = cart.filter(i=>i.id!==id);
+  updateCart();
 }
 
 function removeItem(id){
@@ -81,16 +119,19 @@ function updateCart(){
   if(cart.length===0){
     items.innerHTML = '<div class="cart-empty">Το καλάθι σας είναι άδειο.</div>';
   } else {
-    items.innerHTML = cart.map(i=>`
+    items.innerHTML = cart.map(i=>{
+      const stock = getProductStock(i.id);
+      const atMax = stock != null && i.qty >= stock;
+      return `
       <div class="cart-item">
         <div class="cart-item-img">${i.img?`<img src="${i.img}" alt="${(i.name||'').replace(/"/g,'&quot;')}">`:(i.brand||'').charAt(0)}</div>
         <div class="cart-item-info">
           <h5>${i.brand?i.brand+' · ':''}${i.name}</h5>
-          <small>${i.size||''}</small>
+          <small>${i.size||''}${atMax ? ` <span class="qty-max-note">· max</span>` : ''}</small>
           <div class="qty-ctrl">
             <button onclick="changeQty('${i.id}',-1)">−</button>
             <span>${i.qty}</span>
-            <button onclick="changeQty('${i.id}',1)">+</button>
+            <button onclick="changeQty('${i.id}',1)"${atMax ? ' class="at-max" title="Δεν υπάρχει άλλο stock"' : ''}>+</button>
           </div>
         </div>
         <div style="text-align:right">
@@ -98,7 +139,8 @@ function updateCart(){
           <button class="cart-remove" onclick="removeItem('${i.id}')">Αφαίρεση</button>
         </div>
       </div>
-    `).join('');
+    `;
+    }).join('');
   }
   const total = cart.reduce((s,i)=>s+(i.price||0)*i.qty,0);
   document.getElementById('cartTotal').textContent = total.toFixed(2)+'€';
@@ -150,7 +192,7 @@ function cartViewSwitch(view){
   }
 }
 
-const SHIPPING_FEE = 3.90;
+const SHIPPING_FEE = 4.00;
 
 // «Ολοκλήρωση Αγοράς» → κλείνει το drawer και πάει στην πλήρη σελίδα checkout.
 function checkout(){
@@ -195,6 +237,7 @@ function renderCheckout(){
 
   loadBankDetails();
   onPaymentMethodChange();
+  onShippingMethodChange();
 }
 
 // Υπολογίζει subtotal / έκπτωση / σύνολο και ενημερώνει το UI.
@@ -293,7 +336,7 @@ async function loadBankDetails(){
     try {
       const { data } = await window.sb
         .from('store_settings')
-        .select('bank_name, bank_holder, bank_iban, bank_swift, bank_note')
+        .select('bank_name, bank_holder, bank_iban, bank_swift')
         .eq('id', 1)
         .maybeSingle();
       _bankSettings = data || {};
@@ -310,17 +353,146 @@ function fillBankDetails(s){
   const swift = (s.bank_swift || '').trim();
   document.querySelectorAll('.bank-row-swift').forEach(el=>{ el.hidden = !swift; });
   if(swift) setAll('bank-val-swift', swift);
-  const note = (s.bank_note || '').trim();
-  if(note) setAll('bank-val-note', note);   // αλλιώς κρατάμε το default κείμενο
 }
 
 // Toggle τραπεζικών στοιχείων + label κουμπιού ανά τρόπο πληρωμής.
 function onPaymentMethodChange(){
-  const method = document.querySelector('#checkoutForm input[name="payment_method"]:checked')?.value || 'card';
+  // Μόνο τραπεζική κατάθεση πια — κρατάμε τη συνάρτηση για backward compat.
   const bank = document.getElementById('bankDetails');
-  if(bank) bank.hidden = (method !== 'bank_transfer');
+  if(bank) bank.hidden = false;
   const btn = document.getElementById('pgSubmitBtn');
-  if(btn) btn.textContent = (method === 'card') ? 'Πληρωμή με κάρτα' : 'Καταχώρηση παραγγελίας';
+  if(btn) btn.textContent = 'Καταχώρηση παραγγελίας';
+}
+
+// Toggle Box Now locker field + απαίτηση συμπλήρωσης ανά τρόπο αποστολής.
+function onShippingMethodChange(){
+  const method = document.querySelector('#checkoutForm input[name="shipping_method"]:checked')?.value || 'box_now';
+  const wrap   = document.getElementById('boxNowLockerWrap');
+  const showLocker = (method === 'box_now');
+  if(wrap) wrap.hidden = !showLocker;
+  if(showLocker) loadBoxNowWidget();
+}
+
+// Reset της επιλογής Box Now — επαναφέρει το picker button και κάνει
+// programmatic click ώστε να ανοίξει ξανά το widget (το <a> picker είναι
+// αυτό που έχει wire-up από το script · η "Αλλαγή" απλά delegates).
+function resetBoxNowSelection(){
+  const hidden  = document.getElementById('boxNowLockerInput');
+  const display = document.getElementById('boxNowSelectedDisplay');
+  const pickBtn = document.getElementById('boxNowPickerBtn');
+  if(hidden)  hidden.value = '';
+  if(display) display.hidden = true;
+  if(pickBtn){
+    pickBtn.hidden = false;
+    // setTimeout ώστε να ολοκληρωθεί το show πριν το click trigger
+    setTimeout(()=> pickBtn.click(), 30);
+  }
+}
+
+// ──────────────────────────────────────────────────────────────
+// Box Now official map widget loader
+// ──────────────────────────────────────────────────────────────
+// Φορτώνει το επίσημο script + config μόνο μία φορά. Όταν επιλέγεται
+// locker, ο afterSelect callback γεμίζει το UI και το hidden input.
+let _boxnowLoaded = false;
+function loadBoxNowWidget(){
+  if(_boxnowLoaded) return;
+  _boxnowLoaded = true;
+
+  // Config — πρέπει να οριστεί ΠΡΙΝ φορτωθεί το script
+  window._bn_map_widget_config = {
+    parentElement: '#boxnowmap',
+    type: 'popup',
+    autoclose: true,
+    buttonSelector: '.boxnow-map-widget-button',
+    afterSelect: function(locker){
+      if(!locker) return;
+      const data = {
+        id:       locker.boxnowLockerId            || '',
+        name:     locker.boxnowLockerName          || '',
+        address:  locker.boxnowLockerAddressLine1  || '',
+        postcode: locker.boxnowLockerPostalCode    || ''
+      };
+      const hidden  = document.getElementById('boxNowLockerInput');
+      const title   = document.getElementById('boxNowSelectedTitle');
+      const addr    = document.getElementById('boxNowSelectedAddress');
+      const display = document.getElementById('boxNowSelectedDisplay');
+      const pickBtn = document.getElementById('boxNowPickerBtn');
+      if(hidden)  hidden.value = JSON.stringify(data);
+      if(title)   title.textContent = data.name || (data.id ? `BOX ${data.id}` : 'Επιλεγμένο σημείο');
+      if(addr)    addr.textContent  = [data.address, data.postcode].filter(Boolean).join(' · ') || '—';
+      if(display) display.hidden = false;
+      if(pickBtn) pickBtn.hidden = true;
+    }
+  };
+
+  const s = document.createElement('script');
+  s.src = 'https://widget-cdn.boxnow.gr/map-widget/client/v5.js';
+  s.async = true;
+  document.head.appendChild(s);
+
+  // Δεν ξέρουμε τι class/id έχει το widget popup του Box Now — οπότε όταν
+  // ο χρήστης πατά τον picker, βάζουμε class `bn-picking` στο body που
+  // (μέσω CSS) κρύβει visibility όλα τα checkout cards/summary. Έτσι ΤΙΠΟΤΑ
+  // δεν τρυπάει μπροστά από το popup. Όταν το widget DOM αφαιρεθεί
+  // (selection ή close), το MutationObserver το ανιχνεύει και unhide.
+  let _savedOverflow = null;
+  function startBoxNowMode(){
+    document.body.classList.add('bn-picking');
+    if(_savedOverflow === null){
+      _savedOverflow = document.body.style.overflow || '';
+      document.body.style.overflow = 'hidden';
+    }
+  }
+  function endBoxNowMode(){
+    document.body.classList.remove('bn-picking');
+    if(_savedOverflow !== null){
+      document.body.style.overflow = _savedOverflow;
+      _savedOverflow = null;
+    }
+  }
+
+  // Όταν ο user πατά τον picker → ενεργοποίηση mode
+  const pickBtn = document.getElementById('boxNowPickerBtn');
+  if(pickBtn) pickBtn.addEventListener('click', startBoxNowMode);
+
+  // Watch ολόκληρο το body για ανίχνευση του popup wrapper + αφαίρεσης
+  let _bnPopupRoot = null;
+  const looksLikeBoxNow = (node) => {
+    if(!node || node.nodeType !== 1) return false;
+    const id  = node.id || '';
+    const cls = (typeof node.className === 'string') ? node.className : '';
+    if(/boxnow|bn-(widget|popup)/i.test(id+' '+cls)) return true;
+    // ή iframe με boxnow src
+    if(node.tagName === 'IFRAME' && /boxnow/i.test(node.src||'')) return true;
+    // ή περιέχει τέτοιο iframe
+    if(node.querySelector && node.querySelector('iframe[src*="boxnow"]')) return true;
+    return false;
+  };
+  const bodyObserver = new MutationObserver(mutations => {
+    for(const m of mutations){
+      for(const n of m.addedNodes){
+        if(!_bnPopupRoot && looksLikeBoxNow(n)){
+          _bnPopupRoot = n;
+          startBoxNowMode();
+        }
+      }
+      for(const n of m.removedNodes){
+        if(n === _bnPopupRoot){
+          _bnPopupRoot = null;
+          endBoxNowMode();
+        }
+      }
+    }
+  });
+  bodyObserver.observe(document.body, { childList:true, subtree:true });
+
+  // ESC fallback — αν το widget φύγει χωρίς να ενημερώσει observer
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape' && document.body.classList.contains('bn-picking')){
+      setTimeout(()=> { if(!document.querySelector('iframe[src*="boxnow"]')) endBoxNowMode(); }, 200);
+    }
+  });
 }
 
 // Πάει σε ΞΕΧΩΡΙΣΤΗ σελίδα επιβεβαίωσης (#page-order-confirmed) και τη γεμίζει.
@@ -338,11 +510,50 @@ function finishOrderSuccess(orderNumber, total, mode){
   else window.scrollTo({ top:0, behavior:'smooth' });
 }
 
+// Βρες το πρώτο [required] πεδίο που είναι κενό/μη έγκυρο, scroll smooth
+// με offset για το sticky header, focus + toast με το όνομα του πεδίου.
+// Επιστρέφει true αν όλα ok, false αν βρέθηκε κενό (το submit μπλοκάρει).
+function validateRequiredFields(form){
+  const fields = form.querySelectorAll('[required]');
+  for(const el of fields){
+    // Skip hidden / disabled
+    if(el.disabled || el.type === 'hidden') continue;
+    if(el.offsetParent === null) continue;  // δεν φαίνεται (π.χ. inside hidden section)
+    const ok = el.checkValidity?.() ?? !!(el.value && el.value.trim());
+    if(ok) continue;
+
+    // Friendly label από το wrapping <label> ή placeholder
+    const wrapLabel = el.closest('label')?.querySelector('span')?.textContent
+                    || el.previousElementSibling?.textContent
+                    || el.placeholder
+                    || 'αυτό το πεδίο';
+    const cleanLabel = wrapLabel.replace(/\s*\([^)]*\)\s*$/, '').trim();
+
+    // Scroll στο ΟΛΟ το section που περιέχει το πεδίο, όχι μόνο στο input
+    const section = el.closest('.checkout-card') || el;
+    const y = section.getBoundingClientRect().top + window.scrollY - 100;
+    window.scrollTo({ top:y, behavior:'smooth' });
+    setTimeout(()=> el.focus({ preventScroll:true }), 380);
+
+    // Visual hint — orange border flash
+    el.classList.add('field-error');
+    setTimeout(()=> el.classList.remove('field-error'), 2400);
+
+    showToast(`Παρακαλώ συμπλήρωσε: ${cleanLabel}`, 'warn');
+    return false;
+  }
+  return true;
+}
+
 async function submitOrder(e){
   e.preventDefault();
   const form = e.currentTarget;
   const submitBtn = document.getElementById('pgSubmitBtn');
   const originalText = submitBtn?.textContent || 'Ολοκλήρωση';
+
+  // Custom validation πρώτα — αν έχει κενό, σταμάτα ΠΡΙΝ disable το button.
+  if(!validateRequiredFields(form)) return;
+
   if(submitBtn){ submitBtn.disabled = true; submitBtn.textContent = 'Παρακαλώ περίμενε…'; }
 
   try {
@@ -352,6 +563,21 @@ async function submitOrder(e){
     }
 
     const fd = new FormData(form);
+
+    // Τρόπος αποστολής + Box Now locker
+    const shippingMethod = fd.get('shipping_method') || 'box_now';
+    const boxnowLocker = (fd.get('boxnow_locker') || '').toString().trim();
+    if(shippingMethod === 'box_now' && !boxnowLocker){
+      const section = document.getElementById('boxNowLockerWrap')?.closest('.checkout-card');
+      if(section){
+        const y = section.getBoundingClientRect().top + window.scrollY - 100;
+        window.scrollTo({ top:y, behavior:'smooth' });
+      }
+      showToast('Παρακαλώ επίλεξε σημείο παραλαβής Box Now', 'warn');
+      if(submitBtn){ submitBtn.disabled = false; submitBtn.textContent = originalText; }
+      return;
+    }
+
     const shipping_address = {
       first_name: fd.get('first_name')?.trim(),
       last_name:  fd.get('last_name')?.trim(),
@@ -361,7 +587,9 @@ async function submitOrder(e){
       city:       fd.get('city')?.trim(),
       region:     fd.get('region')?.trim() || null,
       postcode:   fd.get('postcode')?.trim(),
-      country:    'GR'
+      country:    'GR',
+      shipping_method: shippingMethod,                                // 'box_now' | 'elta_courier'
+      boxnow_locker:   shippingMethod === 'box_now' ? boxnowLocker : null
     };
     const notes         = fd.get('notes')?.trim() || null;
     const guestEmail    = fd.get('email')?.trim() || null;

@@ -35,6 +35,9 @@
 /* Quantity control (+/-) */
 .qty-ctrl{display:inline-flex;border:1px solid rgba(156,132,114,0.2);margin-top:.5rem}
 .qty-ctrl button{background:none;border:none;width:26px;height:26px;cursor:pointer;color:var(--aubergine)}
+/* Στο όριο stock — opacity μειωμένο αλλά click ενεργό για να βγαίνει το toast */
+.qty-ctrl button.at-max{opacity:.42;cursor:not-allowed}
+.qty-max-note{font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-leaf);font-weight:600;margin-left:.25rem;opacity:.85}
 .qty-ctrl span{width:30px;text-align:center;font-size:.85rem;display:flex;align-items:center;justify-content:center;background:var(--lavender-mist)}
 .cart-item-price{font-family:'Cormorant Garamond',serif;color:var(--aubergine);font-size:1rem}
 .cart-remove{background:none;border:none;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--plum-deep);cursor:pointer;margin-top:.5rem;text-decoration:underline}
@@ -226,6 +229,118 @@
 .bank-box .iban{letter-spacing:.06em;font-variant-numeric:tabular-nums}
 .bank-note{font-size:.76rem;color:var(--mauve-soft);margin:.7rem 0 0;line-height:1.45}
 
+/* ──────────────────────────────────────────────────────────────
+   BOX NOW locker picker (premium look — ταιριάζει με τις pay-option κάρτες)
+   ────────────────────────────────────────────────────────────── */
+.boxnow-locker-wrap{margin-top:.8rem;padding-top:.2rem;animation:bnLockerIn .25s ease-out}
+.boxnow-locker-wrap[hidden]{display:none}
+@keyframes bnLockerIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.ck-hint{display:block;font-size:.72rem;color:var(--mauve-soft);margin-top:.45rem;line-height:1.5}
+.ck-hint a{color:var(--gold-leaf);text-decoration:underline}
+.ck-hint a:hover{color:var(--aubergine)}
+
+/* Picker button — pill-shaped, gold border, hover lift */
+.boxnow-picker-btn{
+  display:flex;align-items:center;justify-content:center;gap:.7rem;
+  width:100%;margin-top:.55rem;
+  padding:1rem 1.25rem;
+  background:#fff;
+  border:1.5px solid var(--gold-leaf);
+  border-radius:999px;
+  font-family:'Inter',sans-serif;font-size:.72rem;font-weight:600;
+  letter-spacing:.22em;text-transform:uppercase;
+  color:var(--aubergine);cursor:pointer;
+  transition:background .25s ease, transform .25s ease, box-shadow .25s ease, color .25s ease;
+}
+.boxnow-picker-btn:hover{
+  background:var(--gold-leaf);color:#fff;
+  transform:translateY(-2px);
+  box-shadow:0 12px 22px -10px rgba(192,133,122,0.55);
+}
+.boxnow-picker-btn:active{transform:translateY(0)}
+.boxnow-picker-icon{font-size:1.05rem;line-height:1;transform:translateY(-1px)}
+.boxnow-picker-btn[hidden]{display:none}
+
+/* Selected locker display — soft cream card με gold accent + change link */
+.boxnow-selected{
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  margin-top:.55rem;
+  padding:.9rem 1.1rem;
+  background:linear-gradient(135deg, var(--lavender-mist) 0%, rgba(247,232,213,0.55) 100%);
+  border:1px solid rgba(192,133,122,0.28);
+  border-left:3px solid var(--gold-leaf);
+  border-radius:10px;
+}
+.boxnow-selected[hidden]{display:none}
+.boxnow-selected-info{display:flex;flex-direction:column;gap:.2rem;min-width:0;flex:1}
+.boxnow-selected-info strong{
+  font-family:'Cormorant Garamond',serif;font-weight:500;font-style:italic;
+  font-size:1.05rem;color:var(--aubergine);line-height:1.2;
+}
+.boxnow-selected-info small{
+  font-size:.72rem;color:var(--plum-deep);letter-spacing:.04em;
+  line-height:1.4;overflow:hidden;text-overflow:ellipsis;
+}
+.boxnow-change-btn{
+  flex-shrink:0;
+  background:transparent;border:none;
+  font-family:'Inter',sans-serif;font-size:.62rem;font-weight:600;
+  letter-spacing:.25em;text-transform:uppercase;
+  color:var(--gold-leaf);cursor:pointer;
+  padding:.4rem .2rem;
+  text-decoration:underline;text-underline-offset:3px;
+  transition:color .2s ease;
+}
+.boxnow-change-btn:hover{color:var(--aubergine)}
+
+/* ──────────────────────────────────────────────────────────────
+   BOX NOW widget — όταν body έχει class .bn-picking (μπαίνει από JS
+   όταν ο χρήστης πατάει τον picker), κρύβουμε εντελώς (visibility)
+   όλα τα checkout cards ώστε ΤΙΠΟΤΑ να μην τρυπάει μπροστά από το
+   popup του widget. Επανεμφανίζονται όταν το popup κλείσει.
+   ────────────────────────────────────────────────────────────── */
+body.bn-picking .checkout-card,
+body.bn-picking .checkout-summary-card,
+body.bn-picking .checkout-page-grid > *:not(#boxNowLockerWrap):not(#boxnowmap){
+  visibility:hidden !important;
+}
+/* Ο picker container ΕΞΑΙΡΕΙΤΑΙ — μένει visible ώστε το widget να
+   μπορεί να βρει/χρησιμοποιήσει το #boxnowmap container του */
+body.bn-picking #boxNowLockerWrap,
+body.bn-picking #boxnowmap{visibility:visible !important}
+
+#boxnowmap:not(:empty){
+  position:fixed !important;
+  top:0 !important;left:0 !important;
+  width:100vw !important;height:100vh !important;
+  z-index:2147483647 !important;
+  background:rgba(31,24,19,0.55);
+  display:flex !important;align-items:center;justify-content:center;
+}
+/* Καλύπτουμε και τα τυχόν body-level injections για παν ενδεχόμενο */
+iframe[src*="boxnow"],
+[id^="boxnow-popup"],
+[id^="boxnow-widget"],
+[id^="bn-widget"],
+[class*="boxnow-widget"],
+[class*="boxnow-popup"],
+[class*="bn-popup"],
+[class*="bn-widget"]{
+  z-index:2147483647 !important;
+}
+
+/* Orange highlight σε required field που έμεινε κενό κατά το submit */
+.field-error{
+  border-color:#e08a3a !important;
+  box-shadow:0 0 0 3px rgba(224,138,58,0.20) !important;
+  animation: fieldErrorPulse .55s ease-out;
+}
+@keyframes fieldErrorPulse{
+  0%   { box-shadow:0 0 0 0   rgba(224,138,58,0.50) }
+  50%  { box-shadow:0 0 0 9px rgba(224,138,58,0.22) }
+  100% { box-shadow:0 0 0 3px rgba(224,138,58,0.20) }
+}
+
 /* Success state μέσα στη σελίδα */
 .checkout-page-success{
   max-width:560px;margin:1rem auto 0;text-align:center;
@@ -252,3 +367,11 @@
 .toast.show{transform:translateX(-50%) translateY(0);visibility:visible;opacity:1;pointer-events:auto;transition:transform .4s ease, opacity .4s ease, visibility 0s linear 0s}
 /* Άδειο toast → ποτέ ορατό (extra προστασία αν λείπει .show αλλά υπάρχει κάποιο fallback styling) */
 .toast:empty{visibility:hidden!important;opacity:0!important}
+
+/* Πορτοκαλί παραλλαγή toast — για warnings/validation hints */
+.toast.toast-warn{
+  background:linear-gradient(135deg, #e08a3a 0%, #c97520 100%);
+  color:#fff;
+  letter-spacing:.18em;
+  box-shadow:0 20px 40px rgba(201,117,32,0.35);
+}

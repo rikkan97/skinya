@@ -7,11 +7,14 @@
    ==================================================================== */
 
 // ───── TOAST ─────
-function showToast(msg){
+function showToast(msg, variant){
   const t = document.getElementById('toast');
   t.textContent = msg;
+  t.classList.remove('show','toast-warn');
+  void t.offsetWidth;   // force reflow ώστε να ξαναπαίξει το animation
+  if(variant === 'warn') t.classList.add('toast-warn');
   t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 2500);
+  setTimeout(()=>t.classList.remove('show'), 2800);
 }
 
 // ───── NEWSLETTER ─────
@@ -46,8 +49,28 @@ function goToSlide(n){
 function startCarousel(){
   if(carouselInterval) clearInterval(carouselInterval);
   if(totalSlides <= 1) return;
+  if(_carouselPaused) return;   // ο χρήστης διαβάζει — μην το ξαναπιάσεις
   carouselInterval = setInterval(()=>goToSlide(currentSlide+1), 6000);
 }
+function stopCarousel(){
+  if(carouselInterval){ clearInterval(carouselInterval); carouselInterval = null; }
+}
+
+// Pause όσο ο cursor είναι μέσα στο carousel (desktop) ή όταν ο χρήστης
+// αγγίξει slide σε mobile — έτσι προλαβαίνει να διαβάσει χωρίς να αλλάζει.
+let _carouselPaused = false;
+document.addEventListener('DOMContentLoaded', ()=>{
+  const car = document.querySelector('.carousel');
+  if(!car) return;
+  car.addEventListener('mouseenter', ()=>{ _carouselPaused = true; stopCarousel(); });
+  car.addEventListener('mouseleave', ()=>{ _carouselPaused = false; startCarousel(); });
+  // Mobile: tap κάπου στο slide → pause μόνιμα μέχρι reload (όπως κάνει το home-shop)
+  car.addEventListener('pointerdown', e=>{
+    // Επίτρεψε τα κουμπιά πλοήγησης (arrows/dots) να αλλάζουν slide χωρίς να σταματούν εντελώς
+    if(e.target.closest('.arrow, .dot')) return;
+    _carouselPaused = true; stopCarousel();
+  });
+});
 
 // Καλείται από το renderHomeFavorites μετά το rebuild των slides
 window.setCarouselSlides = function(count){

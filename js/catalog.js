@@ -44,6 +44,53 @@ function renderSeals(brand, productBadges){
   }).join('')}</div>`;
 }
 
+// Expandable "Μάθε περισσότερα" — Βοηθάει (bullets) + Tip.
+// Στα mini cards δείχνει και σύντομη 2-line περιγραφή πάνω από τα bullets,
+// επειδή τα mini δεν εμφανίζουν inline desc. Στα featured η μεγάλη desc
+// μένει inline οπότε εδώ μπαίνουν μόνο bullets + tip.
+function renderProductMore(p, opts){
+  const includeDesc = opts && opts.includeDesc;
+  const benefits = Array.isArray(p.benefits) ? p.benefits.filter(Boolean).slice(0,3) : [];
+  const hasTip   = !!(p.tip && p.tip.trim());
+  const hasShort = includeDesc && !!(p.desc && p.desc.trim());
+  if(!benefits.length && !hasTip && !hasShort) return '';
+  return `
+    <details class="product-more">
+      <summary>
+        <span class="product-more-label">Μάθε περισσότερα</span>
+        <span class="product-more-chev" aria-hidden="true">⌄</span>
+      </summary>
+      <div class="product-more-body">
+        ${hasShort?`<p class="product-more-desc">${p.desc}</p>`:''}
+        ${benefits.length?`
+          <div class="product-more-benefits">
+            <span class="product-more-title">Βοηθάει</span>
+            <ul>${benefits.map(b=>`<li>${b}</li>`).join('')}</ul>
+          </div>`:''}
+        ${hasTip?`<p class="product-more-tip"><span class="product-more-tip-ico">💡</span><span><strong>Tip:</strong> ${p.tip}</span></p>`:''}
+      </div>
+    </details>
+  `;
+}
+
+// True όταν stock = 0 (το stock=null/undefined θεωρείται διαθέσιμο για legacy data)
+function isSoldOut(p){
+  return p && p.stock != null && Number(p.stock) <= 0;
+}
+
+// Buy row — όταν sold out, ΜΟΝΟ ένα κεντραρισμένο button (χωρίς τιμή)
+function renderBuyRow(p, label){
+  if(isSoldOut(p)){
+    return `<div class="product-buy is-sold-out-row">
+      <button class="btn-add-cart is-soldout" type="button" disabled aria-disabled="true" aria-label="Sold out"><span>Sold out</span></button>
+    </div>`;
+  }
+  return `<div class="product-buy">
+    ${renderPriceHTML(p)}
+    <button class="btn-add-cart" type="button" onclick="addToCart('${p.id}')" aria-label="Προσθήκη στο καλάθι"><span>${label}</span></button>
+  </div>`;
+}
+
 // Render της γραμμής με το κύριο benefit + tooltip
 function renderKeyIng(p){
   const hasTip = p.tech || p.techDesc;
@@ -62,7 +109,7 @@ function renderKeyIng(p){
 // Featured product card (μεγάλη asymmetric κάρτα στην κορυφή κάθε κατηγορίας)
 function renderFeatured(p){
   return `
-    <article class="featured-product" data-id="${p.id}">
+    <article class="featured-product${isSoldOut(p)?' is-sold-out':''}" data-id="${p.id}">
       <span class="featured-tag">★ Best of Category</span>
       <div class="featured-visual${p.img?' has-img':''}">
         ${p.img?`<img src="${p.img}" alt="${p.brand} ${p.name}" loading="lazy">`:`<span class="visual-initial">${brandInitial(p.brand)}</span><span class="visual-mark">Skinya</span>`}
@@ -74,10 +121,8 @@ function renderFeatured(p){
         ${renderKeyIng(p)}
         <p class="desc">${p.desc||''}</p>
         ${renderBadges(p.badges, p.brand)}
-        <div class="product-buy">
-          ${renderPriceHTML(p)}
-          <button class="btn-add-cart" type="button" onclick="addToCart('${p.id}')"><span>+ Στο καλάθι</span></button>
-        </div>
+        ${renderProductMore(p)}
+        ${renderBuyRow(p, '+ Στο καλάθι')}
       </div>
     </article>
   `;
@@ -86,7 +131,7 @@ function renderFeatured(p){
 // Mini card (μικρή κάρτα στο grid)
 function renderMiniCard(p){
   return `
-    <article class="mini-card" data-id="${p.id}">
+    <article class="mini-card${isSoldOut(p)?' is-sold-out':''}" data-id="${p.id}">
       <div class="mini-visual${p.img?' has-img':''}">
         ${p.img?`<img src="${p.img}" alt="${p.brand} ${p.name}" loading="lazy">`:`<span class="visual-initial">${brandInitial(p.brand)}</span>`}
         ${renderSeals(p.brand, p.badges)}
@@ -96,10 +141,8 @@ function renderMiniCard(p){
         <h4>${p.name}</h4>
         ${renderKeyIng(p)}
         ${renderBadges(p.badges, p.brand)}
-        <div class="product-buy">
-          ${renderPriceHTML(p)}
-          <button class="btn-add-cart" type="button" onclick="addToCart('${p.id}')" aria-label="Προσθήκη στο καλάθι"><span>+ Καλάθι</span></button>
-        </div>
+        ${renderProductMore(p, { includeDesc: true })}
+        ${renderBuyRow(p, '+ Καλάθι')}
       </div>
     </article>
   `;
