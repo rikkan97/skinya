@@ -67,7 +67,7 @@ function renderProductMore(p, opts){
             <span class="product-more-title">Βοηθάει</span>
             <ul>${benefits.map(b=>`<li>${b}</li>`).join('')}</ul>
           </div>`:''}
-        ${hasTip?`<p class="product-more-tip"><span class="product-more-tip-ico">💡</span><span><strong>Tip:</strong> ${p.tip}</span></p>`:''}
+        ${hasTip?`<p class="product-more-tip"><span class="product-more-tip-ico">✦</span><span><strong>Tip:</strong> ${p.tip}</span></p>`:''}
       </div>
     </details>
   `;
