@@ -191,7 +191,7 @@ async function renderHomeFavorites(){
         <ul>${benefits.map(b=>`<li>${escapeHTMLSafe(b)}</li>`).join('')}</ul>
       </div>` : '';
     const tipHTML = tipText ? `
-      <p class="slide-tip"><span class="slide-tip-ico">💡</span><span><strong>Tip:</strong> ${escapeHTMLSafe(tipText)}</span></p>` : '';
+      <p class="slide-tip"><span class="slide-tip-ico">✦</span><span><strong>Tip:</strong> ${escapeHTMLSafe(tipText)}</span></p>` : '';
 
     return `
       <div class="slide">
