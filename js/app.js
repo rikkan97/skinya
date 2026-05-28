@@ -717,6 +717,19 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   setupFanCarousel('morningFan');
   setupFanCarousel('nightFan');
 
+  // ───── ?goto=X param: redirect από standalone page (πχ shop.html)
+  // σε SPA route (πχ checkout) που ζει μόνο στο index.html ─────
+  const gotoParam = new URLSearchParams(location.search).get('goto');
+  if(gotoParam && document.getElementById('page-' + gotoParam)){
+    navigateTo(gotoParam);
+    if(gotoParam === 'checkout' && typeof renderCheckout === 'function'){
+      renderCheckout();
+    }
+    // Καθάρισμα του URL ώστε να μη μείνει ?goto= στο URL
+    history.replaceState(null, '', location.pathname);
+    return;
+  }
+
   // ───── Διάβασε URL hash για initial route ─────
   // Anchors (π.χ. #cat-toners) δεν είναι routes — αγνόησέ τα εδώ.
   const initialHash = location.hash.replace('#','');

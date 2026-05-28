@@ -8,15 +8,23 @@
    ==================================================================== */
 
 function navigateTo(route){
-  // Κρύψε όλες τις σελίδες
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-
-  // Δείξε τη σελίδα που ζητήθηκε (ή πέσε πίσω στο home)
+  // Standalone pages (shop.html, routina.html κλπ) δεν έχουν τις άλλες
+  // SPA-only pages μέσα τους. Αν ο user καλέσει navigateTo('checkout')
+  // από εκεί, redirect στο index.html όπου ζει το checkout SPA.
   const target = document.getElementById('page-' + route);
-  if(target){
-    target.classList.add('active');
+  if(!target){
+    const home = document.getElementById('page-home');
+    if(!home){
+      // Είμαστε σε standalone page — πάμε στο root με query flag
+      window.location.href = '/?goto=' + encodeURIComponent(route);
+      return;
+    }
+    // Είμαστε στο index.html αλλά το route δεν υπάρχει — fallback home
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    home.classList.add('active');
   } else {
-    document.getElementById('page-home').classList.add('active');
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    target.classList.add('active');
   }
 
   // Ενημέρωσε ποιό nav link είναι active
