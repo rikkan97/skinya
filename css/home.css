@@ -328,10 +328,12 @@
 
 /* LEFT — stacked stages, πιο ψηλό για editorial feel */
 .concern-stage-wrap{position:relative;min-height:720px;border-radius:0;overflow:hidden;background:var(--mauve-soft)}
-.concern-stage{position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;justify-content:flex-end;padding:3.2rem 3rem;background-size:cover;background-position:center;background-repeat:no-repeat;opacity:0;visibility:hidden;transform:scale(1.06);transition:opacity 1.6s cubic-bezier(.45,0,.55,1),transform 2.6s cubic-bezier(.45,0,.55,1),visibility 0s linear 1.6s;will-change:opacity,transform}
-/* Per-concern fallback tones (όταν δεν έχει φορτώσει η φωτογραφία) */
-.concern-stage[data-concern="dryness"]{background-color:#e8d4be;background-size:140%}
-.concern-stage[data-concern="acne"]{background-color:#a7b598;background-size:140%}
+.concern-stage{position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;justify-content:flex-end;padding:3.2rem 3rem;background-size:cover;background-position:center 35%;background-repeat:no-repeat;opacity:0;visibility:hidden;transform:scale(1.06);transition:opacity 1.6s cubic-bezier(.45,0,.55,1),transform 2.6s cubic-bezier(.45,0,.55,1),visibility 0s linear 1.6s;will-change:opacity,transform}
+/* Per-concern fallback tones (όταν δεν έχει φορτώσει η φωτογραφία) + image framing.
+   dryness (ΠΡΙΝ/ΜΕΤΑ στο κάτω): position στο top ώστε να κόβονται έξω από το πλαίσιο.
+   acne (Before/After στο πάνω): position στο bottom για το ίδιο. */
+.concern-stage[data-concern="dryness"]{background-color:#e8d4be;background-size:cover;background-position:center 18%}
+.concern-stage[data-concern="acne"]{background-color:#a7b598;background-size:cover;background-position:center 85%}
 .concern-stage[data-concern="pigmentation"]{background-color:#c89870}
 .concern-stage[data-concern="sensitivity"]{background-color:#deb9ac}
 .concern-stage[data-concern="anti-aging"]{background-color:#8d7a6c}

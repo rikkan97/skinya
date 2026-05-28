@@ -91,15 +91,17 @@ html,body{max-width:100%;overflow-x:hidden}
   .cat-card-product{width:75%;height:42%;top:13%}
   .cat-card-overlay{gap:.6rem}
   .cat-card-desc{font-size:.82rem}
-  .concern-match{grid-template-columns:1fr;padding:0 1.5rem;margin:2rem auto 4rem}
-  .concern-stage-wrap{border-radius:6px 6px 0 0;min-height:460px}
+  /* Mobile: full-bleed (όχι side-padding) → η φωτό πιάνει άκρη-άκρη.
+     Aspect-ratio 4/5 για εκδοτικό impact χωρίς "χαμηλή" φωτο. */
+  .concern-match{grid-template-columns:1fr;padding:0;margin:2rem 0 4rem;max-width:100%}
+  .concern-stage-wrap{border-radius:0;min-height:0;aspect-ratio:4/5;width:100%}
   .concern-stage{padding:2.4rem 1.8rem}
   .concern-stage-content h3{font-size:2.3rem}
   .concern-stage-content p{font-size:.88rem;margin-bottom:1.2rem}
   .concern-stage-ings{margin-bottom:1.4rem}
   .ing-chip{font-size:.58rem;padding:.45rem .85rem;letter-spacing:.18em}
   .concern-stage-cta{padding:.8rem 1.4rem;font-size:.65rem}
-  .concern-selector{border-radius:0 0 6px 6px;min-height:auto}
+  .concern-selector{border-radius:0;min-height:auto}
   .concern-selector-head{padding:1.8rem 1.8rem 1.2rem}
   .concern-selector-head h2{font-size:1.6rem}
   .concern-row{padding:1rem 1.8rem;gap:1.1rem}
