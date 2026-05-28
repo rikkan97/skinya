@@ -2,6 +2,12 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/shop", "destination": "/shop.html" }
+    { "source": "/shop", "destination": "/shop.html" },
+    { "source": "/routina", "destination": "/routina.html" },
+    { "source": "/notes", "destination": "/notes.html" },
+    { "source": "/epikoinwnia", "destination": "/epikoinwnia.html" },
+    { "source": "/oroi", "destination": "/oroi.html" },
+    { "source": "/aporrito", "destination": "/aporrito.html" },
+    { "source": "/cookies", "destination": "/cookies.html" }
   ]
 }
