@@ -162,7 +162,15 @@ async function accountLogout(){
 // ──────────────────────────────────────────────────────────────
 async function updateAccountUI(){
   const { data: { session } } = await window.sb.auth.getSession();
+  const wasLoggedIn = !!window.currentUser;
   window.currentUser = session?.user || null;
+
+  // Restore cart από Supabase όταν user γίνεται logged-in (login event ή
+  // page reload με ενεργό session). Δεν τρέχει σε logout ή σε ήδη
+  // logged-in state που δεν άλλαξε.
+  if(window.currentUser && !wasLoggedIn && typeof restoreCartFromSupabase === 'function'){
+    restoreCartFromSupabase();
+  }
 
   // Ενημέρωσε το nav button — δείξε ένα small dot αν logged in
   const btn = document.getElementById('accountBtn');

@@ -1,0 +1,5 @@
+# Επιτρέπουμε crawling από όλους τους search engines
+User-agent: *
+Allow: /
+
+Sitemap: https://skinya.gr/sitemap.xml

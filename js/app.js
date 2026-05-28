@@ -242,6 +242,11 @@ function setupScrollSpy(){
 
 document.addEventListener('DOMContentLoaded', async ()=>{
 
+  // ───── Cart restore από localStorage (count badge + drawer) ─────
+  if (typeof initCartFromStorage === 'function') {
+    initCartFromStorage();
+  }
+
   // ───── Φόρτωση δεδομένων από Supabase (γεμίζει products + categories arrays) ─────
   if (typeof loadDataFromSupabase === 'function') {
     await loadDataFromSupabase();
@@ -658,7 +663,7 @@ document.addEventListener('DOMContentLoaded', async ()=>{
         contactForm.reset();
       }).catch(err=>{
         console.error('[Skinya] contact send error:', err);
-        showToast('Κάτι πήγε στραβά — δοκίμασε ξανά ή στείλε email στο info@skinya.gr');
+        showToast('Κάτι πήγε στραβά, δοκίμασε ξανά ή στείλε email στο hello@skinya.gr');
       }).finally(()=>{
         btn.disabled = false;
         btn.innerHTML = originalHTML;

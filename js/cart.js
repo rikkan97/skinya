@@ -11,7 +11,49 @@
                    (αργότερα θα στέλνει POST σε backend endpoint)
    ==================================================================== */
 
-let cart = [];
+// ── Cart persistence ─────────────────────────────────────────
+// localStorage για ΟΛΟΥΣ (guest + logged-in). Επιβιώνει refresh,
+// tab close, browser restart. Logged-in users έχουν ΕΠΙΠΛΕΟΝ
+// Supabase sync (save_abandoned_cart) για cross-device cart.
+const CART_STORAGE_KEY = 'skinya_cart';
+
+function loadCartFromStorage(){
+  try {
+    const raw = localStorage.getItem(CART_STORAGE_KEY);
+    if(!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch(e){ return []; }
+}
+
+function saveCartToStorage(){
+  try { localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart)); } catch(e){}
+}
+
+let cart = loadCartFromStorage();
+
+// Αρχικοποίηση count badge + drawer content (αν υπάρχουν στο DOM).
+// Καλείται από app.js μετά το DOMContentLoaded.
+function initCartFromStorage(){
+  if(document.getElementById('cartCount')) updateCart();
+}
+
+// Restore cart από Supabase για logged-in users (cross-device).
+// Καλείται από app.js όταν εντοπίσει logged-in user.
+async function restoreCartFromSupabase(){
+  if(!window.sb || !window.currentUser) return;
+  try {
+    const { data, error } = await window.sb.rpc('load_abandoned_cart');
+    if(error || !data || !Array.isArray(data) || data.length === 0) return;
+    // DB items have format {sku, name, brand, price, qty, img} — map back to cart shape
+    cart = data.map(i => ({
+      id: i.sku, name: i.name, brand: i.brand,
+      price: i.price || 0, qty: i.qty || 1, img: i.img || null
+    }));
+    saveCartToStorage();
+    updateCart();
+  } catch(e){ /* best-effort */ }
+}
 
 // Επιστρέφει true όταν το προϊόν έχει αποθεματικό > 0 (ή stock = null/unset)
 function isProductAvailable(p){
@@ -145,7 +187,8 @@ function updateCart(){
   const total = cart.reduce((s,i)=>s+(i.price||0)*i.qty,0);
   document.getElementById('cartTotal').textContent = total.toFixed(2)+'€';
 
-  scheduleAbandonedSave();
+  saveCartToStorage();      // localStorage (guest + logged-in)
+  scheduleAbandonedSave();  // Supabase sync (logged-in μόνο)
 }
 
 // ── Abandoned cart capture (#12) — μόνο για συνδεδεμένους, throttled ──
