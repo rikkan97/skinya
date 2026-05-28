@@ -200,8 +200,11 @@ function scheduleAbandonedSave(){
     if(cart.length === 0) return;
     const items = cart.map(i=>({ sku:i.id, name:i.name, brand:i.brand, price:i.price||0, qty:i.qty, img:i.img||null }));
     const subtotal = cart.reduce((s,i)=>s+(i.price||0)*i.qty, 0);
-    window.sb.rpc('save_abandoned_cart', { p_items: items, p_subtotal: Number(subtotal.toFixed(2)) })
-      .catch(()=>{});                        // best-effort
+    // Supabase v2 builder είναι PromiseLike: .then() αντί για .catch()
+    try {
+      window.sb.rpc('save_abandoned_cart', { p_items: items, p_subtotal: Number(subtotal.toFixed(2)) })
+        .then(()=>{}, ()=>{});            // best-effort, swallow errors
+    } catch(_){ /* sync throw — ignore */ }
   }, 2500);
 }
 
