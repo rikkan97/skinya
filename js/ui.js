@@ -18,15 +18,52 @@ function showToast(msg, variant){
 }
 
 // ───── NEWSLETTER ─────
-function subscribeNews(){
-  const email = document.getElementById('newsEmail').value;
-  if(!email || !email.includes('@')){
+// Αποθηκεύει στο newsletter_subscribers (RLS: anyone can insert).
+// Αν ο χρήστης είναι ήδη logged-in, ενημερώνει και το customers.newsletter = true.
+async function subscribeNews(){
+  const input = document.getElementById('newsEmail');
+  const email = (input?.value || '').trim().toLowerCase();
+  if(!email || !email.includes('@') || !email.includes('.')){
     showToast('Εισάγετε έγκυρο email');
     return;
   }
-  document.getElementById('newsEmail').value = '';
-  // ΜΕΛΛΟΝ: fetch('/api/newsletter', {method:'POST', body:JSON.stringify({email})})
-  showToast('Καλώς ήρθατε στο Cercle Skinya ❀');
+
+  const btn = document.querySelector('.news-form button');
+  const originalBtn = btn ? btn.textContent : '';
+  if(btn){ btn.disabled = true; btn.textContent = '…'; }
+
+  try {
+    if(!window.sb) throw new Error('Supabase client not loaded');
+
+    // Newsletter list (κύριος προορισμός)
+    const { error } = await window.sb
+      .from('newsletter_subscribers')
+      .insert({ email, source: 'homepage' });
+
+    // 23505 = unique_violation → ήδη εγγεγραμμένος, το θεωρούμε επιτυχία (idempotent UX)
+    if(error && error.code !== '23505') throw error;
+
+    // Αν έχει account, σήμανε και το customers.newsletter (RLS: μόνο τον δικό του row)
+    try {
+      const { data: { user } } = await window.sb.auth.getUser();
+      if(user){
+        await window.sb
+          .from('customers')
+          .update({ newsletter: true })
+          .eq('id', user.id);
+      }
+    } catch(_){ /* non-fatal */ }
+
+    input.value = '';
+    showToast(error?.code === '23505'
+      ? 'Είσαι ήδη μέλος του Cercle Skinya ❀'
+      : 'Καλώς ήρθες στο Cercle Skinya ❀');
+  } catch(err) {
+    console.error('[Skinya] newsletter subscribe error:', err);
+    showToast('Κάτι πήγε στραβά — δοκίμασε ξανά', 'warn');
+  } finally {
+    if(btn){ btn.disabled = false; btn.textContent = originalBtn; }
+  }
 }
 
 // ───── CAROUSEL (δυναμικός αριθμός slides — από site_sections) ─────
