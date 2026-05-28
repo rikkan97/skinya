@@ -20,7 +20,7 @@ Dashboard → Project Settings → **Edge Functions → Secrets** (ή με CLI):
 supabase secrets set RESEND_API_KEY=re_xxxxxxxx
 supabase secrets set EMAIL_FROM="Skinya <onboarding@resend.dev>"
 # όταν έχεις verified domain, άλλαξε ΜΟΝΟ αυτό:
-# supabase secrets set EMAIL_FROM="Skinya <orders@skinya.gr>"
+# supabase secrets set EMAIL_FROM="Skinya <hello@skinya.gr>"
 ```
 (`SUPABASE_URL` & `SUPABASE_SERVICE_ROLE_KEY` υπάρχουν αυτόματα.)
 

@@ -13,8 +13,8 @@
 //
 // Secrets που πρέπει να οριστούν (Dashboard → Edge Functions → Secrets):
 //   RESEND_API_KEY            — το API key του Resend
-//   EMAIL_FROM                — π.χ. "Skinya <orders@skinya.gr>"  (test: onboarding@resend.dev)
-//   ADMIN_EMAIL               — (προαιρετικό) π.χ. orders@skinya.gr για τα internal A1/A2
+//   EMAIL_FROM                — π.χ. "Skinya <hello@skinya.gr>"  (test: onboarding@resend.dev)
+//   ADMIN_EMAIL               — (προαιρετικό) π.χ. hello@skinya.gr για τα internal A1/A2
 //   ADMIN_URL                 — (προαιρετικό) π.χ. https://admin.skinya.gr για link στο admin email
 //   SUPABASE_URL              — αυτόματα διαθέσιμο
 //   SUPABASE_SERVICE_ROLE_KEY — αυτόματα διαθέσιμο
@@ -24,7 +24,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') ?? '';
 const EMAIL_FROM      = Deno.env.get('EMAIL_FROM') ?? 'Skinya <onboarding@resend.dev>';
-const ADMIN_EMAIL     = Deno.env.get('ADMIN_EMAIL') ?? '';   // π.χ. orders@skinya.gr (internal notifications)
+const ADMIN_EMAIL     = Deno.env.get('ADMIN_EMAIL') ?? '';   // π.χ. hello@skinya.gr (internal notifications)
 const ADMIN_URL       = Deno.env.get('ADMIN_URL') ?? '';     // π.χ. https://admin.skinya.gr (link στο email)
 const SITE_URL        = (Deno.env.get('SITE_URL') ?? 'https://skinya.gr').replace(/\/+$/, '');  // για absolute image URLs
 const SUPABASE_URL    = Deno.env.get('SUPABASE_URL') ?? '';
