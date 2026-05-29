@@ -104,8 +104,12 @@ async function accountSubmit(e, type){
       }
     }
     else if(type === 'forgot'){
+      // ΣΗΜΑΝΤΙΚΟ: ΟΧΙ '#reset' στο redirectTo — το Supabase appendάρει τα auth
+      // tokens στο hash, και ο SDK δεν μπορεί να τα διαβάσει σωστά αν υπάρχει
+      // άλλο χωρίς-equals fragment από πριν. Το modal ανοίγει μέσω
+      // onAuthStateChange('PASSWORD_RECOVERY'), δεν χρειάζεται hash trigger.
       const { error } = await window.sb.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin + window.location.pathname + '#reset'
+        redirectTo: window.location.origin + window.location.pathname
       });
       if(error) throw error;
       setAccountMsg(form, 'Σου στείλαμε σύνδεσμο επαναφοράς στο email σου ✉ (έλεγξε και τα spam).', 'ok');
@@ -118,9 +122,16 @@ async function accountSubmit(e, type){
         setAccountMsg(form, 'Οι κωδικοί δεν ταιριάζουν', 'error');
         return;
       }
+      // Pre-check: αν δεν υπάρχει session, ο user δεν ήρθε από έγκυρο email link
+      // (π.χ. έβαλε χειροκίνητα #reset). Δείξε σαφές μήνυμα αντί cryptic SDK error.
+      const { data: { session } } = await window.sb.auth.getSession();
+      if(!session){
+        setAccountMsg(form, 'Η συνεδρία επαναφοράς έληξε. Ζήτησε νέο σύνδεσμο.', 'error');
+        setTimeout(() => accountSwitch('forgot'), 1800);
+        return;
+      }
       const { error } = await window.sb.auth.updateUser({ password });
       if(error) throw error;
-      // Καθάρισε το recovery hash (#access_token=...) και το #reset από το URL
       try { history.replaceState(null, '', window.location.pathname + window.location.search); } catch(_){}
       form.reset();
       showToast('Ο κωδικός σου άλλαξε ✓');
@@ -262,9 +273,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
         openAccount('reset');
       }
     });
-    // Fallback για παλιότερα Supabase SDK / cold load (refresh στο /#reset):
-    // αν το URL hash περιέχει type=recovery, άνοιξε κατευθείαν το reset view.
-    if(/type=recovery|[#&]reset(\b|$)/.test(window.location.hash)){
+    // Fallback για παλιότερα Supabase SDK / cold load: αν το URL hash περιέχει
+    // type=recovery, άνοιξε το reset view (ο SDK θα έχει ήδη φτιάξει session).
+    if(/type=recovery/.test(window.location.hash)){
       openAccount('reset');
     }
   }
