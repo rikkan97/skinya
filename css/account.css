@@ -166,7 +166,7 @@
 .account-page-header{padding:6rem 2.6rem 3rem;text-align:center;background:linear-gradient(180deg,var(--ivory) 0%,var(--champagne) 100%)}
 .account-page-header h1{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(2.2rem,5vw,3.6rem);letter-spacing:-.02em;color:var(--aubergine);margin:.4rem 0 .4rem;line-height:1.05}
 .account-page-header h1 em{font-style:italic;color:var(--gold-leaf)}
-.account-page-email{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--plum-deep);font-size:1.05rem;margin:0 auto;text-align:center;max-width:none}
+.account-page-email{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--plum-deep);font-size:1.05rem;margin:0;display:inline-block;max-width:none}
 
 .account-page-section{max-width:900px;margin:0 auto;padding:2.5rem 2rem 5rem}
 
