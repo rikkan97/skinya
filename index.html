@@ -48,6 +48,25 @@
 <link rel="stylesheet" href="css/legal.css">
 <link rel="stylesheet" href="css/responsive.css">
 
+<!-- Anti-flash για ?goto= redirects από standalone pages.
+     Τρέχει πριν το first paint → CSS κρύβει το page-home αμέσως, εμφανίζει το
+     ζητούμενο page. Χωρίς αυτό, ο user βλέπει home για ένα frame πριν το JS init. -->
+<script>
+(function(){
+  try {
+    var route = new URLSearchParams(location.search).get('goto')
+             || (location.hash.replace('#','').match(/^[a-z-]+$/i) ? location.hash.replace('#','') : null);
+    if(route) document.documentElement.dataset.initialRoute = route;
+  } catch(_) {}
+})();
+</script>
+<style>
+  html[data-initial-route] #page-home{display:none}
+  html[data-initial-route="account"] #page-account{display:block}
+  html[data-initial-route="checkout"] #page-checkout{display:block}
+  html[data-initial-route="order-confirmed"] #page-order-confirmed{display:block}
+</style>
+
 <!-- JSON-LD: Organization (brand identity για το Google) -->
 <script type="application/ld+json">
 {
