@@ -702,8 +702,10 @@ async function submitOrder(e){
     // supabase/order_received_email_trigger.sql.
 
     // Η παραγγελία δημιουργήθηκε — mark recovered το abandoned cart (best-effort).
+    // Promise.resolve() γύρω από το rpc builder: το v2 SDK builder είναι thenable
+    // αλλά δεν έχει .catch() → χωρίς αυτό σπάει με «not a function».
     if(window.currentUser){
-      window.sb.rpc('clear_abandoned_cart').catch(()=>{});
+      Promise.resolve(window.sb.rpc('clear_abandoned_cart')).catch(()=>{});
     }
 
     // άδειασε το καλάθι + reset κουπονιού.
