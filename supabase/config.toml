@@ -1,0 +1,41 @@
+# ============================================================
+# SKINYA · Supabase CLI config
+# ------------------------------------------------------------
+# Κρατάει persistent τα per-function settings ώστε να ΜΗΝ
+# χάνονται σε κάθε `supabase functions deploy`.
+#
+# ΓΙΑΤΙ verify_jwt = false σε αυτά τα functions:
+# Καλούνται από guests (μη logged-in customers) που δεν έχουν
+# JWT. Τα functions κάνουν service-role lookups· δεν εκθέτουν
+# ευαίσθητα δεδομένα. Με verify_jwt = true, το gateway απέρριπτε
+# το publishable key των guests → emails χάνονταν σιωπηλά.
+# ============================================================
+
+project_id = "swkdewwmmxsftdmzjqsr"
+
+# Email confirmation παραγγελίας — καλείται σε guest checkout
+[functions.send-order-email]
+verify_jwt = false
+
+# Welcome email — καλείται μετά το signUp πριν ο user έχει session
+[functions.send-welcome]
+verify_jwt = false
+
+# Φόρμα επικοινωνίας — guests
+[functions.send-contact]
+verify_jwt = false
+
+# Viva payment webhook — καλείται από εξωτερικό σύστημα (Viva), όχι user
+[functions.viva-webhook]
+verify_jwt = false
+
+# Cron jobs (service-role) — δεν έχουν user context
+[functions.low-stock-alert]
+verify_jwt = false
+
+[functions.send-abandoned-carts]
+verify_jwt = false
+
+# create-viva-payment — καλείται στο checkout (guest ή logged-in)
+[functions.create-viva-payment]
+verify_jwt = false
