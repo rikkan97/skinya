@@ -110,6 +110,22 @@ async function accountSubmit(e, type){
       if(error) throw error;
       setAccountMsg(form, 'Σου στείλαμε σύνδεσμο επαναφοράς στο email σου ✉ (έλεγξε και τα spam).', 'ok');
     }
+    else if(type === 'reset'){
+      // Ο user έχει ήδη ενεργή recovery session (από το link του email). Απλά
+      // updateUser με νέο password — δεν χρειάζεται email.
+      const password2 = form.querySelector('input[name="password2"]').value;
+      if(password !== password2){
+        setAccountMsg(form, 'Οι κωδικοί δεν ταιριάζουν', 'error');
+        return;
+      }
+      const { error } = await window.sb.auth.updateUser({ password });
+      if(error) throw error;
+      // Καθάρισε το recovery hash (#access_token=...) και το #reset από το URL
+      try { history.replaceState(null, '', window.location.pathname + window.location.search); } catch(_){}
+      form.reset();
+      showToast('Ο κωδικός σου άλλαξε ✓');
+      closeAccount();
+    }
     else { // login
       const { error } = await window.sb.auth.signInWithPassword({ email, password });
       if(error) throw error;
@@ -239,7 +255,18 @@ document.addEventListener('DOMContentLoaded', ()=>{
       if(event === 'SIGNED_IN' && session?.user){
         maybeSendWelcomeOnce(session.user);
       }
+      // Reset password flow — όταν ο user έρθει από το email link, το Supabase SDK
+      // ανταλλάσσει το recovery token με session και πυροδοτεί PASSWORD_RECOVERY.
+      // Ανοίγουμε το modal στο reset view ώστε να ορίσει νέο κωδικό.
+      if(event === 'PASSWORD_RECOVERY'){
+        openAccount('reset');
+      }
     });
+    // Fallback για παλιότερα Supabase SDK / cold load (refresh στο /#reset):
+    // αν το URL hash περιέχει type=recovery, άνοιξε κατευθείαν το reset view.
+    if(/type=recovery|[#&]reset(\b|$)/.test(window.location.hash)){
+      openAccount('reset');
+    }
   }
 });
 
