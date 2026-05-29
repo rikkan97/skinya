@@ -20,8 +20,10 @@ function navigateTo(route){
   if(!target){
     const home = document.getElementById('page-home');
     if(!home){
-      // Είμαστε σε standalone page — πάμε στο root με query flag
-      window.location.href = '/?goto=' + encodeURIComponent(route);
+      // Είμαστε σε standalone page — πάμε στο root με query flag.
+      // Αν υπάρχει pending acct tab, encode και αυτό για να επιβιώσει στο reload.
+      const tabHint = window._pendingAcctTab ? '&tab=' + encodeURIComponent(window._pendingAcctTab) : '';
+      window.location.href = '/?goto=' + encodeURIComponent(route) + tabHint;
       return;
     }
     // Είμαστε στο index.html αλλά το route δεν υπάρχει — fallback home

@@ -34,18 +34,28 @@ function escapeHTML(s){
 // Καλείται όταν ο user πλοηγείται στο page-account
 // ──────────────────────────────────────────────────────────────
 async function loadAccountPage(){
-  // Αν δεν είναι logged in, redirect στο home + open login
+  // Σε fresh page load (π.χ. ?goto=account redirect από /shop), το auth init
+  // είναι ακόμα async — το window.currentUser είναι null. Διαβάζουμε session
+  // από localStorage cache (getSession sync-από-cache) ΠΡΙΝ αποφασίσουμε redirect.
   if(!window.currentUser){
+    try {
+      const { data: { session } } = await window.sb.auth.getSession();
+      if(session?.user){
+        window.currentUser = session.user;
+      }
+    } catch(_){ /* fall through */ }
+  }
+  if(!window.currentUser){
+    // Όντως δεν είναι logged in — redirect στο home + open login
     navigateTo('home');
     setTimeout(()=>{ if(typeof openAccount === 'function') openAccount('login'); }, 200);
     return;
   }
-  // Δείξε το email στο header
-  const emailEl = document.getElementById('accountPageEmail');
-  if(emailEl) emailEl.textContent = window.currentUser.email || '';
 
-  // Default tab = orders
-  acctTabSwitch('orders');
+  // Default tab: αν κλήθηκε από modal item με data-acct-tab, χρησιμοποίησέ το.
+  const requestedTab = window._pendingAcctTab || 'orders';
+  window._pendingAcctTab = null;
+  acctTabSwitch(requestedTab);
   loadOrders();
   loadProfile();
 }

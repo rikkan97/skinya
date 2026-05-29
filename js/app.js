@@ -263,6 +263,11 @@ document.addEventListener('DOMContentLoaded', async ()=>{
     if(target){
       e.preventDefault();
       const cat = target.dataset.cat;
+      // Account tab hint — διαβάζεται από loadAccountPage μετά τη navigation,
+      // ώστε το «Στοιχεία λογαριασμού» να ανοίγει στο σωστό tab.
+      if(target.dataset.acctTab){
+        window._pendingAcctTab = target.dataset.acctTab;
+      }
       navigateTo(target.dataset.route);
       if(cat){
         setTimeout(()=>{
@@ -732,7 +737,9 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   // ───── ?goto=X param: redirect από standalone page (πχ shop.html)
   // σε SPA route (πχ checkout) που ζει μόνο στο index.html ─────
   const gotoParam = new URLSearchParams(location.search).get('goto');
+  const tabParam  = new URLSearchParams(location.search).get('tab');
   if(gotoParam && document.getElementById('page-' + gotoParam)){
+    if(tabParam) window._pendingAcctTab = tabParam;
     navigateTo(gotoParam);
     if(gotoParam === 'checkout' && typeof renderCheckout === 'function'){
       renderCheckout();
