@@ -329,14 +329,17 @@
 /* LEFT — stacked stages, πιο ψηλό για editorial feel */
 .concern-stage-wrap{position:relative;min-height:720px;border-radius:0;overflow:hidden;background:var(--mauve-soft)}
 .concern-stage{position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;justify-content:flex-end;padding:3.2rem 3rem;background-size:cover;background-position:center 35%;background-repeat:no-repeat;opacity:0;visibility:hidden;transform:scale(1.06);transition:opacity 1.6s cubic-bezier(.45,0,.55,1),transform 2.6s cubic-bezier(.45,0,.55,1),visibility 0s linear 1.6s;will-change:opacity,transform}
-/* Per-concern fallback tones (όταν δεν έχει φορτώσει η φωτογραφία) + image framing.
-   dryness (ΠΡΙΝ/ΜΕΤΑ στο κάτω): position στο top ώστε να κόβονται έξω από το πλαίσιο.
-   acne (Before/After στο πάνω): position στο bottom για το ίδιο. */
-.concern-stage[data-concern="dryness"]{background-color:#e8d4be;background-size:cover;background-position:center 18%}
-.concern-stage[data-concern="acne"]{background-color:#a7b598;background-size:cover;background-position:center 85%}
-.concern-stage[data-concern="pigmentation"]{background-color:#c89870}
+/* Per-concern fallback tones + image framing.
+   `cover` δεν αρκεί όταν η εικόνα είναι landscape και το container portrait — η εικόνα
+   γεμίζει κάθετα ακριβώς, οπότε labels πάνω/κάτω παραμένουν ορατά. Χρησιμοποιούμε
+   `auto 135%` ώστε το ύψος της εικόνας να ξεπερνά το container κατά 35%, και positionάρουμε
+   top/bottom ώστε τα labels να κόβονται έξω σε όλα τα viewports (desktop + mobile).
+   pigmentation/anti-aging (χωρίς labels): μικρό zoom 115% για να μη φαίνεται πλάι το γέμισμα. */
+.concern-stage[data-concern="dryness"]{background-color:#e8d4be;background-size:auto 135%;background-position:center top}
+.concern-stage[data-concern="acne"]{background-color:#a7b598;background-size:auto 135%;background-position:center bottom}
+.concern-stage[data-concern="pigmentation"]{background-color:#c89870;background-size:auto 115%}
 .concern-stage[data-concern="sensitivity"]{background-color:#deb9ac}
-.concern-stage[data-concern="anti-aging"]{background-color:#8d7a6c}
+.concern-stage[data-concern="anti-aging"]{background-color:#8d7a6c;background-size:auto 115%}
 /* Dark gradient overlay για text legibility */
 .concern-stage::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(31,24,19,0) 0%,rgba(31,24,19,0) 38%,rgba(31,24,19,0.45) 72%,rgba(31,24,19,0.82) 100%);pointer-events:none}
 .concern-stage.is-active{opacity:1;visibility:visible;transform:scale(1);z-index:2;transition:opacity 1.6s cubic-bezier(.45,0,.55,1),transform 2.6s cubic-bezier(.45,0,.55,1),visibility 0s linear 0s}
