@@ -17,6 +17,10 @@ create index if not exists newsletter_subscribers_subscribed_idx on newsletter_s
 
 alter table newsletter_subscribers enable row level security;
 
+-- Table-level grants: RLS δεν φτάνει — το role πρέπει να έχει και SQL-level
+-- privilege για να μπορεί καν να δοκιμάσει INSERT. Ίδιο pattern με guest_checkout.sql.
+grant insert on newsletter_subscribers to anon, authenticated;
+
 -- Anonymous + authenticated: μπορούν να κάνουν INSERT (εγγραφή)
 drop policy if exists "anyone can subscribe" on newsletter_subscribers;
 create policy "anyone can subscribe" on newsletter_subscribers
