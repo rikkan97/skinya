@@ -695,12 +695,11 @@ async function submitOrder(e){
     const orderNumber = order?.order_number || '—';
     const orderId     = order?.order_id || null;
 
-    // Email επιβεβαίωσης «Λάβαμε την παραγγελία σας» — fire-and-forget.
-    if(orderId){
-      window.sb.functions.invoke('send-order-email', {
-        body: { type: 'received', order_id: orderId }
-      }).catch(err => console.warn('[Skinya] confirmation email failed:', err));
-    }
+    // Email επιβεβαίωσης «Λάβαμε την παραγγελία σας» στέλνεται πλέον
+    // SERVER-SIDE μέσω DB trigger (trg_order_received_email) σε κάθε
+    // insert στο orders. Έτσι φεύγει πάντα — ακόμα και σε card payment
+    // όπου ο browser κάνει redirect στο Viva αμέσως. Δες
+    // supabase/order_received_email_trigger.sql.
 
     // Η παραγγελία δημιουργήθηκε — mark recovered το abandoned cart (best-effort).
     if(window.currentUser){
