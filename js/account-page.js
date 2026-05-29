@@ -34,27 +34,31 @@ function escapeHTML(s){
 // Καλείται όταν ο user πλοηγείται στο page-account
 // ──────────────────────────────────────────────────────────────
 async function loadAccountPage(){
+  console.log('[Skinya] loadAccountPage start; currentUser=', !!window.currentUser, 'pendingTab=', window._pendingAcctTab);
   // Σε fresh page load (π.χ. ?goto=account redirect από /shop), το auth init
   // είναι ακόμα async — το window.currentUser είναι null. Διαβάζουμε session
   // από localStorage cache (getSession sync-από-cache) ΠΡΙΝ αποφασίσουμε redirect.
   if(!window.currentUser){
     try {
       const { data: { session } } = await window.sb.auth.getSession();
+      console.log('[Skinya] getSession returned:', !!session);
       if(session?.user){
         window.currentUser = session.user;
       }
-    } catch(_){ /* fall through */ }
+    } catch(err){ console.warn('[Skinya] getSession error:', err); }
   }
   if(!window.currentUser){
-    // Όντως δεν είναι logged in — redirect στο home + open login
-    navigateTo('home');
-    setTimeout(()=>{ if(typeof openAccount === 'function') openAccount('login'); }, 200);
+    // Δεν είναι logged in — ΜΗΝ κάνεις redirect στο home (δημιουργεί confusion).
+    // Άνοιξε το login modal πάνω στη σελίδα account.
+    console.log('[Skinya] No session → open login modal (no redirect)');
+    if(typeof openAccount === 'function') openAccount('login');
     return;
   }
 
   // Default tab: αν κλήθηκε από modal item με data-acct-tab, χρησιμοποίησέ το.
   const requestedTab = window._pendingAcctTab || 'orders';
   window._pendingAcctTab = null;
+  console.log('[Skinya] account page loaded → tab:', requestedTab);
   acctTabSwitch(requestedTab);
   loadOrders();
   loadProfile();
