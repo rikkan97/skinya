@@ -29,6 +29,12 @@ window.sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
-    detectSessionInUrl: true
+    detectSessionInUrl: true,
+    // flowType: 'implicit' → tokens στο URL hash, αμέσως ενεργή session
+    // χωρίς code_verifier handshake. Κρίσιμο για password-reset cross-device:
+    // όταν ο χρήστης ανοίγει το email link σε άλλο browser/tab από εκεί που
+    // ζήτησε το reset, ο PKCE (default σε νεότερα SDK) σπάει σιωπηλά. Email
+    // & magic links είναι short-lived ούτως ή άλλως → ασφαλές tradeoff.
+    flowType: 'implicit'
   }
 });
