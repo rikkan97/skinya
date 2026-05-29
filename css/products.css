@@ -243,9 +243,8 @@
 .key-ing .tooltip span{display:block;opacity:.92}
 .key-ing .tooltip::before{content:'';position:absolute;top:-5px;right:14px;width:10px;height:10px;background:#52382a;transform:rotate(45deg);border-radius:1px}
 .key-ing.show-tip .tooltip{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto}
-@media (hover:hover){
-  .key-ing.has-tip:hover .tooltip{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto}
-}
+/* Σκόπιμα ΧΩΡΙΣ :hover trigger — μόνο κλικ στο ⓘ ανοίγει το tooltip.
+   Έτσι δεν ανοίγει κατά λάθος όταν ο χρήστης απλά περνά πάνω από το card. */
 
 /* PRODUCT IMAGES — full-bleed cover σε όλο το visual box */
 .featured-visual.has-img,.mini-visual.has-img{padding:0;background:#fff}
@@ -377,11 +376,14 @@
 }
 .cert-badge[data-tip].show-tip::after{transform:translateY(0)}
 .product-seal[data-tip].show-tip::after{transform:translateY(0)}
-/* Hover (desktop only — devices με fine pointer) — guarded να μην triggerάρει σε touch */
+/* Hover (desktop only — devices με fine pointer) — guarded να μην triggerάρει σε touch.
+   transition-delay 450ms ΜΟΝΟ στο :hover → όταν περνάει γρήγορα το ποντίκι από scroll
+   τα tooltips ΔΕΝ ανοίγουν. Όταν φύγει το ποντίκι, δεν υπάρχει delay → άμεσο κλείσιμο. */
 @media (hover:hover) and (pointer:fine){
   .cert-badge[data-tip]:hover::after,.cert-badge[data-tip]:hover::before,
   .product-seal[data-tip]:hover::after,.product-seal[data-tip]:hover::before{
     opacity:1;visibility:visible;
+    transition-delay:450ms;
   }
   .cert-badge[data-tip]:hover::after{transform:translateY(0)}
   .product-seal[data-tip]:hover::after{transform:translateY(0)}
