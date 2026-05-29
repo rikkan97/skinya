@@ -45,7 +45,7 @@ const CARRIERS: Record<string, { label: string; url: (nr: string) => string }> =
   speedex:        { label: 'Speedex',              url: nr => `https://speedex.gr/speedex/NewTrackAndTrace.aspx?number=${encodeURIComponent(nr)}` },
   courier_center: { label: 'Courier Center',       url: _nr => `https://www.courier.gr/track` },
   geniki:         { label: 'Γενική Ταχυδρομική',   url: nr => `https://www.taxydromiki.com/track/${encodeURIComponent(nr)}` },
-  boxnow:         { label: 'BOX NOW',              url: _nr => `https://boxnow.gr/track` },
+  boxnow:         { label: 'BOX NOW',              url: nr => `https://boxnow.gr/?track=${encodeURIComponent(nr)}` },
 };
 
 const fmtMoney = (n: unknown) => `${(Number(n) || 0).toFixed(2)}€`;
@@ -168,6 +168,33 @@ function bankBlock(o: any, bank: any): string {
     </table>`;
 }
 
+function shippingMethodBlock(o: any): string {
+  const addr = o.shipping_address || {};
+  const m = addr.shipping_method || '';
+  if(!m) return '';
+  let locker: any = null;
+  if(m === 'box_now' && addr.boxnow_locker){
+    try { locker = JSON.parse(addr.boxnow_locker); } catch(_){}
+  }
+  const title = m === 'box_now'
+    ? 'Παραλαβή από Box Now'
+    : m === 'elta_courier'
+      ? 'Παράδοση κατ\' οίκον (Γενική Ταχυδρομική)'
+      : esc(m);
+  const sub = locker
+    ? `<strong style="display:block;color:${C.ink};font-size:15px;margin-top:4px">${esc(locker.name || ('BOX ' + (locker.id||'')))}</strong>
+       <span style="color:${C.muted};font-size:13px">${esc([locker.address, locker.postcode].filter(Boolean).join(' · '))}</span>`
+    : '';
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#faf1e9;border:1px solid ${C.line};border-radius:12px;margin:0 0 16px">
+    <tr><td style="height:3px;background:${C.gold};border-radius:12px 12px 0 0"></td></tr>
+    <tr><td style="padding:14px 18px">
+      <span style="color:${C.gold};font-size:10px;letter-spacing:.28em;text-transform:uppercase;font-weight:600">Τρόπος αποστολής</span><br>
+      <span style="color:${C.ink};font-size:14px;font-weight:500">${title}</span>
+      ${sub}
+    </td></tr>
+  </table>`;
+}
+
 function receivedHtml(o: any, bank: any): string {
   const addr = o.shipping_address || {};
   const name = [addr.first_name, addr.last_name].filter(Boolean).join(' ') || '';
@@ -175,6 +202,7 @@ function receivedHtml(o: any, bank: any): string {
   const intro = `${name ? esc(name) + ', ε' : 'Ε'}υχαριστούμε για την παραγγελία σου. Την παραλάβαμε και βρίσκεται <strong>υπό επεξεργασία</strong>.${isBank ? ' Ολοκλήρωσε την πληρωμή με τα στοιχεία παρακάτω.' : ' Θα σου στείλουμε νέο email με τον αριθμό αποστολής μόλις φύγει το δέμα.'}`;
   return shell('Λάβαμε την παραγγελία σου ❀', `
     ${orderBadge(o)}
+    ${shippingMethodBlock(o)}
     ${bankBlock(o, bank)}
     ${itemsTable(o.items)}
     ${totalsBlock(o)}
@@ -215,6 +243,18 @@ function adminInfoRows(o: any): string {
   const pm = o.payment_method === 'bank_transfer' ? 'Τραπεζική κατάθεση' : 'Κάρτα (Viva)';
   const street = [addr.line1, addr.line2].filter(Boolean).join(', ');
   const area   = [addr.postcode, addr.city, addr.region].filter(Boolean).join(' · ');
+  // Τρόπος αποστολής που διάλεξε ο πελάτης (Box Now vs Γενική Ταχυδρομική)
+  const shipMethod = addr.shipping_method || '';
+  const shipLabel = shipMethod === 'box_now' ? 'Box Now (locker)'
+                  : shipMethod === 'elta_courier' ? 'Γενική Ταχυδρομική (κατ\' οίκον)'
+                  : (shipMethod || '—');
+  let locker: any = null;
+  if(addr.boxnow_locker){
+    try { locker = JSON.parse(addr.boxnow_locker); } catch(_){}
+  }
+  const lockerStr = locker
+    ? `${locker.name || ('BOX ' + (locker.id||''))} · ${[locker.address, locker.postcode].filter(Boolean).join(' ')}`
+    : '';
   const row = (l: string, v: string) =>
     `<tr><td style="padding:4px 0;color:#9a8f86;font-size:13px;vertical-align:top">${l}</td><td style="padding:4px 0;text-align:right;color:#1c1a18;font-size:13px;font-weight:600">${v}</td></tr>`;
   const link = ADMIN_URL
@@ -229,6 +269,8 @@ function adminInfoRows(o: any): string {
         ${row('Τηλέφωνο', esc(addr.phone || '—'))}
         ${street ? row('Διεύθυνση', esc(street)) : ''}
         ${area ? row('Περιοχή', esc(area)) : ''}
+        ${row('Αποστολή', esc(shipLabel))}
+        ${lockerStr ? row('Locker', esc(lockerStr)) : ''}
         ${row('Πληρωμή', pm)}
         ${o.coupon_code ? row('Κουπόνι', esc(o.coupon_code)) : ''}
         ${row('Σύνολο', fmtMoney(o.total))}
