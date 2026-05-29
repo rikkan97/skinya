@@ -82,7 +82,7 @@ async function loadOrders(){
       container.innerHTML = `
         <div class="acct-empty-state">
           <p class="acct-empty">Δεν έχεις ακόμα παραγγελίες.</p>
-          <a class="btn-primary" data-route="products"><span>Ανακάλυψε προϊόντα</span></a>
+          <a class="btn-primary" href="/shop"><span>Ανακάλυψε προϊόντα</span></a>
         </div>`;
       return;
     }

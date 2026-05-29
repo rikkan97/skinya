@@ -15,26 +15,15 @@
    ==================================================================== */
 
 /* ====================================================================
-   VIEW PRODUCT — navigate στα Προϊόντα και κάνε scroll/highlight
-   στην κάρτα με data-id={id}. Ίδιο pattern με search.js.
+   VIEW PRODUCT — thin wrapper γύρω από το goToProduct (router.js).
+   Δουλεύει από οποιαδήποτε σελίδα (standalone ή SPA): αν είμαστε στη
+   σελίδα /shop κάνει inline scroll + highlight, αλλιώς redirect στη
+   /shop?pid=ID#cat-X και το landing handler αναλαμβάνει το scroll.
+   Διατηρείται ως ξεχωριστή συνάρτηση επειδή την καλούν legacy onclick
+   handlers (π.χ. στο routina.html).
    ==================================================================== */
 function viewProduct(id){
-  const onProducts = document.getElementById('page-products')?.classList.contains('active');
-  const doScroll = ()=>{
-    const card = document.querySelector(`[data-id="${id}"]`);
-    if(!card) return;
-    const offset = 100;
-    const y = card.getBoundingClientRect().top + window.scrollY - offset;
-    window.scrollTo({top:y, behavior:'smooth'});
-    card.classList.add('search-highlight');
-    setTimeout(()=>card.classList.remove('search-highlight'), 2400);
-  };
-  if(onProducts){
-    setTimeout(doScroll, 60);
-  } else {
-    navigateTo('products');
-    setTimeout(doScroll, 220);
-  }
+  if(typeof goToProduct === 'function') goToProduct(id);
 }
 
 /* ====================================================================
@@ -512,7 +501,10 @@ document.addEventListener('DOMContentLoaded', async ()=>{
       homeShopTabs.querySelectorAll('.home-shop-tab').forEach(t=>{
         t.classList.toggle('is-active', t.dataset.cat === catId);
       });
-      if(homeShopMoreLink) homeShopMoreLink.dataset.cat = catId;
+      if(homeShopMoreLink){
+        homeShopMoreLink.dataset.cat = catId;
+        homeShopMoreLink.href = '/shop#cat-' + catId;
+      }
 
       // Mobile scroll-strip: scroll-άρουμε το active tab στο view ΜΟΝΟ όταν το
       // διάλεξε ο χρήστης. Στο auto-cycle κρατάμε το strip ακίνητο (ξεκινά από
@@ -716,6 +708,26 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   setupScrollSpy();
   setupFanCarousel('morningFan');
   setupFanCarousel('nightFan');
+
+  // ───── /shop landing — διάβασε #cat-X / ?pid=ID και scroll μετά
+  //       το renderCatalog (τα anchors υπάρχουν πια στο DOM). Χωρίς
+  //       αυτό, native hash scroll αποτυγχάνει επειδή το catalog
+  //       ρεντάρει async μετά το load. ─────
+  if(document.getElementById('page-products')){
+    const params = new URLSearchParams(location.search);
+    const pid = params.get('pid');
+    const hash = location.hash.replace('#','');
+    if(pid){
+      // Καθάρισμα του URL ώστε refresh να μην ξανα-highlight-άρει
+      history.replaceState(null, '', location.pathname + location.hash);
+      setTimeout(()=>{ if(typeof goToProduct==='function') goToProduct(pid); }, 80);
+    } else if(hash.startsWith('cat-')){
+      setTimeout(()=>{
+        const cat = hash.replace('cat-','');
+        if(typeof goToCategory==='function') goToCategory(cat);
+      }, 80);
+    }
+  }
 
   // ───── ?goto=X param: redirect από standalone page (πχ shop.html)
   // σε SPA route (πχ checkout) που ζει μόνο στο index.html ─────

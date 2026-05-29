@@ -5,8 +5,9 @@
    • Close: ESC, click στο backdrop, click στο ✕, click σε αποτέλεσμα
    • Filter: case + accent insensitive (Ελληνικά + Αγγλικά)
    • Πεδία match: brand + name + keyIng + tech
-   • Click result → navigateTo('products') + smooth scroll στην κάρτα
-     με data-id, και προσθέτει .search-highlight για 2.2s pulse
+   • Click result → goToProduct(id): inline scroll αν είμαστε στη /shop,
+     αλλιώς redirect σε /shop?pid=ID#cat-X (router.js + app.js landing
+     handler) και προσθέτει .search-highlight για 2.4s pulse
    ==================================================================== */
 
 let _searchOpened = false;
@@ -167,28 +168,11 @@ function setupSearch(){
     const r = e.target.closest('.search-result');
     if(!r) return;
     const id = r.dataset.id;
-    const cat = r.dataset.cat;
     closeSearch();
-    // Αν είμαστε ήδη στη σελίδα products, scroll άμεσα. Αλλιώς navigate πρώτα.
-    const onProducts = document.getElementById('page-products')?.classList.contains('active');
-    const doScroll = ()=>{
-      const card = document.querySelector(`[data-id="${id}"]`);
-      const anchor = card || document.getElementById('cat-' + cat);
-      if(!anchor) return;
-      const offset = 100; // sticky nav clearance
-      const y = anchor.getBoundingClientRect().top + window.scrollY - offset;
-      window.scrollTo({top:y, behavior:'smooth'});
-      if(card){
-        card.classList.add('search-highlight');
-        setTimeout(()=>card.classList.remove('search-highlight'), 2400);
-      }
-    };
-    if(onProducts){
-      setTimeout(doScroll, 60);
-    } else {
-      navigateTo('products');
-      setTimeout(doScroll, 200);
-    }
+    // goToProduct (router.js): inline scroll αν είμαστε ήδη στη /shop,
+    // αλλιώς redirect στη /shop?pid=ID#cat-X — το app.js landing handler
+    // αναλαμβάνει το scroll αφού το catalog ρεντάρει.
+    if(typeof goToProduct === 'function') goToProduct(id);
   });
 
   renderSearchResults('');

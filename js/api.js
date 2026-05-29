@@ -206,7 +206,7 @@ async function renderHomeFavorites(){
             <div class="meta-item"><small>Μέγεθος</small><strong>${escapeHTMLSafe(p.size||'—')}</strong></div>
             <div class="meta-item"><small>Badges</small><strong>${escapeHTMLSafe(badges)}</strong></div>
           </div>
-          <a class="btn-primary" data-route="products" data-cat="${escapeHTMLSafe(p.cat)}"><span>Δες στα ${escapeHTMLSafe(catGen)}</span></a>
+          <a class="btn-primary" href="/shop#cat-${escapeHTMLSafe(p.cat)}"><span>Δες στα ${escapeHTMLSafe(catGen)}</span></a>
         </div>
         <div class="slide-visual">
           <span class="slide-visual-initial">${escapeHTMLSafe((p.brand||'Skinya').charAt(0))}</span>
