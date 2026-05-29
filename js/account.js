@@ -88,10 +88,10 @@ async function accountSubmit(e, type){
       }
       const { data, error } = await window.sb.auth.signUp({ email, password });
       if(error) throw error;
-      // Welcome email (#11) — best-effort, δεν μπλοκάρει τη ροή
-      window.sb.functions.invoke('send-welcome', { body:{ email } })
-        .catch(err => console.warn('[Skinya] welcome email failed:', err));
-      // Αν το Supabase project έχει "Confirm email" ON, δεν δίνεται session αμέσως
+      // Αν το Supabase project έχει "Confirm email" ON, δεν δίνεται session αμέσως.
+      // Welcome email φεύγει ΜΕΤΑ την επιβεβαίωση μέσω onAuthStateChange→SIGNED_IN
+      // (βλ. maybeSendWelcomeOnce). Αν είναι OFF και έχουμε ήδη session, ο handler
+      // θα το πιάσει κανονικά — χωρίς να σταλεί ταυτόχρονα με το confirm email.
       if(data.session){
         showToast('Καλώς ήρθες ❀');
         form.reset();
@@ -231,8 +231,35 @@ document.addEventListener('DOMContentLoaded', ()=>{
   // Initial session check + listen σε auth state changes
   if(window.sb){
     updateAccountUI();
-    window.sb.auth.onAuthStateChange((_event, _session)=>{
+    window.sb.auth.onAuthStateChange((event, session)=>{
       updateAccountUI();
+      // Welcome email φεύγει εδώ (ΜΕΤΑ το email-confirm), όχι κατά το signUp.
+      // Atomic claim στο customers.welcome_sent_at → idempotent: τρέχει σε κάθε
+      // SIGNED_IN αλλά στέλνει μόνο την πρώτη φορά.
+      if(event === 'SIGNED_IN' && session?.user){
+        maybeSendWelcomeOnce(session.user);
+      }
     });
   }
 });
+
+// Atomic-claim + send welcome email (#11). Καλείται από onAuthStateChange.
+// Η UPDATE με `is('welcome_sent_at', null)` παίζει σαν compare-and-swap:
+// μόνο ένα tab/session «κερδίζει» το row → μόνο ένα welcome φεύγει.
+async function maybeSendWelcomeOnce(user){
+  if(!user?.id || !user?.email) return;
+  try {
+    const { data, error } = await window.sb
+      .from('customers')
+      .update({ welcome_sent_at: new Date().toISOString() })
+      .eq('id', user.id)
+      .is('welcome_sent_at', null)
+      .select('id');
+    if(error){ console.warn('[Skinya] welcome claim error:', error); return; }
+    if(!data || data.length === 0) return;  // ήδη σταλμένο
+    window.sb.functions.invoke('send-welcome', { body:{ email: user.email } })
+      .catch(err => console.warn('[Skinya] welcome email failed:', err));
+  } catch(err){
+    console.warn('[Skinya] maybeSendWelcomeOnce error:', err);
+  }
+}
