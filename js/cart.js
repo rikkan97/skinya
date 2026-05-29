@@ -40,11 +40,22 @@ function initCartFromStorage(){
 
 // Restore cart από Supabase για logged-in users (cross-device).
 // Καλείται από app.js όταν εντοπίσει logged-in user.
+// ΣΗΜΑΝΤΙΚΟ: αν το DB επιστρέψει null/empty σημαίνει ότι ο user έχει
+// καθαρίσει το cart του από άλλη συσκευή — άρα καθαρίζουμε και τοπικά.
 async function restoreCartFromSupabase(){
   if(!window.sb || !window.currentUser) return;
   try {
     const { data, error } = await window.sb.rpc('load_abandoned_cart');
-    if(error || !data || !Array.isArray(data) || data.length === 0) return;
+    if(error) return;
+    if(!data || !Array.isArray(data) || data.length === 0){
+      // Cross-device clear — άδειασε και τοπικά αν είχε τίποτα
+      if(cart.length > 0){
+        cart = [];
+        saveCartToStorage();
+        updateCart();
+      }
+      return;
+    }
     // DB items have format {sku, name, brand, price, qty, img} — map back to cart shape
     cart = data.map(i => ({
       id: i.sku, name: i.name, brand: i.brand,
@@ -197,11 +208,18 @@ function scheduleAbandonedSave(){
   if(!window.currentUser) return;            // capture μόνο logged-in
   clearTimeout(_abandonedTimer);
   _abandonedTimer = setTimeout(()=>{
-    if(cart.length === 0) return;
-    const items = cart.map(i=>({ sku:i.id, name:i.name, brand:i.brand, price:i.price||0, qty:i.qty, img:i.img||null }));
-    const subtotal = cart.reduce((s,i)=>s+(i.price||0)*i.qty, 0);
-    // Supabase v2 builder είναι PromiseLike: .then() αντί για .catch()
     try {
+      if(cart.length === 0){
+        // Cart άδειασε — clear το DB row ώστε cross-device sync να μη
+        // φέρει πίσω παλιά items. clear_abandoned_cart κάνει
+        // recovered_at = now(), και το load_abandoned_cart το φιλτράρει.
+        window.sb.rpc('clear_abandoned_cart')
+          .then(()=>{}, ()=>{});
+        return;
+      }
+      const items = cart.map(i=>({ sku:i.id, name:i.name, brand:i.brand, price:i.price||0, qty:i.qty, img:i.img||null }));
+      const subtotal = cart.reduce((s,i)=>s+(i.price||0)*i.qty, 0);
+      // Supabase v2 builder είναι PromiseLike: .then() αντί για .catch()
       window.sb.rpc('save_abandoned_cart', { p_items: items, p_subtotal: Number(subtotal.toFixed(2)) })
         .then(()=>{}, ()=>{});            // best-effort, swallow errors
     } catch(_){ /* sync throw — ignore */ }
