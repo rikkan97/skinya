@@ -577,9 +577,13 @@ async function renderProductsHeader(){
   const anyFrame = document.querySelector(slotSelector.center);
   if(!anyFrame) return;
 
+  // No-flash fade-in: εμφάνισε το stack ΜΟΝΟ αφού μπουν οι admin εικόνες.
+  const stackEl = document.querySelector('.page-header--products .ph-stack');
+  const reveal = () => stackEl && stackEl.classList.add('is-ready');
+
   const section = window.siteSections?.['products_header']
                   || await fetchSiteSection('products_header');
-  if(!section || !Array.isArray(section.items)) return;
+  if(!section || !Array.isArray(section.items)){ reveal(); return; }
 
   const slots = ['left', 'center', 'right'];
   const itemBySlot = (slot, idx) =>
@@ -619,6 +623,15 @@ async function renderProductsHeader(){
       if(labelTxt) miniName.textContent = labelTxt;
     }
   });
+
+  // Fade-in αφού φορτώσει η κύρια εικόνα — αποφεύγει half-loaded flash.
+  const mainImg = anyFrame.querySelector('.ph-product-main img');
+  if(mainImg && !mainImg.complete){
+    mainImg.addEventListener('load', reveal, { once: true });
+    mainImg.addEventListener('error', reveal, { once: true });
+  } else {
+    reveal();
+  }
 }
 
 async function renderFounders(){
