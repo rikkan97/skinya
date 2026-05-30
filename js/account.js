@@ -180,8 +180,10 @@ async function accountLogout(){
   }
   showToast('Αποσυνδέθηκες ✓');
   closeAccount();
-  // Μετά το logout → αρχική (όχι στις παραγγελίες/λογαριασμό)
-  if(typeof navigateTo === 'function') navigateTo('home');
+  // Μετά το logout → hard redirect στην αρχική. Όχι SPA-swap: θέλουμε
+  // καθαρό state (currentUser, cart κλπ) + να φύγουμε σίγουρα από το
+  // account page ακόμα κι αν είμαστε σε standalone σελίδα.
+  setTimeout(() => { window.location.href = '/'; }, 600);
 }
 
 // ──────────────────────────────────────────────────────────────
