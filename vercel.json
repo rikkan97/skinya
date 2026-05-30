@@ -12,15 +12,7 @@
   ],
   "headers": [
     {
-      "//": "JS/CSS: ο browser ΠΑΝΤΑ revalidates (ETag) — παίρνει νέα έκδοση μόλις αλλάξει, χωρίς manual hard refresh. Τέλος στα stale-cache bugs.",
-      "source": "/(.*)\\.(js|css)",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
-      ]
-    },
-    {
-      "//": "HTML: επίσης revalidate (τα pages αλλάζουν συχνά).",
-      "source": "/(.*)\\.html",
+      "source": "/(.*)\\.(js|css|html)",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
       ]
