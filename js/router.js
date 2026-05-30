@@ -13,6 +13,14 @@
    ==================================================================== */
 
 function navigateTo(route){
+  // Anti-flash hint (data-initial-route στο <html>) εφαρμόζει inline CSS
+  // με id-selector specificity που κρατάει το ΑΡΧΙΚΟ page visible ακόμα
+  // και αν αφαιρέσουμε το .active class. Καθαρίζουμε εδώ το hint ώστε το
+  // .page {display:none} του base.css να επανέρθει — αλλιώς μετά από
+  // checkout → order-confirmed εμφανίζονται ΚΑΙ ΤΑ ΔΥΟ pages μαζί.
+  if(document.documentElement.dataset.initialRoute){
+    delete document.documentElement.dataset.initialRoute;
+  }
   // Standalone pages (shop.html, routina.html κλπ) δεν έχουν τις άλλες
   // SPA-only pages μέσα τους. Αν ο user καλέσει navigateTo('checkout')
   // από εκεί, redirect στο index.html όπου ζει το checkout SPA.

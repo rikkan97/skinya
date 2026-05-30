@@ -54,9 +54,12 @@
 <script>
 (function(){
   try {
+    var valid = ['account','checkout','order-confirmed'];
     var route = new URLSearchParams(location.search).get('goto')
-             || (location.hash.replace('#','').match(/^[a-z-]+$/i) ? location.hash.replace('#','') : null);
-    if(route) document.documentElement.dataset.initialRoute = route;
+             || location.hash.replace('#','');
+    if(route && valid.indexOf(route) !== -1){
+      document.documentElement.dataset.initialRoute = route;
+    }
   } catch(_) {}
 })();
 </script>
