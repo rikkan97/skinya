@@ -224,12 +224,21 @@ function updateCart(){
     items.innerHTML = cart.map(i=>{
       const stock = getProductStock(i.id);
       const atMax = stock != null && i.qty >= stock;
+      // Ένδειξη «σετ» + αρχική τιμή διαγραμμένη όταν υπάρχει bundle/sale έκπτωση
+      const p    = (typeof products !== 'undefined' && Array.isArray(products)) ? products.find(pr=>pr.id===i.id) : null;
+      const orig = (p && typeof effectivePrice === 'function') ? effectivePrice(p) : (i.price||0);
+      const hasDisc = orig - (i.price||0) > 0.005;
+      const priceHtml = i.price
+        ? (hasDisc
+            ? `<div class="cart-item-price"><s style="opacity:.5;font-size:.8em;margin-right:.35em">${(orig*i.qty).toFixed(2)}€</s>${(i.price*i.qty).toFixed(2)}€</div>`
+            : `<div class="cart-item-price">${(i.price*i.qty).toFixed(2)}€</div>`)
+        : '';
       return `
       <div class="cart-item">
         <div class="cart-item-img">${i.img?`<img src="${i.img}" alt="${(i.name||'').replace(/"/g,'&quot;')}">`:(i.brand||'').charAt(0)}</div>
         <div class="cart-item-info">
           <h5>${i.brand?i.brand+' · ':''}${i.name}</h5>
-          <small>${i.size||''}${atMax ? ` <span class="qty-max-note">· max</span>` : ''}</small>
+          <small>${i.size||''}${hasDisc ? ` <span style="color:var(--gold-leaf,#c0857a);font-weight:600">· σετ ✦</span>` : ''}${atMax ? ` <span class="qty-max-note">· max</span>` : ''}</small>
           <div class="qty-ctrl">
             <button onclick="changeQty('${i.id}',-1)">−</button>
             <span>${i.qty}</span>
@@ -237,7 +246,7 @@ function updateCart(){
           </div>
         </div>
         <div style="text-align:right">
-          ${i.price?`<div class="cart-item-price">${(i.price*i.qty).toFixed(2)}€</div>`:''}
+          ${priceHtml}
           <button class="cart-remove" onclick="removeItem('${i.id}')">Αφαίρεση</button>
         </div>
       </div>
