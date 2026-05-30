@@ -57,8 +57,12 @@ declare
   v_stock         int;
   v_sku           text;
   v_product_name  text;
-  v_base          numeric;
+  v_base          numeric;   -- effective τιμή (sale αν υπάρχει, αλλιώς default)
+  v_default       numeric;   -- κανονική τιμή (default_price) — βάση για bundle
+  v_bundle_target numeric;   -- default × (1 - bundle_pct)
+  v_discounted    numeric;   -- least(sale, bundle_target) = η μεγαλύτερη έκπτωση
   v_unit          numeric;
+  v_line          numeric;
   v_disc_pct      numeric;
   v_order_skus    text[];
   v_bundle_skus   text[];
@@ -169,17 +173,31 @@ begin
     v_sku := v_item->>'sku';
     v_qty := (v_item->>'quantity')::int;
 
-    -- Τιμή ΑΠΟ ΤΗ ΒΑΣΗ — όχι από το frontend
-    select coalesce(price, default_price)
-      into v_base
+    -- Τιμές ΑΠΟ ΤΗ ΒΑΣΗ — όχι από το frontend
+    --   v_base    = effective (sale price αν υπάρχει, αλλιώς default)
+    --   v_default = κανονική τιμή (βάση για τον υπολογισμό του bundle)
+    select coalesce(price, default_price), default_price
+      into v_base, v_default
       from products where sku = v_sku;
-    v_base := coalesce(v_base, 0);
+    v_base    := coalesce(v_base, 0);
+    v_default := coalesce(v_default, v_base);
 
-    -- Bundle discount αν το sku ανήκει σε πλήρες σετ
     v_disc_pct := coalesce((v_bundle_disc->>v_sku)::numeric, 0);
-    v_unit := round(v_base * (1 - v_disc_pct), 2);
 
-    v_subtotal := v_subtotal + (v_unit * v_qty);
+    if v_disc_pct > 0 then
+      -- Bundle τιμή πάνω στην ΚΑΝΟΝΙΚΗ τιμή
+      v_bundle_target := round(v_default * (1 - v_disc_pct), 2);
+      -- «Μόνο η μεγαλύτερη έκπτωση»: το χαμηλότερο από sale vs bundle
+      v_discounted := least(v_base, v_bundle_target);
+      -- «Μόνο 1 τεμάχιο»: 1× discounted + υπόλοιπα σε κανονική/sale τιμή
+      v_line := round(v_discounted + v_base * (v_qty - 1), 2);
+    else
+      v_line := round(v_base * v_qty, 2);
+    end if;
+
+    -- Blended unit price (line / qty) — κρατά uniform δομή στο order_items
+    v_unit := round(v_line / v_qty, 2);
+    v_subtotal := v_subtotal + v_line;
 
     select id into v_product_id from products where sku = v_sku;
 
@@ -187,7 +205,7 @@ begin
       order_id, product_id, product_snapshot, quantity, unit_price, line_total
     ) values (
       v_order_id, v_product_id, v_item->'snapshot',
-      v_qty, v_unit, round(v_unit * v_qty, 2)
+      v_qty, v_unit, v_line
     );
   end loop;
 

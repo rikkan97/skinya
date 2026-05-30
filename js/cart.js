@@ -198,9 +198,18 @@ function recalcBundlePricing(){
   cart.forEach(item => {
     const p = products.find(pr => pr.id === item.id);
     if(!p) return;                          // άγνωστο προϊόν — άσε το ως έχει
-    const base = effectivePrice(p);
-    const disc = discMap[item.id] || 0;
-    item.price = +(base * (1 - disc)).toFixed(2);
+    const base = effectivePrice(p);         // sale τιμή αν υπάρχει, αλλιώς default
+    const pct  = discMap[item.id] || 0;
+    if(pct > 0){
+      // ΙΔΙΟ logic με το backend (create_order):
+      const def        = (p.defaultPrice != null && !isNaN(p.defaultPrice)) ? Number(p.defaultPrice) : base;
+      const target     = +(def * (1 - pct)).toFixed(2);
+      const discounted = Math.min(base, target);                  // μεγαλύτερη έκπτωση (sale vs bundle)
+      const line       = +(discounted + base * (item.qty - 1)).toFixed(2);  // μόνο 1 τεμάχιο discount
+      item.price = +(line / item.qty).toFixed(2);                 // blended unit price
+    } else {
+      item.price = base;
+    }
   });
 }
 
