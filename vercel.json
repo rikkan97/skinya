@@ -9,5 +9,21 @@
     { "source": "/oroi", "destination": "/oroi.html" },
     { "source": "/aporrito", "destination": "/aporrito.html" },
     { "source": "/cookies", "destination": "/cookies.html" }
+  ],
+  "headers": [
+    {
+      "//": "JS/CSS: ο browser ΠΑΝΤΑ revalidates (ETag) — παίρνει νέα έκδοση μόλις αλλάξει, χωρίς manual hard refresh. Τέλος στα stale-cache bugs.",
+      "source": "/(.*)\\.(js|css)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+      ]
+    },
+    {
+      "//": "HTML: επίσης revalidate (τα pages αλλάζουν συχνά).",
+      "source": "/(.*)\\.html",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+      ]
+    }
   ]
 }
