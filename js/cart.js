@@ -117,10 +117,13 @@ function addToCart(id){
 // αντί για 6+ διαδοχικά toasts από το addToCart.
 function addBundle(ids, bundleName, discount){
   const pct = (typeof discount === 'number' && discount > 0) ? discount : 0;
+  let added = 0, soldOut = 0, total = 0;
   ids.forEach(id => {
     const product = products.find(p => p.id === id);
     if(!product) return;
-    if(!isProductAvailable(product)) return;
+    total++;
+    if(!isProductAvailable(product)){ soldOut++; return; }
+    added++;
     const existing = cart.find(i => i.id === id);
     if(existing){
       existing.qty++;
@@ -132,7 +135,16 @@ function addBundle(ids, bundleName, discount){
     }
   });
   updateCart();
-  showToast(`${bundleName} προστέθηκε στο καλάθι ❀`);
+  // Ενημέρωσε σαφώς αν κάποια προϊόντα του σετ ήταν sold out (όχι σιωπηλό skip)
+  if(added === 0){
+    showToast('Το σετ δεν είναι διαθέσιμο αυτή τη στιγμή — sold out', 'warn');
+    return;
+  }
+  if(soldOut > 0){
+    showToast(`Προστέθηκαν ${added}/${total} — ${soldOut} sold out αυτή τη στιγμή`, 'warn');
+  } else {
+    showToast(`${bundleName} προστέθηκε στο καλάθι ❀`);
+  }
   bumpCartCount();
 }
 
