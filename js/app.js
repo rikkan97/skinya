@@ -740,6 +740,20 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   const tabParam  = new URLSearchParams(location.search).get('tab');
   if(gotoParam && document.getElementById('page-' + gotoParam)){
     if(tabParam) window._pendingAcctTab = tabParam;
+    // Checkout από abandoned-cart email: ο logged-in user μπορεί να μην
+    // έχει ακόμα cart στο localStorage αυτής της συσκευής. Restore από
+    // Supabase ΠΡΩΤΑ ώστε το checkout να μην είναι άδειο. Σιγουρεύουμε
+    // ότι το session έχει διαβαστεί (το updateAccountUI μπορεί να μην
+    // έχει προλάβει να θέσει το window.currentUser).
+    if(gotoParam === 'checkout' && cart.length === 0){
+      try {
+        if(!window.currentUser && window.sb){
+          const { data: { session } } = await window.sb.auth.getSession();
+          window.currentUser = session?.user || window.currentUser;
+        }
+        if(typeof restoreCartFromSupabase === 'function') await restoreCartFromSupabase();
+      } catch(_){ /* best-effort */ }
+    }
     navigateTo(gotoParam);
     if(gotoParam === 'checkout' && typeof renderCheckout === 'function'){
       renderCheckout();

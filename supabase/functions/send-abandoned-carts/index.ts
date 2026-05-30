@@ -45,7 +45,7 @@ function cartHtml(items: any[], subtotal: number): string {
                 <td style="padding:8px 0;text-align:right;font-weight:700;color:#1c1a18">${fmtMoney(subtotal)}</td></tr>
           </table>
           <p style="margin:22px 0 0;text-align:center">
-            <a href="${SITE_URL}" style="display:inline-block;background:#1c1a18;color:#fff;text-decoration:none;padding:14px 30px;border-radius:999px;font-weight:600">Ολοκλήρωσε την παραγγελία →</a>
+            <a href="${SITE_URL}/?goto=checkout" style="display:inline-block;background:#1c1a18;color:#fff;text-decoration:none;padding:14px 30px;border-radius:999px;font-weight:600">Ολοκλήρωσε την παραγγελία →</a>
           </p>
         </td></tr>
         <tr><td style="padding:20px 32px;background:#faf8f6;color:#9a8f86;font-size:12px;text-align:center;border-top:1px solid #eee">Skinya · Authentic K-Beauty</td></tr>
