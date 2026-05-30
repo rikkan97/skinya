@@ -203,6 +203,12 @@ async function saveProfile(e){
       .eq('id', window.currentUser.id);
 
     if(error) throw error;
+
+    // Sync με το newsletter_subscribers (την επίσημη λίστα για campaigns).
+    // RLS-safe μέσω RPC: subscribe/unsubscribe ανάλογα με το checkbox.
+    window.sb.rpc('sync_newsletter_subscription', { p_subscribe: !!fd.get('newsletter') })
+      .then(()=>{}, ()=>{});   // best-effort, μη μπλοκάρεις το profile save
+
     showToast('Τα στοιχεία αποθηκεύτηκαν ✓');
     if(typeof updateAccountUI === 'function') updateAccountUI();   // refresh greeting με το νέο όνομα
   } catch(err){
