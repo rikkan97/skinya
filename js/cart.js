@@ -177,7 +177,35 @@ function removeItem(id){
   updateCart();
 }
 
+// Συγχρονισμός bundle discount με το backend (create_order): το set
+// discount εφαρμόζεται ΜΟΝΟ αν ΟΛΑ τα SKUs ενός σετ υπάρχουν στο καλάθι.
+// Αλλιώς full price. Έτσι το frontend σύνολο ταιριάζει ΠΑΝΤΑ με το ποσό
+// που χρεώνει ο server — δεν «κολλάει» έκπτωση σε μερικό σετ.
+function recalcBundlePricing(){
+  if(typeof resolveBundle !== 'function' || typeof effectivePrice !== 'function') return;
+  if(typeof products === 'undefined' || !Array.isArray(products)) return;
+
+  const discMap = {};   // sku -> discount (αν πλήρες σετ στο καλάθι)
+  ['morning_routine','night_routine'].forEach(secId => {
+    let b; try { b = resolveBundle(secId); } catch(_){ return; }
+    if(!b || !b.discount || !Array.isArray(b.items)) return;
+    const skus = b.items.map(i => i.sku).filter(Boolean);
+    if(!skus.length) return;
+    const allIn = skus.every(s => cart.some(ci => ci.id === s && ci.qty > 0));
+    if(allIn) skus.forEach(s => { discMap[s] = Math.max(discMap[s] || 0, b.discount); });
+  });
+
+  cart.forEach(item => {
+    const p = products.find(pr => pr.id === item.id);
+    if(!p) return;                          // άγνωστο προϊόν — άσε το ως έχει
+    const base = effectivePrice(p);
+    const disc = discMap[item.id] || 0;
+    item.price = +(base * (1 - disc)).toFixed(2);
+  });
+}
+
 function updateCart(){
+  recalcBundlePricing();   // sync τιμές με το backend πριν τους υπολογισμούς
   const items = document.getElementById('cartItems');
   const count = cart.reduce((s,i)=>s+i.qty,0);
   document.getElementById('cartCount').textContent = count;
